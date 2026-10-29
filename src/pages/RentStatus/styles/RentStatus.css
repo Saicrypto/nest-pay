@@ -1,0 +1,198 @@
+
+.rent-status-section {
+  margin-top: 32px;
+  min-width: 0;
+}
+
+.rent-status-section h2 {
+  color: #20251f;
+  font-size: 22px;
+  margin: 0 0 18px;
+}
+
+.rent-status-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+}
+
+
+
+.rent-status-card {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+  padding: 16px;
+  border: 1px solid #e8ebe5;
+  border-radius: 14px;
+  background: #fff;
+}
+
+.rent-status-card span {
+  color: #737970;
+  font-size: 13px;
+}
+
+.rent-status-card strong {
+  color: #20251f;
+  font-size: 25px;
+}
+
+.rent-status-card small {
+  color: #737970;
+  font-size: 12px;
+  overflow-wrap: anywhere;
+}
+
+.rent-status-card.paid {
+  border-top: 3px solid #315c40;
+}
+
+.rent-status-card.unpaid {
+  border-top: 3px solid #d4a13b;
+}
+
+.rent-status-card.overdue {
+  border-top: 3px solid #c54b4b;
+}
+
+.rent-status-list {
+  margin-top: 24px;
+  padding: 18px;
+  border: 1px solid #e8ebe5;
+  border-radius: 16px;
+  background: #fff;
+}
+
+.rent-status-list h3 {
+  margin: 0 0 14px;
+  color: #20251f;
+  font-size: 17px;
+}
+
+.rent-status-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 0;
+  border-bottom: 1px solid #edf0ea;
+}
+
+.rent-status-row:last-child {
+  border-bottom: none;
+}
+
+.rent-status-row > div,
+.rent-status-row-right {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+}
+
+.rent-status-row strong {
+  color: #20251f;
+  font-size: 14px;
+  overflow-wrap: anywhere;
+}
+
+.rent-status-row span {
+  color: #737970;
+  font-size: 12px;
+}
+
+.rent-status-row-right {
+  align-items: flex-end;
+  flex-shrink: 0;
+}
+
+.rent-status-row-right a {
+  color: #315c40;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.rent-status-label {
+  text-transform: capitalize;
+}
+
+.rent-status-label.paid {
+  color: #315c40;
+}
+
+.rent-status-label.unpaid {
+  color: #a57517;
+}
+
+.rent-status-label.overdue {
+  color: #c03636;
+}
+
+.rent-status-error {
+  color: #a12626;
+  overflow-wrap: anywhere;
+}
+
+@media (max-width: 600px) {
+  .rent-status-section {
+    margin-top: 28px;
+  }
+
+  .rent-status-grid {
+    gap: 8px;
+  }
+
+  .rent-status-card {
+    padding: 12px 10px;
+    gap: 7px;
+  }
+
+  .rent-status-card strong {
+    font-size: 21px;
+  }
+
+  .rent-status-card small {
+    font-size: 11px;
+  }
+
+  .rent-status-list {
+    padding: 14px;
+  }
+
+  .rent-status-row {
+    gap: 8px;
+  }
+}
+
+
+.rent-status-card {
+  appearance: none;
+  -webkit-appearance: none;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 8px;
+  min-width: 0;
+  width: 100%;
+  padding: 16px;
+  border: 1px solid #e8ebe5;
+  border-radius: 14px;
+  background: #fff;
+  font-family: inherit;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.rent-status-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+}
+
+.rent-status-card:focus-visible {
+  outline: 2px solid #315c40;
+  outline-offset: 3px;
+}
+

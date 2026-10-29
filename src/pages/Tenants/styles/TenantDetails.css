@@ -1,0 +1,292 @@
+
+.tenant-details-page {
+  box-sizing: border-box;
+  min-height: 100vh;
+  padding: 0 5% 48px;
+  background: #f5f7f2;
+  color: #17231d;
+}
+
+.tenant-details-header {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  min-height: 82px;
+  border-bottom: 1px solid #e3e9e0;
+}
+
+.tenant-details-back {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 8px;
+  color: #28573d;
+  background: transparent;
+  border: 0;
+  border-radius: 10px;
+  font: inherit;
+  font-size: 15px;
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.tenant-details-back svg {
+  width: 26px;
+  height: 26px;
+}
+
+.tenant-details-back:hover {
+  background: #eaf1e8;
+}
+
+.tenant-details-brand {
+  color: #28573d;
+  font-size: 29px;
+  font-weight: 750;
+  letter-spacing: -1px;
+  text-decoration: none;
+}
+
+.tenant-details-card {
+  max-width: 1000px;
+  margin: 28px auto 0;
+  padding: 32px;
+  background: #fff;
+  border: 1px solid #e8ede6;
+  border-radius: 24px;
+}
+
+.tenant-details-eyebrow {
+  margin: 0 0 12px;
+  color: #6c8173;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 2px;
+}
+
+.tenant-details-card h1 {
+  margin: 0;
+  color: #14221a;
+  font-size: clamp(28px, 4vw, 38px);
+  font-weight: 750;
+  letter-spacing: -1px;
+  overflow-wrap: anywhere;
+}
+
+.tenant-details-property-address {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  margin: 18px 0 0;
+  color: #64736a;
+  font-size: 15px;
+  line-height: 1.7;
+}
+
+.tenant-details-property-address svg {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+  margin-top: 2px;
+  color: #DD6013;
+}
+
+.whatsapp-reminder-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  width: 100%;
+  min-height: 58px;
+  margin-top: 28px;
+  padding: 14px 20px;
+  color: #fff;
+  background: #DD6013;
+  border: 0;
+  border-radius: 14px;
+  font: inherit;
+  font-size: 15px;
+  font-weight: 650;
+  cursor: pointer;
+  transition: background 0.2s ease, transform 0.2s ease;
+}
+
+.whatsapp-reminder-button svg {
+  width: 25px;
+  height: 25px;
+  flex-shrink: 0;
+}
+
+.whatsapp-reminder-button:hover {
+  background: #DD6013;
+}
+
+.whatsapp-reminder-button:active {
+  transform: scale(0.99);
+}
+
+.tenant-details-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+  max-width: 1000px;
+  margin: 24px auto 0;
+}
+
+.tenant-detail-item {
+  box-sizing: border-box;
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  min-width: 0;
+  min-height: 132px;
+  padding: 24px;
+  background: #fff;
+  border: 1px solid #e8ede6;
+  border-radius: 22px;
+}
+
+.tenant-detail-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 52px;
+  width: 52px;
+  height: 52px;
+  color: #DD6013;
+  background: #edf4eb;
+  border-radius: 16px;
+}
+
+.tenant-detail-icon svg {
+  width: 24px;
+  height: 24px;
+  stroke-width: 1.8;
+}
+
+.tenant-detail-content {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-width: 0;
+  padding-top: 3px;
+}
+
+.tenant-detail-label {
+  color: #718078;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.tenant-detail-value {
+  color: #17231d;
+  font-size: 17px;
+  font-weight: 650;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+.tenant-details-loading {
+  padding: 32px 0;
+  color: #64736a;
+}
+
+.tenant-details-page .property-details-error {
+  max-width: 1000px;
+  margin: 24px auto;
+}
+
+@media (max-width: 700px) {
+  .tenant-details-page {
+    padding: 0 18px 32px;
+  }
+
+  .tenant-details-header {
+    min-height: 68px;
+    gap: 10px;
+  }
+
+  .tenant-details-brand {
+    font-size: 25px;
+  }
+
+  .tenant-details-card {
+    margin-top: 20px;
+    padding: 24px 20px;
+    border-radius: 22px;
+  }
+
+  .tenant-details-grid {
+    gap: 12px;
+    margin-top: 16px;
+  }
+
+  .tenant-detail-item {
+    flex-direction: column;
+    gap: 12px;
+    min-height: 145px;
+    padding: 17px;
+    border-radius: 18px;
+  }
+
+  .tenant-detail-icon {
+    flex-basis: 44px;
+    width: 44px;
+    height: 44px;
+    border-radius: 13px;
+  }
+
+  .tenant-detail-icon svg {
+    width: 21px;
+    height: 21px;
+  }
+
+  .tenant-detail-content {
+    gap: 6px;
+    padding-top: 0;
+  }
+
+  .tenant-detail-label {
+    font-size: 12px;
+  }
+
+  .tenant-detail-value {
+    font-size: 14px;
+  }
+
+  .whatsapp-reminder-button {
+    min-height: 54px;
+    gap: 9px;
+    padding: 12px;
+    font-size: 13px;
+  }
+}
+
+@media (max-width: 360px) {
+  .tenant-details-page {
+    padding-right: 12px;
+    padding-left: 12px;
+  }
+
+  .tenant-details-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .tenant-detail-item {
+    flex-direction: row;
+    align-items: center;
+    min-height: 100px;
+  }
+
+  .tenant-detail-content {
+    gap: 5px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .whatsapp-reminder-button {
+    transition: none;
+  }
+}

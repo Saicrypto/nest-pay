@@ -1,0 +1,279 @@
+
+/* Shared dropdown */
+.status-dropdown {
+  position: relative;
+  display: inline-flex;
+  flex-shrink: 0;
+  font-family: inherit;
+  z-index: 2;
+}
+
+.status-dropdown:has(.status-dropdown-menu) {
+  z-index: 100;
+}
+
+.status-dropdown-trigger {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  min-height: 36px;
+  padding: 0 10px;
+  border: 1px solid transparent;
+  border-radius: 999px;
+  background: #fff0e5;
+  color: #dd6013;
+  font: inherit;
+  font-size: 12px;
+  font-weight: 600;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: background 0.2s ease, border-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.status-dropdown-trigger:hover {
+  border-color: #dd6013;
+}
+
+.status-dropdown-trigger:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(221, 96, 19, 0.16);
+}
+
+.status-dropdown-trigger:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.status-dropdown-trigger svg {
+  flex-shrink: 0;
+  transition: transform 0.2s ease;
+}
+
+.status-dropdown-trigger svg.rotated {
+  transform: rotate(180deg);
+}
+
+/* Status dot */
+.status-dropdown-dot {
+  width: 7px;
+  height: 7px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  background: #dd6013;
+}
+
+/* Occupancy colors */
+.status-dropdown.occupancy.occupied .status-dropdown-trigger {
+  background: #eaf6ee;
+  color: #237448;
+}
+
+.status-dropdown.occupancy.occupied .status-dropdown-dot,
+.status-dropdown-option.occupied .status-dropdown-dot {
+  background: #27835d;
+}
+
+.status-dropdown.occupancy.vacant .status-dropdown-trigger {
+  background: #fff3df;
+  color: #94600c;
+}
+
+.status-dropdown.occupancy.vacant .status-dropdown-dot,
+.status-dropdown-option.vacant .status-dropdown-dot {
+  background: #d99519;
+}
+
+/* Payment colors */
+.status-dropdown.payment.paid .status-dropdown-trigger {
+  background: #eaf6ee;
+  color: #237448;
+}
+
+.status-dropdown.payment.paid .status-dropdown-dot,
+.status-dropdown-option.paid .status-dropdown-dot {
+  background: #27835d;
+}
+
+.status-dropdown.payment.unpaid .status-dropdown-trigger {
+  background: #fff3df;
+  color: #94600c;
+}
+
+.status-dropdown.payment.unpaid .status-dropdown-dot,
+.status-dropdown-option.unpaid .status-dropdown-dot {
+  background: #d99519;
+}
+
+.status-dropdown.payment.overdue .status-dropdown-trigger {
+  background: #fff0ed;
+  color: #bd3b2b;
+}
+
+.status-dropdown.payment.overdue .status-dropdown-dot,
+.status-dropdown-option.overdue .status-dropdown-dot {
+  background: #d64535;
+}
+
+/* Floating menu */
+.status-dropdown-menu {
+  position: absolute;
+  top: calc(100% + 7px);
+  right: 0;
+  min-width: 145px;
+  padding: 5px;
+  background: #fff;
+  border: 1px solid #eceee9;
+  border-radius: 13px;
+  box-shadow: 0 10px 28px rgba(31, 39, 30, 0.13);
+  z-index: 999;
+  animation: status-dropdown-enter 0.16s ease-out;
+}
+
+.status-dropdown-option {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  width: 100%;
+  padding: 10px 9px;
+  border: none;
+  border-radius: 9px;
+  background: transparent;
+  color: #30352f;
+  font: inherit;
+  font-size: 13px;
+  text-align: left;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.status-dropdown-option:hover {
+  background: #f5f6f2;
+}
+
+.status-dropdown-option.selected {
+  background: #fff0e5;
+  color: #c9530d;
+  font-weight: 600;
+}
+
+.status-dropdown-option > svg {
+  margin-left: auto;
+  color: #dd6013;
+}
+
+@keyframes status-dropdown-enter {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .status-dropdown-trigger,
+  .status-dropdown-trigger svg,
+  .status-dropdown-option {
+    transition: none;
+  }
+
+  .status-dropdown-menu {
+    animation: none;
+  }
+}
+
+
+/* Month selector uses the same dropdown style */
+.status-dropdown.month .status-dropdown-trigger {
+  background: #fff;
+  color: #30352f;
+  border-color: #e5e7df;
+}
+
+.status-dropdown.month .status-dropdown-trigger:hover {
+  border-color: #DD6013;
+}
+
+.status-dropdown.month .status-dropdown-menu {
+  min-width: 160px;
+  max-height: 260px;
+  overflow-y: auto;
+}
+
+.status-dropdown.month .status-dropdown-option.selected {
+  background: #fff0e5;
+  color: #DD6013;
+}
+
+/* Property Type dropdown — match payment status dropdown */
+.status-dropdown.property-type {
+  display: flex;
+  width: 100%;
+  margin-bottom: 20px;
+}
+
+.status-dropdown.property-type .status-dropdown-trigger {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  min-height: 46px;
+  padding: 0 12px;
+  border: 1px solid #dfe3dc;
+  border-radius: 9px;
+  background: #ffffff;
+  color: #20251f;
+  font-size: 14px;
+  font-weight: 400;
+}
+
+.status-dropdown.property-type .status-dropdown-trigger:hover {
+  border-color: #dd6013;
+}
+
+.status-dropdown.property-type .status-dropdown-menu {
+  top: calc(100% + 5px);
+  left: 0;
+  right: 0;
+  min-width: 100%;
+  padding: 5px;
+  background: #ffffff;
+  border: 1px solid #eceee9;
+  border-radius: 13px;
+  box-shadow: 0 10px 28px rgba(31, 39, 30, 0.13);
+  box-sizing: border-box;
+}
+
+.status-dropdown.property-type .status-dropdown-option {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  width: 100%;
+  padding: 10px 9px;
+  border: none;
+  border-radius: 9px;
+  background: transparent;
+  color: #30352f;
+  font-size: 13px;
+  font-weight: 400;
+  text-align: left;
+}
+
+.status-dropdown.property-type .status-dropdown-option:hover {
+  background: #f5f6f2;
+}
+
+.status-dropdown.property-type .status-dropdown-option.selected {
+  background: #fff0e5;
+  color: #dd6013;
+  font-weight: 600;
+}
+
+.status-dropdown.property-type .status-dropdown-option > svg {
+  margin-left: auto;
+  color: #dd6013;
+}

@@ -1,0 +1,450 @@
+
+/* ========================================
+   NEST PAY — RENT STATUS PAGE
+   ======================================== */
+
+.rent-status-page {
+  min-height: 100vh;
+  min-height: 100dvh;
+  box-sizing: border-box;
+  padding: calc(12px + env(safe-area-inset-top)) 16px
+    calc(20px + env(safe-area-inset-bottom));
+  background: #f5f6f2;
+  color: #20251f;
+  font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI",
+    Roboto, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+/* Header */
+
+.rent-status-page-header {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.rent-status-back {
+  position: absolute;
+  left: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 32px;
+  min-height: 40px;
+  color: #315c40;
+  font-size: 27px;
+  font-weight: 400;
+  text-decoration: none;
+}
+
+.rent-status-page-header > span {
+  display: block;
+  margin: 0 0 28px;
+  color: #dd6013;
+  font-size: 22px;
+  font-weight: 750;
+  text-align: center;
+  transform: translateY(10px);
+}
+
+.rent-subtitle {
+  margin: 6px 0 0;
+  color: #888888;
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 1.4;
+  text-align: center;
+}
+
+
+.rent-status-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.rent-status-search {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex: 1;
+  min-width: 0;
+  padding: 0 12px;
+  border: 1px solid #e5e7eb;
+  border-radius: 24px;
+  background: #fff;
+}
+
+.rent-status-search input {
+  flex: 1;
+  width: 100%;
+  min-width: 0;
+  padding: 10px 0;
+  border: none;
+  outline: none;
+  background: transparent;
+  color: #333;
+  font-size: 13px;
+}
+
+.rent-status-search input::placeholder {
+  color: #888;
+  opacity: 1;
+}
+
+.rent-status-month {
+  flex-shrink: 0;
+}
+
+.rent-status-header-spacer {
+   position: absolute;
+  right: 0;
+  width: 32px;
+  flex-shrink: 0;
+}
+
+/* Page heading */
+
+.rent-status-page > h1 {
+  margin: 0;
+  font-size: 24px;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+}
+
+.rent-status-page-subtitle {
+  margin: 6px 0 18px;
+  color: #737970;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+/* Month selector */
+
+.rent-status-toolbar {
+  display: flex;
+  justify-content: flex-end;
+  margin: 0 0 10px;
+}
+
+.rent-status-month select {
+  min-height: 36px;
+  padding: 6px 10px;
+  border: 1px solid #e1e5e1;
+  border-radius: 9px;
+  background: #fff;
+  color: #20251f;
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+/* Filter tabs */
+
+.rent-status-tabs {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  overflow-x: auto;
+  margin-bottom: 4px;
+  border-bottom: 1px solid #e8ebe5;
+  scrollbar-width: none;
+}
+
+.rent-status-tabs::-webkit-scrollbar {
+  display: none;
+}
+
+.rent-status-tabs button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  flex-shrink: 0;
+  padding: 12px 0 10px;
+  border: 0;
+  border-bottom: 2px solid transparent;
+  background: transparent;
+  color: #737970;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 500;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.rent-status-tabs button.active {
+  border-bottom-color: #315c40;
+  color: #315c40;
+  font-weight: 700;
+}
+
+.rent-status-tabs button span {
+  font-size: 12px;
+}
+
+
+
+
+/* Rent records */
+
+.rent-status-records {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.rent-status-record {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  margin-bottom: 10px;
+  padding: 14px 12px;
+  border: 1px solid #e8ebe5;
+  border-radius: 12px;
+  background: #fff;
+  box-shadow: 0 4px 14px rgba(25, 40, 20, 0.03);
+}
+
+/* Colored status indicator */
+
+.rent-status-dot {
+  width: 12px;
+  height: 12px;
+  margin-top: 3px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.rent-status-dot.paid {
+  background: #4bc36a;
+}
+
+.rent-status-dot.unpaid,
+.rent-status-dot.overdue {
+  background: #ff343b;
+}
+
+.rent-status-dot.due-soon {
+  background: #f5a900;
+}
+
+/* Tenant and property information */
+
+.rent-status-record-main {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-width: 0;
+  gap: 2px;
+  color: inherit;
+  text-decoration: none;
+}
+
+.rent-status-record-main > strong {
+  font-size: 14px;
+  font-weight: 650;
+  line-height: 1.4;
+  letter-spacing: -0.15px;
+  overflow-wrap: anywhere;
+}
+
+.rent-status-record-main > span {
+  color: #555d56;
+  font-size: 12px;
+  line-height: 1.4;
+  overflow-wrap: anywhere;
+}
+
+.rent-status-record-main > .rent-status-date {
+  margin-top: 2px;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.rent-status-record-main > .rent-status-date.paid {
+  color: #16863a;
+}
+
+.rent-status-record-main > .rent-status-date.unpaid,
+.rent-status-record-main > .rent-status-date.overdue {
+  color: #d22e32;
+}
+
+.rent-status-record-main > .rent-status-date.due-soon {
+  color: #d18d00;
+}
+
+/* Record actions */
+
+.rent-status-record-actions {
+  display: flex;
+  flex-shrink: 0;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 8px;
+  width: 105px;
+}
+
+.rent-status-record-actions select {
+  box-sizing: border-box;
+  width: 100%;
+  min-height: 34px;
+  padding: 6px;
+  border: 1px solid #dfe3dc;
+  border-radius: 9px;
+  background: #fff;
+  color: #20251f;
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.rent-status-record-actions a {
+  color: #315c40;
+  font-size: 12px;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.rent-status-reminder {
+  width: 100%;
+  min-height: 34px;
+  padding: 6px 8px;
+  border: 0;
+  border-radius: 8px;
+  background: #dcefe0;
+  color: #315c40;
+  font-family: inherit;
+  font-size: 11px;
+  font-weight: 600;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.rent-status-reminder:active {
+  background: #c8e5cf;
+}
+
+/* Status labels */
+
+.rent-status-label {
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: capitalize;
+}
+
+.rent-status-label.paid {
+  color: #24964c;
+}
+
+.rent-status-label.unpaid,
+.rent-status-label.overdue {
+  color: #d22e32;
+}
+
+/* Empty and error states */
+
+.rent-status-error {
+  color: #a12626;
+  font-size: 13px;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
+
+.rent-status-empty {
+  padding: 24px 12px;
+  color: #737970;
+  text-align: center;
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+/* Screen-reader-only labels */
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* Tablet and desktop */
+
+@media (min-width: 601px) {
+  .rent-status-page {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 24px;
+    border-right: 1px solid #e8ebe5;
+    border-left: 1px solid #e8ebe5;
+  }
+
+  .rent-status-record {
+    padding: 16px 12px;
+  }
+}
+
+/* Small mobile screens */
+
+@media (max-width: 380px) {
+  .rent-status-page {
+    padding-right: 12px;
+    padding-left: 12px;
+  }
+
+  .rent-status-record {
+    gap: 8px;
+    padding: 12px 9px;
+  }
+
+  .rent-status-record-actions {
+    width: 96px;
+  }
+
+  .rent-status-record-main > strong {
+    font-size: 13px;
+  }
+
+  .rent-status-record-main > span,
+  .rent-status-record-main > .rent-status-date {
+    font-size: 11px;
+  }
+
+  .rent-status-reminder {
+    padding: 6px;
+    font-size: 10px;
+  }
+
+  .rent-status-tabs {
+    gap: 10px;
+  }
+}
+
+
+
+
+.rent-status-record-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.rent-status-reminder {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}

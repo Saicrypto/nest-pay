@@ -1,0 +1,89 @@
+
+.vacate-modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  background: rgba(0, 0, 0, 0.65);
+}
+
+.vacate-modal {
+  width: 100%;
+  max-width: 420px;
+  padding: 24px;
+  border: 1px solid #333;
+  border-radius: 14px;
+  background: #171717;
+  color: #fff;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.35);
+}
+
+.vacate-modal h3 {
+  margin: 0 0 14px;
+  font-size: 20px;
+}
+
+.vacate-modal p {
+  color: #ccc;
+  line-height: 1.6;
+  font-size: 14px;
+}
+
+.vacate-modal .vacate-modal-warning {
+  color: #ff9b72;
+  font-weight: 600;
+}
+
+.vacate-modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 24px;
+}
+
+.vacate-modal-actions button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  min-height: 40px;
+  padding: 0 16px;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.vacate-cancel-btn {
+  background: transparent;
+  border: 1px solid #555;
+  color: #fff;
+}
+
+.vacate-proceed-btn {
+  background: #DD6013;
+  border: 1px solid #DD6013;
+  color: #fff;
+}
+
+.vacate-modal-actions button:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+}
+
+.vacate-spinner {
+  width: 15px;
+  height: 15px;
+  border: 2px solid rgba(255, 255, 255, 0.4);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: vacate-spin 0.7s linear infinite;
+}
+
+@keyframes vacate-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}

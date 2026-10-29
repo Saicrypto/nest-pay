@@ -1,0 +1,424 @@
+
+.unit-card {
+  box-sizing: border-box;
+  display: grid;
+  gap: 16px;
+  padding: 24px 28px;
+  background: #fff;
+  border: 1px solid #e8ebe8;
+  border-radius: 24px;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.unit-card {
+  position: relative;
+  z-index: 1;
+  overflow: visible;
+}
+
+.unit-card:has(.occupancy-menu) {
+  z-index: 100;
+}
+
+.unit-card.has-active-tenant {
+  cursor: pointer;
+}
+
+.unit-card:hover {
+  border-color: #d5e1d7;
+  box-shadow: 0 4px 16px rgba(34, 67, 45, 0.04);
+}
+
+.unit-card-main {
+  display: grid;
+  grid-template-columns: 44px minmax(0, 1fr) auto;
+  grid-template-rows: auto auto;
+  align-items: center;
+  gap: 8px 12px;
+  min-width: 0;
+}
+
+.unit-card-icon {
+  grid-column: 1;
+  grid-row: 1;
+}
+
+.unit-card-heading {
+  grid-column: 2;
+  grid-row: 1;
+  min-width: 0;
+}
+
+.unit-card-heading h3 {
+  margin: 0;
+  color: #111d1b;
+  font-size: 19px;
+  font-weight: 700;
+  text-transform: capitalize;
+  overflow-wrap: anywhere;
+}
+
+.unit-card-main > .status-dropdown {
+  grid-column: 3;
+  grid-row: 1;
+  justify-self: end;
+}
+
+.unit-card-details {
+  grid-column: 1 / -1;
+  grid-row: 2;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+  min-width: 0;
+  margin: 0;
+  color: #697578;
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.unit-card-detail-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.unit-card-detail-item svg {
+  flex-shrink: 0;
+}
+
+.unit-card-separator {
+  color: #8b9693;
+}
+
+
+
+.unit-card-tenant-name {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  min-width: 0;
+}
+
+@media (max-width: 600px) {
+  .unit-card-details {
+    gap: 5px;
+    font-size: 13px;
+  }
+}
+
+.occupancy-badge {
+  box-sizing: border-box;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 48px;
+  max-width: 150px;
+  padding: 10px 14px;
+  border: 1px solid transparent;
+  border-radius: 18px;
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.occupancy-badge.occupied {
+  color: #765016;
+  background: #fff3df;
+  border-color: #fff0d5;
+}
+
+.occupancy-badge.vacant {
+  color: #28573d;
+  background: #edf7ee;
+  border-color: #e1f0e3;
+}
+
+.occupancy-badge:focus-visible {
+  outline: 2px solid #315c40;
+  outline-offset: 3px;
+}
+
+.unit-card-arrow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #566266;
+  font-size: 32px;
+  line-height: 1;
+}
+
+
+
+
+
+@media (max-width: 600px) {
+  .unit-card {
+    padding: 18px 16px;
+    border-radius: 20px;
+  }
+
+  .unit-card-main {
+    grid-template-columns: 44px minmax(0, 1fr) auto;
+    gap: 10px;
+  }
+
+  .unit-card-heading h3 {
+    font-size: 17px;
+  }
+
+  .unit-card-details {
+    gap: 4px;
+    font-size: 11px;
+  }
+
+  .occupancy-badge {
+    min-height: 36px;
+    max-width: 110px;
+    padding: 7px 8px;
+    font-size: 11px;
+  }
+
+  .unit-card-arrow {
+    font-size: 25px;
+  }
+
+  
+}
+
+@media (max-width: 360px) {
+  .unit-card {
+    padding: 15px;
+  }
+
+  .unit-card-main {
+    grid-template-columns: minmax(0, 1fr) auto;
+  }
+
+  .unit-card-arrow {
+    display: none;
+  }
+
+  .occupancy-badge {
+    grid-column: 2;
+    grid-row: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .unit-card {
+    transition: none;
+  }
+}
+
+/* Flat icon */
+.unit-card-icon {
+  width: 44px;
+  height: 44px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #fff0e5;
+  border-radius: 12px;
+}
+
+/* Modern occupancy dropdown */
+.occupancy-select-wrapper {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  flex-shrink: 0;
+  padding: 0 12px;
+  height: 36px;
+  border: 1px solid transparent;
+  border-radius: 999px;
+  transition: background 0.2s ease, border-color 0.2s ease;
+}
+
+.occupancy-select-wrapper.occupied {
+  background: #eaf6ee;
+  border-color: #d8eddf;
+  color: #237448;
+}
+
+.occupancy-select-wrapper.vacant {
+  background: #fff3df;
+  border-color: #f4e3c2;
+  color: #9a6108;
+}
+
+.occupancy-status-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.occupied .occupancy-status-dot {
+  background: #27835d;
+  box-shadow: 0 0 0 3px rgba(39, 131, 93, 0.10);
+}
+
+.vacant .occupancy-status-dot {
+  background: #d99519;
+  box-shadow: 0 0 0 3px rgba(217, 149, 25, 0.10);
+}
+
+.occupancy-badge {
+  appearance: none;
+  -webkit-appearance: none;
+  border: none;
+  outline: none;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 0 15px 0 0;
+  cursor: pointer;
+  min-width: 0;
+}
+
+.occupancy-chevron {
+  position: absolute;
+  right: 10px;
+  pointer-events: none;
+  color: inherit;
+  transition: transform 0.2s ease;
+}
+
+.occupancy-select-wrapper:focus-within {
+  border-color: #dd6013;
+  box-shadow: 0 0 0 3px rgba(221, 96, 19, 0.12);
+}
+
+/* Keep the unit card above cards below it while its dropdown is open */
+.unit-card {
+  position: relative;
+  z-index: 1;
+}
+
+.unit-card:has(.status-dropdown-menu) {
+  z-index: 100;
+}
+
+/* Keep the dropdown menu above surrounding content */
+.status-dropdown {
+  position: relative;
+  z-index: 2;
+}
+
+.status-dropdown:has(.status-dropdown-menu) {
+  z-index: 101;
+}
+
+.status-dropdown-menu {
+  position: absolute;
+  z-index: 9999;
+}
+
+.unit-details-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  background: rgba(0, 0, 0, 0.55);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+.unit-details-modal {
+  position: relative;
+  z-index: 10000;
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 460px;
+  max-height: calc(100vh - 32px);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: 28px;
+  border-radius: 16px;
+  background: #fff;
+  color: #222;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.2);
+}
+
+.unit-details-modal h2 {
+  margin: 0 35px 20px 0;
+  color: #DD6013;
+}
+
+.unit-details-modal h3 {
+  margin: 18px 0 12px;
+}
+
+.unit-details-modal p {
+  margin: 12px 0;
+  line-height: 1.5;
+}
+
+.unit-details-close {
+  position: absolute;
+  top: 12px;
+  right: 16px;
+  border: none;
+  background: transparent;
+  font-size: 30px;
+  cursor: pointer;
+}
+
+
+.unit-details-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 24px;
+  padding-top: 16px;
+  border-top: 1px solid #e5e7e2;
+}
+
+.unit-details-actions button {
+  flex: 1;
+  min-height: 42px;
+  border: 1px solid #d8dcd4;
+  border-radius: 8px;
+  padding: 10px 14px;
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s ease, border-color 0.2s ease;
+}
+
+.unit-details-actions button:first-child {
+  background: #f1f3ed;
+  color: #343a30;
+}
+
+.unit-details-actions button:first-child:hover {
+  background: #e5e9de;
+  border-color: #aab29f;
+}
+
+.unit-details-actions .unit-delete-button {
+  background: #fff2ef;
+  color: #b42318;
+  border-color: #f2c3bb;
+}
+
+.unit-details-actions .unit-delete-button:hover {
+  background: #ffe3dd;
+  border-color: #e7a49a;
+}
+
+.unit-details-actions button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
