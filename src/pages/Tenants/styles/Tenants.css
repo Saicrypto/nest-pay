@@ -926,3 +926,103 @@
   color: #ff7777;
   font-size: 13px;
 }
+
+
+/* Tenants page skeleton */
+
+.tenants-page-skeleton {
+  pointer-events: none;
+}
+
+.tenants-skeleton-line,
+.tenants-skeleton-status {
+  background: linear-gradient(
+    90deg,
+    #e8ebe5 25%,
+    #f5f6f2 50%,
+    #e8ebe5 75%
+  );
+  background-size: 200% 100%;
+  animation: tenants-shimmer 1.5s infinite linear;
+  border-radius: 6px;
+}
+
+.tenants-page-skeleton .tenants-search {
+  color: #dd6013;
+}
+
+.tenants-skeleton-line.search {
+  width: 65%;
+  height: 13px;
+}
+
+.tenants-skeleton-property-list {
+  margin-top: 24px;
+}
+
+.tenants-page-skeleton .tenants-property {
+  margin-bottom: 24px;
+}
+
+.tenants-skeleton-property-info {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.tenants-skeleton-line.property-name {
+  width: 180px;
+  height: 17px;
+}
+
+.tenants-skeleton-line.property-address {
+  width: 130px;
+  height: 11px;
+}
+
+.tenants-page-skeleton .tenants-property-icon {
+  color: #dd6013;
+}
+
+.tenants-page-skeleton .tenants-unit-list {
+  margin-top: 14px;
+}
+
+.tenants-page-skeleton .tenants-unit {
+  cursor: default;
+}
+
+.tenants-skeleton-line.unit-name {
+  width: 85px;
+  height: 16px;
+}
+
+.tenants-skeleton-status {
+  width: 75px;
+  height: 26px;
+  border-radius: 20px;
+}
+
+.tenants-skeleton-line.tenant-name {
+  width: 125px;
+  height: 12px;
+}
+
+@keyframes tenants-shimmer {
+  from {
+    background-position: 200% 0;
+  }
+
+  to {
+    background-position: -200% 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tenants-page-skeleton *,
+  .tenants-page-skeleton *::before,
+  .tenants-page-skeleton *::after {
+    animation: none !important;
+  }
+}

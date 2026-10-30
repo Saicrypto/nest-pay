@@ -20,15 +20,18 @@ import { clearPropertyDetailsCache } from "../../Properties/cache/propertyDetail
 import { clearTenantsCache } from "../../Tenants/cache/tenantsCache";
 import { clearTenantDetailsCache } from "../../Tenants/cache/tenantDetailsCache";
 import { clearRentStatusCache } from "../../RentStatus/cache/rentStatusCache";
+import ProfileSkeleton from "../components/ProfileSkeleton";
 
 function Profile() {
-  const { user } = useUser();
+  
+  const { user, loading } = useUser();
   const navigate = useNavigate();
   const [signingOut, setSigningOut] = useState(false);
   const [error, setError] = useState("");
-
   const metadata = user?.user_metadata || {};
-
+  if (loading) {
+  return <ProfileSkeleton />;
+}
   const name =
     metadata.full_name ||
     metadata.name ||

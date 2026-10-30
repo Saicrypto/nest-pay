@@ -20,6 +20,7 @@ import {
   getRentStatusCache,
   setRentStatusCache,
 } from "../cache/rentStatusCache";
+import RentStatusPageSkeleton from "../components/RentStatusPageSkeleton";
 
 function RentStatusPage() {
   const [payments, setPayments] = useState([]);
@@ -235,7 +236,7 @@ const counts = {
 
 
   if (loading) {
-    return <main className="rent-status-page">Loading rent records...</main>;
+    return <RentStatusPageSkeleton />;
   }
 
   return (

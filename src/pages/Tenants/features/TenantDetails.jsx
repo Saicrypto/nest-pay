@@ -20,6 +20,7 @@ import {
   getTenantDetailsCache,
   setTenantDetailsCache,
 } from "../cache/tenantDetailsCache";
+import TenantDetailsSkeleton from "../components/TenantDetailsSkeleton";
 
 function TenantDetails() {
   const { tenantId } = useParams();
@@ -176,11 +177,7 @@ useEffect(() => {
   }
 
   if (loading) {
-    return (
-      <main className="tenant-details-page">
-        <p className="tenant-details-loading">Loading tenant details...</p>
-      </main>
-    );
+return <TenantDetailsSkeleton />;
   }
 
   if (error || !tenant || !unit || !property) {

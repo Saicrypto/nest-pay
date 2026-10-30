@@ -290,3 +290,96 @@
     transition: none;
   }
 }
+
+
+/* Tenant details skeleton */
+
+.tenant-details-skeleton {
+  pointer-events: none;
+}
+
+.tenant-skeleton-line,
+.tenant-skeleton-icon,
+.tenant-skeleton-button {
+  background: linear-gradient(
+    90deg,
+    #e8ebe5 25%,
+    #f5f6f2 50%,
+    #e8ebe5 75%
+  );
+  background-size: 200% 100%;
+  animation: tenant-details-shimmer 1.5s infinite linear;
+}
+
+.tenant-skeleton-line {
+  height: 12px;
+  border-radius: 6px;
+}
+
+.tenant-skeleton-line.eyebrow {
+  width: 110px;
+  margin-bottom: 18px;
+}
+
+.tenant-skeleton-line.name {
+  width: 55%;
+  height: 26px;
+  margin-bottom: 16px;
+}
+
+.tenant-skeleton-line.address {
+  width: 75%;
+  margin-bottom: 22px;
+}
+
+.tenant-skeleton-button {
+  width: 210px;
+  height: 42px;
+  border-radius: 9px;
+}
+
+.tenant-skeleton-icon {
+  width: 40px;
+  height: 40px;
+  flex-shrink: 0;
+  border-radius: 11px;
+}
+
+.tenant-skeleton-info {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 10px;
+  min-width: 0;
+}
+
+.tenant-skeleton-line.label {
+  width: 45%;
+}
+
+.tenant-skeleton-line.value {
+  width: 75%;
+  height: 15px;
+}
+
+@keyframes tenant-details-shimmer {
+  from {
+    background-position: 200% 0;
+  }
+
+  to {
+    background-position: -200% 0;
+  }
+}
+
+@media (max-width: 600px) {
+  .tenant-details-skeleton .tenant-details-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tenant-details-skeleton * {
+    animation: none !important;
+  }
+}

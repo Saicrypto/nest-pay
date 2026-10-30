@@ -196,3 +196,65 @@
   outline-offset: 3px;
 }
 
+
+/* Rent status summary skeleton */
+
+.rent-status-skeleton {
+  pointer-events: none;
+}
+
+.rent-skeleton-heading {
+  width: 145px;
+  height: 22px;
+  margin-bottom: 18px;
+  border-radius: 6px;
+}
+
+.rent-status-skeleton .rent-status-card {
+  cursor: default;
+}
+
+.rent-skeleton-line,
+.rent-skeleton-heading {
+  background: linear-gradient(
+    90deg,
+    #e8ebe5 25%,
+    #f5f6f2 50%,
+    #e8ebe5 75%
+  );
+  background-size: 200% 100%;
+  animation: rent-summary-shimmer 1.5s infinite linear;
+  border-radius: 6px;
+}
+
+.rent-skeleton-line.label {
+  width: 65%;
+  height: 13px;
+}
+
+.rent-skeleton-line.count {
+  width: 35%;
+  height: 25px;
+  margin-top: 14px;
+}
+
+.rent-skeleton-line.amount {
+  width: 55%;
+  height: 13px;
+  margin-top: 12px;
+}
+
+@keyframes rent-summary-shimmer {
+  from {
+    background-position: 200% 0;
+  }
+  to {
+    background-position: -200% 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .rent-status-skeleton * {
+    animation: none;
+  }
+}

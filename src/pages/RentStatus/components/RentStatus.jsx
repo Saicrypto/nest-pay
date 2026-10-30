@@ -7,6 +7,7 @@ import {
   getRentStatusCache,
   setRentStatusCache,
 } from "../cache/rentStatusCache";
+import RentStatusSkeleton from "../components/RentStatusSkeleton";
 
 function RentStatus() {
   const navigate = useNavigate();
@@ -77,9 +78,9 @@ function RentStatus() {
     }).format(Number(amount || 0));
   }
 
-  if (loading) {
-    return <section className="rent-status-section">Loading rent status...</section>;
-  }
+if (loading) {
+  return <RentStatusSkeleton />;
+}
 
   return (
     <section className="rent-status-section">

@@ -448,3 +448,170 @@
   justify-content: center;
   gap: 6px;
 }
+
+
+
+/* Full Rent Status page skeleton */
+
+.rent-status-page-skeleton {
+  pointer-events: none;
+}
+
+.rent-status-page-skeleton .rent-status-page-header {
+  margin-bottom: 24px;
+}
+
+.rent-page-skeleton-line,
+.rent-page-skeleton-month,
+.rent-page-skeleton-tab,
+.rent-page-skeleton-icon,
+.rent-page-skeleton-action,
+.rent-page-skeleton-dropdown {
+  background: linear-gradient(
+    90deg,
+    #e8ebe5 25%,
+    #f5f6f2 50%,
+    #e8ebe5 75%
+  );
+  background-size: 200% 100%;
+  animation: rent-page-shimmer 1.5s infinite linear;
+}
+
+.rent-page-skeleton-line {
+  height: 12px;
+  border-radius: 6px;
+}
+
+.rent-status-page-skeleton .rent-status-toolbar {
+  align-items: center;
+}
+
+.rent-status-page-skeleton .rent-status-search {
+  min-height: 42px;
+}
+
+.rent-page-skeleton-line.search {
+  width: 65%;
+}
+
+.rent-page-skeleton-month {
+  width: 120px;
+  height: 42px;
+  flex-shrink: 0;
+  border-radius: 9px;
+}
+
+.rent-status-page-skeleton .rent-status-tabs {
+  display: flex;
+  gap: 10px;
+}
+
+.rent-page-skeleton-tab {
+  flex: 1;
+  height: 40px;
+  border-radius: 9px;
+}
+
+.rent-status-page-skeleton .rent-status-record {
+  min-height: 110px;
+}
+
+.rent-page-skeleton-icon {
+  width: 42px;
+  height: 42px;
+  flex-shrink: 0;
+  border-radius: 12px;
+}
+
+.rent-page-skeleton-record-main {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 10px;
+  min-width: 0;
+}
+
+.rent-page-skeleton-line.unit {
+  width: 35%;
+  height: 15px;
+}
+
+.rent-page-skeleton-line.property {
+  width: 55%;
+}
+
+.rent-page-skeleton-line.tenant {
+  width: 45%;
+}
+
+.rent-page-skeleton-line.amount {
+  width: 30%;
+  height: 15px;
+}
+
+.rent-page-skeleton-line.date {
+  width: 50%;
+}
+
+.rent-page-skeleton-actions {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 12px;
+}
+
+.rent-page-skeleton-action {
+  width: 105px;
+  height: 30px;
+  border-radius: 8px;
+}
+
+.rent-page-skeleton-dropdown {
+  width: 105px;
+  height: 34px;
+  border-radius: 8px;
+}
+
+@keyframes rent-page-shimmer {
+  from {
+    background-position: 200% 0;
+  }
+
+  to {
+    background-position: -200% 0;
+  }
+}
+
+@media (max-width: 600px) {
+  .rent-status-page-skeleton .rent-status-record {
+    flex-wrap: wrap;
+  }
+
+  .rent-page-skeleton-actions {
+    width: 100%;
+    flex-direction: row;
+    justify-content: flex-end;
+    align-items: center;
+  }
+
+  .rent-page-skeleton-action,
+  .rent-page-skeleton-dropdown {
+    width: 95px;
+  }
+
+  .rent-status-page-skeleton .rent-status-tabs {
+    overflow: hidden;
+  }
+
+  .rent-page-skeleton-tab {
+    min-width: 65px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .rent-status-page-skeleton *,
+  .rent-status-page-skeleton *::before,
+  .rent-status-page-skeleton *::after {
+    animation: none !important;
+  }
+}

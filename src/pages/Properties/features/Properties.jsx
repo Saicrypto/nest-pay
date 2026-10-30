@@ -9,6 +9,7 @@ import {
   getPropertiesCache,
   setPropertiesCache,
 } from "../cache/propertiesCache";
+import PropertiesSkeleton from "../components/PropertiesSkeleton";
 
 function Properties() {
   const [properties, setProperties] = useState([]);
@@ -95,7 +96,7 @@ useEffect(() => {
         )}
 
         {loading ? (
-          <p>Loading your properties...</p>
+           <PropertiesSkeleton />
         ) : properties.length === 0 ? (
           <div className="properties-empty-state">
             <LuBuilding2 size={36} />

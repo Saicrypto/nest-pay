@@ -5,16 +5,13 @@ import usePropertyDetails from "../hooks/usePropertyDetails";
 import PropertySummary from "../components/PropertySummary";
 import PropertyUnits from "../components/PropertyUnits";
 import "../styles/PropertyDetails.css";
+import PropertyDetailsSkeleton from "../components/PropertyDetailsSkeleton";
 
 function PropertyDetails() {
   const details = usePropertyDetails();
-  if (details.loading) {
-    return (
-      <main className="property-details-page">
-        Loading property...
-      </main>
-    );
-  }
+ if (details.loading) {
+  return <PropertyDetailsSkeleton />;
+}
 
   if (details.error) {
     return (

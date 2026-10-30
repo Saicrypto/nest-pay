@@ -22,6 +22,7 @@ import {
   getTenantsCache,
   setTenantsCache,
 } from "../cache/tenantsCache";
+import TenantsSkeleton from "../components/TenantsSkeleton";
 
 function formatCurrency(value) {
   return new Intl.NumberFormat("en-IN", {
@@ -284,11 +285,7 @@ setUnits((current) => {
 };
 
   if (loading) {
-    return (
-      <main className="tenants-page">
-        <p className="tenants-message">Loading tenants...</p>
-      </main>
-    );
+return <TenantsSkeleton />;
   }
 
   return (
