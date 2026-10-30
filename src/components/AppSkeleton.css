@@ -1,0 +1,153 @@
+
+.app-skeleton {
+  min-height: 100vh;
+  background: #0d0d0d;
+  padding: 24px 20px 100px;
+  box-sizing: border-box;
+  animation: skeleton-fade 0.3s ease;
+}
+
+.skeleton-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  max-width: 760px;
+  margin: 0 auto 40px;
+}
+
+.skeleton-logo {
+  width: 115px;
+  height: 25px;
+  border-radius: 6px;
+}
+
+.skeleton-circle {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+}
+
+.skeleton-content {
+  max-width: 760px;
+  margin: 0 auto;
+}
+
+.skeleton-heading {
+  width: 190px;
+  height: 27px;
+  border-radius: 6px;
+  margin-bottom: 12px;
+}
+
+.skeleton-subheading {
+  width: 230px;
+  height: 12px;
+  border-radius: 5px;
+  margin-bottom: 30px;
+}
+
+.skeleton-summary {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+  margin-bottom: 35px;
+}
+
+.skeleton-block {
+  height: 105px;
+  border-radius: 12px;
+}
+
+.skeleton-section-title {
+  width: 140px;
+  height: 20px;
+  border-radius: 5px;
+  margin-bottom: 18px;
+}
+
+.skeleton-card {
+  padding: 20px;
+  border: 1px solid #292929;
+  border-radius: 12px;
+  margin-bottom: 14px;
+}
+
+.skeleton-line {
+  height: 12px;
+  border-radius: 5px;
+  margin-bottom: 13px;
+}
+
+.skeleton-line.long {
+  width: 65%;
+}
+
+.skeleton-line.medium {
+  width: 45%;
+}
+
+.skeleton-line.short {
+  width: 25%;
+  margin-bottom: 0;
+}
+
+.skeleton-logo,
+.skeleton-circle,
+.skeleton-heading,
+.skeleton-subheading,
+.skeleton-block,
+.skeleton-section-title,
+.skeleton-line {
+  background: linear-gradient(
+    90deg,
+    #202020 25%,
+    #303030 50%,
+    #202020 75%
+  );
+  background-size: 200% 100%;
+  animation: skeleton-shimmer 1.5s infinite linear;
+}
+
+.skeleton-bottom-nav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 65px;
+  background: #151515;
+  border-top: 1px solid #292929;
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+}
+
+.skeleton-bottom-nav div {
+  width: 30px;
+  height: 30px;
+  border-radius: 8px;
+  background: #292929;
+}
+
+@keyframes skeleton-shimmer {
+  from {
+    background-position: 200% 0;
+  }
+  to {
+    background-position: -200% 0;
+  }
+}
+
+@keyframes skeleton-fade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@media (min-width: 768px) {
+  .skeleton-bottom-nav {
+    display: none;
+  }
+}

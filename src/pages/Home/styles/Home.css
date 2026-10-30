@@ -607,3 +607,179 @@
     padding: 16px;
   }
 }
+
+
+
+/* Home dashboard skeleton */
+
+.home-dashboard-skeleton {
+  width: 100%;
+  margin-top: 32px;
+}
+
+.home-skeleton-property-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.home-skeleton-property-carousel {
+  display: flex;
+  gap: 16px;
+  overflow: hidden;
+}
+
+.home-skeleton-property-card {
+  flex: 0 0 calc((100% - 16px) / 2);
+  min-width: 0;
+  overflow: hidden;
+  border: 1px solid #e8ebe5;
+  border-radius: 16px;
+  background: #fff;
+}
+
+.home-skeleton-property-image {
+  height: 190px;
+}
+
+.home-skeleton-property-details {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 16px;
+}
+
+.home-skeleton-stats {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+  margin-top: 32px;
+}
+
+.home-skeleton-stat-card,
+.home-skeleton-rent-card {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  min-width: 0;
+  padding: 24px;
+  border: 1px solid #e8ebe5;
+  border-radius: 16px;
+  background: #fff;
+}
+
+.home-skeleton-stat-icon {
+  flex-shrink: 0;
+  width: 48px;
+  height: 48px;
+  border-radius: 14px;
+}
+
+.home-skeleton-stat-info {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 12px;
+  min-width: 0;
+}
+
+.home-skeleton-rent-card {
+  margin-top: 18px;
+}
+
+.home-skeleton-rent-status {
+  margin-top: 32px;
+}
+
+.home-skeleton-status-row {
+  height: 65px;
+  margin-top: 14px;
+  border: 1px solid #e8ebe5;
+  border-radius: 12px;
+  background: #fff;
+}
+
+.home-skeleton-line,
+.home-skeleton-button,
+.home-skeleton-property-image,
+.home-skeleton-stat-icon {
+  background: linear-gradient(
+    90deg,
+    #e8ebe5 25%,
+    #f5f6f2 50%,
+    #e8ebe5 75%
+  );
+  background-size: 200% 100%;
+  animation: home-skeleton-shimmer 1.5s infinite linear;
+}
+
+.home-skeleton-line {
+  height: 12px;
+  border-radius: 6px;
+}
+
+.home-skeleton-line.title {
+  width: 150px;
+  height: 22px;
+}
+
+.home-skeleton-line.medium {
+  width: 65%;
+}
+
+.home-skeleton-line.short {
+  width: 40%;
+}
+
+.home-skeleton-line.number {
+  width: 55%;
+  height: 24px;
+}
+
+.home-skeleton-button {
+  width: 145px;
+  height: 42px;
+  border-radius: 10px;
+}
+
+@keyframes home-skeleton-shimmer {
+  from {
+    background-position: 200% 0;
+  }
+  to {
+    background-position: -200% 0;
+  }
+}
+
+@media (max-width: 600px) {
+  .home-skeleton-property-card {
+    flex-basis: 85%;
+  }
+
+  .home-skeleton-stats {
+    gap: 12px;
+    margin-top: 24px;
+  }
+
+  .home-skeleton-stat-card {
+    gap: 8px;
+    padding: 14px 10px;
+  }
+
+  .home-skeleton-stat-icon {
+    width: 36px;
+    height: 36px;
+  }
+
+  .home-skeleton-rent-card {
+    padding: 16px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .home-dashboard-skeleton * {
+    animation: none !important;
+  }
+}

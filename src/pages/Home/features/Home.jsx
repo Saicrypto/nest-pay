@@ -23,6 +23,7 @@ LuChevronRight,
   LuX,
   LuWallet,
 } from "react-icons/lu";
+import HomeDashboardSkeleton from "../components/HomeDashboardSkeleton";
 
 function Home() {
 
@@ -145,160 +146,150 @@ useEffect(() => {
 
        
         
-
-{properties.length === 0 ? (
-  <div className="empty-state">
-    <h2>No properties yet</h2>
-    <p>Add your first property to start managing rent and tenants.</p>
-  </div>
+{loading ? (
+  <HomeDashboardSkeleton />
 ) : (
-  <section className="property-list">
-    <div className="property-carousel-header">
-      <h2>Your properties</h2>
-
-      <div className="property-carousel-controls">
-        <button
-          type="button"
-          onClick={() => scrollProperties(-1)}
-          aria-label="Previous properties"
-        >
-          <LuChevronLeft />
-        </button>
-
-        <button
-          type="button"
-          onClick={() => scrollProperties(1)}
-          aria-label="Next properties"
-        >
-          <LuChevronRight />
-        </button>
+  <>
+    {properties.length === 0 ? (
+      <div className="empty-state">
+        <h2>No properties yet</h2>
+        <p>
+          Add your first property to start managing rent and tenants.
+        </p>
       </div>
+    ) : (
+      <section className="property-list">
+        <div className="property-carousel-header">
+          <h2>Your properties</h2>
+
+          <div className="property-carousel-controls">
+            <button
+              type="button"
+              onClick={() => scrollProperties(-1)}
+              aria-label="Previous properties"
+            >
+              <LuChevronLeft />
+            </button>
+
+            <button
+              type="button"
+              onClick={() => scrollProperties(1)}
+              aria-label="Next properties"
+            >
+              <LuChevronRight />
+            </button>
+          </div>
+        </div>
+
+        <div className="property-carousel" ref={propertyCarouselRef}>
+          {properties.map((property) => {
+            const total = Number(property.total_units || 0);
+            const location = [property.city, property.state]
+              .filter(Boolean)
+              .join(", ");
+
+            return (
+              <article className="property-card" key={property.id}>
+                <Link
+                  to="/properties"
+                  className="property-card-main"
+                  aria-label="View all properties"
+                >
+                  <div className="property-card-image">
+                    <img
+                      src={
+                        property.image_url ||
+                        "/images/property-placeholder.jpg"
+                      }
+                      alt={property.property_name}
+                      onError={(event) => {
+                        event.currentTarget.style.display = "none";
+                      }}
+                    />
+
+                    <span className="property-units-badge">
+                      <LuBuilding2 /> {total} Units
+                    </span>
+                  </div>
+
+                  <div className="property-card-details">
+                    <h3>{property.property_name}</h3>
+
+                    {location && (
+                      <p className="property-card-location">
+                        {location}
+                      </p>
+                    )}
+                  </div>
+                </Link>
+              </article>
+            );
+          })}
+        </div>
+      </section>
+    )}
+
+    {error && (
+      <p className="dashboard-error" role="alert">
+        {error}
+      </p>
+    )}
+
+    <div className="stats-grid">
+      <article className="stat-card">
+        <div className="stat-card-icon properties-icon">
+          <LuHouse />
+        </div>
+        <div className="stat-card-info">
+          <span>Total properties</span>
+          <strong>{stats.properties}</strong>
+        </div>
+      </article>
+
+      <article className="stat-card">
+        <div className="stat-card-icon units-icon">
+          <LuBuilding2 />
+        </div>
+        <div className="stat-card-info">
+          <span>Total flats</span>
+          <strong>{stats.units}</strong>
+        </div>
+      </article>
+
+      <article className="stat-card">
+        <div className="stat-card-icon occupied-icon">
+          <LuUsers />
+        </div>
+        <div className="stat-card-info">
+          <span>Occupied flats</span>
+          <strong>{stats.occupied}</strong>
+        </div>
+      </article>
+
+      <article className="stat-card">
+        <div className="stat-card-icon vacant-icon">
+          <LuBuilding />
+        </div>
+        <div className="stat-card-info">
+          <span>Vacant flats</span>
+          <strong>{stats.vacant}</strong>
+        </div>
+      </article>
+
+      <article className="stat-card rent-stat-card">
+        <div className="stat-card-icon rent-icon">
+          <LuChartNoAxesColumn />
+        </div>
+        <div className="stat-card-info">
+          <span>Expected monthly rent</span>
+          <strong>{formatCurrency(stats.monthlyRent)}</strong>
+        </div>
+      </article>
     </div>
 
-    <div className="property-carousel" ref={propertyCarouselRef}>
-      {properties.map((property) => {
-        const total = Number(property.total_units || 0);
-        const location = [property.city, property.state]
-          .filter(Boolean)
-          .join(", ");
-
-        return (
-          <article className="property-card" key={property.id}>
-           <Link
-  to="/properties"
-  className="property-card-main"
-  aria-label="View all properties"
->
-              <div className="property-card-image">
-                <img
-                  src={
-                    property.image_url ||
-                    "/images/property-placeholder.jpg"
-                  }
-                  alt={property.property_name}
-                  onError={(event) => {
-                    event.currentTarget.style.display = "none";
-                  }}
-                />
-
-                <span className="property-units-badge">
-                  <LuBuilding2 /> {total} Units
-                </span>
-              </div>
-
-              <div className="property-card-details">
-                <h3>{property.property_name}</h3>
-
-                {location && (
-                  <p className="property-card-location">
-                    {location}
-                  </p>
-                )}
-              </div>
-            </Link>
-          </article>
-        );
-      })}
-    </div>
-  </section>
+    <RentStatus />
+  </>
 )}
-
-
-
-        {error && (
-          <p className="dashboard-error" role="alert">
-            {error}
-          </p>
-        )}
-
-        {loading ? (
-          <p>Loading your property data...</p>
-        ) : (
-          <>
-            
-<div className="stats-grid">
-  <article className="stat-card">
-    <div className="stat-card-icon properties-icon">
-      <LuHouse />
-    </div>
-    <div className="stat-card-info">
-      <span>Total properties</span>
-      <strong>{stats.properties}</strong>
-    </div>
-    
-  </article>
-
-  <article className="stat-card">
-    <div className="stat-card-icon units-icon">
-      <LuBuilding2 />
-    </div>
-    <div className="stat-card-info">
-      <span>Total flats</span>
-      <strong>{stats.units}</strong>
-    </div>
-  
-  </article>
-
-  <article className="stat-card">
-    <div className="stat-card-icon occupied-icon">
-      <LuUsers />
-    </div>
-    <div className="stat-card-info">
-      <span>Occupied flats</span>
-      <strong>{stats.occupied}</strong>
-    </div>
-    
-  </article>
-
-  <article className="stat-card">
-    <div className="stat-card-icon vacant-icon">
-      <LuBuilding />
-    </div>
-    <div className="stat-card-info">
-      <span>Vacant flats</span>
-      <strong>{stats.vacant}</strong>
-    </div>
-    
-  </article>
-
-  <article className="stat-card rent-stat-card">
-    <div className="stat-card-icon rent-icon">
-      <LuChartNoAxesColumn />
-    </div>
-    <div className="stat-card-info">
-      <span>Expected monthly rent</span>
-      <strong>{formatCurrency(stats.monthlyRent)}</strong>
-    </div>
-    
-  </article>
-</div>
-
-            
-<RentStatus />
-
-
-          </>
-        )}
       </section>
     </main>
   );

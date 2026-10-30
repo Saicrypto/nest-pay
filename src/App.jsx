@@ -17,13 +17,15 @@ import PaymentSettings from "./pages/Profile/features/PaymentSettings";
 import Profile from "./pages/Profile/features/Profile";
 import Tenants from "./pages/Tenants/features/Tenants";
 import TenantDetails from "./pages/Tenants/features/TenantDetails";
+import AppSkeleton from "./components/AppSkeleton";
+
 
 function ProtectedRoute({ children }) {
   const { user, loading } = useUser();
 
-  if (loading) {
-    return <p>Loading Nest Pay...</p>;
-  }
+ if (loading) {
+  return <AppSkeleton />;
+}
 
   return user ? children : <Navigate to="/login" replace />;
 }
