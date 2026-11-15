@@ -1,0 +1,173 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
+:root {
+  --brand-orange: #e0530a;
+  --brand-orange-dark: #c94707;
+  --brand-peach: #faf0e6;
+  --brand-peach-soft: #fcf5ee;
+  --brand-peach-border: #f1dcc8;
+  --bg-canvas: #faf7f4;
+  --surface-white: #ffffff;
+  --ink-primary: #141414;
+  --ink-secondary: #6b6b6b;
+  --ink-muted: #9a948e;
+  --border-subtle: #ece6df;
+  --shadow-card: 0 6px 20px -4px rgba(20, 20, 20, 0.05);
+}
+
+.tenant-flat-details-page,
+.tenant-flat-details-page * {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  box-sizing: border-box;
+}
+
+.tenant-flat-details-page {
+  width: 100%;
+  max-width: 440px;
+  min-height: 100vh;
+  margin: 0 auto;
+  background-color: var(--bg-canvas);
+  color: var(--ink-primary);
+  padding: 18px 18px 116px 18px;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* =========================================
+   Light Editorial Back Pill Button
+   ========================================= */
+.tenant-flat-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: 38px;
+  padding: 0 15px 0 12px;
+  margin-bottom: 20px;
+  background-color: var(--surface-white);
+  border: 1px solid var(--border-subtle);
+  border-radius: 999px;
+  color: var(--ink-primary);
+  font-size: 13.5px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(20, 20, 20, 0.04);
+  transition: border-color 0.15s ease, transform 0.14s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.tenant-flat-back svg {
+  color: var(--brand-orange);
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+}
+
+.tenant-flat-back:hover {
+  border-color: var(--brand-peach-border);
+}
+
+.tenant-flat-back:active {
+  transform: scale(0.97);
+}
+
+/* =========================================
+   Sub-Page Title Header
+   ========================================= */
+.tenant-flat-header {
+  display: flex;
+  align-items: center;
+  gap: 13px;
+  margin-bottom: 20px;
+}
+
+.tenant-flat-header > svg {
+  width: 46px;
+  height: 46px;
+  padding: 12px;
+  border-radius: 15px;
+  background-color: var(--brand-peach);
+  border: 1px solid var(--brand-peach-border);
+  color: var(--brand-orange);
+  flex-shrink: 0;
+}
+
+.tenant-flat-header div {
+  flex: 1;
+  min-width: 0;
+}
+
+.tenant-flat-header h1 {
+  margin: 0 0 3px 0;
+  font-size: 25px;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  line-height: 1.15;
+  color: var(--ink-primary);
+}
+
+.tenant-flat-header p {
+  margin: 0;
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--ink-secondary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* =========================================
+   Flat Details Bento Card
+   ========================================= */
+.tenant-flat-details-card {
+  background-color: var(--surface-white);
+  border: 1px solid var(--border-subtle);
+  border-radius: 26px;
+  padding: 20px 18px 8px 18px;
+  box-shadow: var(--shadow-card);
+  display: flex;
+  flex-direction: column;
+}
+
+.tenant-flat-details-card h2 {
+  margin: 0 0 8px 0;
+  padding-bottom: 14px;
+  border-bottom: 1px solid var(--border-subtle);
+  font-size: 18px;
+  font-weight: 800;
+  letter-spacing: -0.025em;
+  color: var(--brand-orange);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.tenant-flat-detail-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  padding: 14px 0;
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.tenant-flat-detail-row:last-child {
+  border-bottom: none;
+}
+
+.tenant-flat-detail-row span {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--ink-secondary);
+  flex-shrink: 0;
+}
+
+.tenant-flat-detail-row strong {
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: -0.015em;
+  color: var(--ink-primary);
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+  word-break: break-word;
+}

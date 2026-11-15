@@ -6,13 +6,14 @@ async getTenantsByUnit(unitId) {
   const { data, error } = await supabase
     .from("tenants")
     .select(`
-      id,
-      unit_id,
-      full_name,
-      phone,
-      email,
-      tenant_status,
-      created_at
+full_name,
+phone,
+email,
+age,
+family_members,
+profession,
+tenant_status,
+created_at
     `)
     .eq("unit_id", unitId)
     .order("created_at", { ascending: false });
@@ -149,6 +150,9 @@ async getMyTenants() {
       full_name,
       phone,
       email,
+      age,
+      family_members,
+      profession,
       tenant_status,
       created_at
     `)

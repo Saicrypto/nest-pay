@@ -1,0 +1,528 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
+:root {
+  --brand-orange: #e0530a;
+  --brand-orange-dark: #c94707;
+  --brand-peach: #faf0e6;
+  --brand-peach-soft: #fcf5ee;
+  --brand-peach-border: #f1dcc8;
+  --bg-canvas: #faf7f4;
+  --surface-white: #ffffff;
+  --ink-primary: #141414;
+  --ink-secondary: #6b6b6b;
+  --ink-muted: #9a948e;
+  --border-subtle: #ece6df;
+  --shadow-card: 0 6px 20px -4px rgba(20, 20, 20, 0.05);
+  --shadow-btn: 0 8px 20px -4px rgba(224, 83, 10, 0.36);
+}
+
+.raise-complaint-page,
+.raise-complaint-page * {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  box-sizing: border-box;
+}
+
+.raise-complaint-page {
+  width: 100%;
+  max-width: 440px;
+  min-height: 100vh;
+  margin: 0 auto;
+  background-color: var(--bg-canvas);
+  color: var(--ink-primary);
+  padding: 0 18px 116px 18px;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* =========================================
+   Sticky Light-Canvas Editorial Top Bar
+   ========================================= */
+.rc-topbar {
+  position: sticky;
+  top: 0;
+  z-index: 30;
+  margin: 0 -18px 20px -18px;
+  padding: 14px 18px;
+  background-color: rgba(250, 247, 244, 0.94);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border-subtle);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.raise-complaint-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: none;
+  border: none;
+  padding: 0;
+  color: var(--ink-primary);
+  font-size: 13.5px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  cursor: pointer;
+}
+
+.rc-back-circle {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background-color: var(--surface-white);
+  border: 1px solid var(--border-subtle);
+  color: var(--brand-orange);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 8px rgba(20, 20, 20, 0.04);
+}
+
+.rc-brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 14px;
+  font-weight: 800;
+  letter-spacing: -0.025em;
+  color: var(--ink-primary);
+}
+
+.rc-brand-mark {
+  width: 24px;
+  height: 24px;
+  border-radius: 8px;
+  background-color: var(--brand-orange);
+  color: #ffffff;
+  font-size: 12.5px;
+  font-weight: 800;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* =========================================
+   Page Title & Intro
+   ========================================= */
+.rc-intro {
+  margin-bottom: 18px;
+}
+
+.rc-eyebrow {
+  margin: 0 0 6px 0;
+  font-size: 10.5px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  color: var(--brand-orange);
+}
+
+.rc-intro h1 {
+  margin: 0 0 6px 0;
+  font-size: 27px;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  line-height: 1.15;
+  color: var(--ink-primary);
+}
+
+.rc-intro p:last-child {
+  margin: 0;
+  font-size: 13.5px;
+  font-weight: 500;
+  color: var(--ink-secondary);
+}
+
+/* =========================================
+   Complaint Form Bento Card
+   ========================================= */
+.raise-complaint-form {
+  background-color: var(--surface-white);
+  border: 1px solid var(--border-subtle);
+  border-radius: 26px;
+  padding: 20px 18px;
+  box-shadow: var(--shadow-card);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.rc-chips-block {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 6px;
+}
+
+.rc-field-label,
+.raise-complaint-form label {
+  font-size: 12.5px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  color: var(--ink-primary);
+}
+
+.rc-chips-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+}
+
+.rc-chip {
+  height: 33px;
+  padding: 0 12px;
+  border-radius: 999px;
+  background-color: var(--bg-canvas);
+  border: 1px solid var(--border-subtle);
+  color: var(--ink-secondary);
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.14s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.rc-chip:hover {
+  border-color: var(--brand-peach-border);
+  color: var(--ink-primary);
+}
+
+.rc-chip.active {
+  background-color: var(--brand-peach);
+  border-color: var(--brand-orange);
+  color: var(--brand-orange);
+  font-weight: 700;
+}
+
+/* Styled Select Dropdown */
+/* =========================================
+   App-Style Custom Issue Dropdown
+   ========================================= */
+.rc-custom-select {
+  position: relative;
+  margin-bottom: 4px;
+}
+
+.rc-select-trigger {
+  width: 100%;
+  height: 48px;
+  background-color: var(--bg-canvas);
+  border: 1px solid var(--border-subtle);
+  border-radius: 15px;
+  padding: 0 14px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--ink-muted);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  text-align: left;
+  cursor: pointer;
+  transition: border-color 0.15s ease, background-color 0.15s ease, box-shadow 0.15s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.rc-select-trigger.has-value {
+  color: var(--ink-primary);
+  font-weight: 700;
+}
+
+.rc-select-trigger.open {
+  background-color: var(--surface-white);
+  border-color: var(--brand-orange);
+  box-shadow: 0 0 0 3px rgba(224, 83, 10, 0.12);
+}
+
+.rc-select-chevron {
+  color: var(--brand-orange);
+  flex-shrink: 0;
+  transition: transform 0.2s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.rc-select-trigger.open .rc-select-chevron {
+  transform: rotate(180deg);
+}
+
+.rc-select-menu {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  right: 0;
+  z-index: 60;
+  margin: 0;
+  padding: 6px;
+  list-style: none;
+  max-height: 248px;
+  overflow-y: auto;
+  background-color: var(--surface-white);
+  border: 1px solid var(--border-subtle);
+  border-radius: 18px;
+  box-shadow: 0 14px 32px -6px rgba(20, 20, 20, 0.16);
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  animation: rcDropdownFade 0.16s cubic-bezier(0.22, 1, 0.36, 1);
+  -webkit-overflow-scrolling: touch;
+}
+
+@keyframes rcDropdownFade {
+  from {
+    opacity: 0;
+    transform: translateY(-6px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.rc-select-option {
+  min-height: 40px;
+  padding: 9px 12px;
+  border-radius: 12px;
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--ink-primary);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  cursor: pointer;
+  transition: background-color 0.12s ease, color 0.12s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.rc-select-option:hover {
+  background-color: var(--bg-canvas);
+}
+
+.rc-select-option.selected {
+  background-color: var(--brand-peach);
+  color: var(--brand-orange);
+  font-weight: 700;
+}
+
+.rc-option-check {
+  color: var(--brand-orange);
+  flex-shrink: 0;
+}
+
+.raise-complaint-form select {
+  width: 100%;
+  height: 46px;
+  appearance: none;
+  -webkit-appearance: none;
+  background-color: var(--bg-canvas);
+  border: 1px solid var(--border-subtle);
+  border-radius: 14px;
+  padding: 0 38px 0 14px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--ink-primary);
+  outline: none;
+  cursor: pointer;
+  transition: border-color 0.15s ease, background-color 0.15s ease;
+}
+
+.raise-complaint-form select:focus {
+  background-color: var(--surface-white);
+  border-color: var(--brand-orange);
+}
+
+.rc-select-chevron {
+  position: absolute;
+  right: 13px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--brand-orange);
+  pointer-events: none;
+}
+
+.rc-desc-label-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 2px;
+}
+
+.rc-char-count {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--ink-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.raise-complaint-form textarea {
+  width: 100%;
+  min-height: 118px;
+  resize: vertical;
+  background-color: var(--bg-canvas);
+  border: 1px solid var(--border-subtle);
+  border-radius: 16px;
+  padding: 13px 14px;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 1.5;
+  color: var(--ink-primary);
+  outline: none;
+  transition: border-color 0.15s ease, background-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.raise-complaint-form textarea::placeholder {
+  color: var(--ink-muted);
+}
+
+.raise-complaint-form textarea:focus {
+  background-color: var(--surface-white);
+  border-color: var(--brand-orange);
+  box-shadow: 0 0 0 3px rgba(224, 83, 10, 0.12);
+}
+
+.rc-error-banner {
+  margin: 2px 0 0 0;
+  background-color: #fef2f2;
+  border: 1px solid #fecaca;
+  color: #b91c1c;
+  font-size: 13px;
+  font-weight: 600;
+  padding: 11px 14px;
+  border-radius: 14px;
+}
+
+.rc-submit-btn {
+  margin-top: 6px;
+  width: 100%;
+  height: 52px;
+  background-color: var(--brand-orange);
+  border: none;
+  border-radius: 16px;
+  color: #ffffff;
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  cursor: pointer;
+  box-shadow: var(--shadow-btn);
+  transition: background-color 0.15s ease, transform 0.14s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.rc-submit-btn:hover:not(:disabled) {
+  background-color: var(--brand-orange-dark);
+}
+
+.rc-submit-btn:active:not(:disabled) {
+  transform: scale(0.98);
+}
+
+.rc-submit-btn:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+}
+
+/* =========================================
+   Success Confirmation Card
+   ========================================= */
+.complaint-success {
+  background-color: var(--surface-white);
+  border: 1px solid var(--border-subtle);
+  border-radius: 26px;
+  padding: 32px 22px;
+  box-shadow: var(--shadow-card);
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+.rc-success-icon {
+  width: 60px;
+  height: 60px;
+  border-radius: 18px;
+  background-color: #ecfdf3;
+  border: 1px solid #bbf7d0;
+  color: #15803d;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 4px;
+}
+
+.complaint-success h3 {
+  margin: 0;
+  font-size: 19px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: var(--ink-primary);
+}
+
+.complaint-success p {
+  margin: 0 0 8px 0;
+  max-width: 280px;
+  font-size: 13.5px;
+  font-weight: 500;
+  line-height: 1.5;
+  color: var(--ink-secondary);
+}
+
+.complaint-success button {
+  width: 100%;
+  height: 48px;
+  background-color: var(--brand-orange);
+  border: none;
+  border-radius: 15px;
+  color: #ffffff;
+  font-size: 14.5px;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: var(--shadow-btn);
+  transition: background-color 0.15s ease, transform 0.14s ease;
+}
+
+.complaint-success button:hover {
+  background-color: var(--brand-orange-dark);
+}
+
+.raise-complaint-form .rc-select-trigger {
+  width: 100%;
+  height: 48px;
+  margin: 0;
+  background-color: var(--bg-canvas);
+  border: 1px solid var(--border-subtle);
+  border-radius: 15px;
+  padding: 0 14px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--ink-muted);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  text-align: left;
+  cursor: pointer;
+  transition: border-color 0.15s ease, background-color 0.15s ease, box-shadow 0.15s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.raise-complaint-form .rc-select-trigger:hover {
+  background-color: var(--surface-white);
+  border-color: var(--brand-peach-border);
+}
+
+.raise-complaint-form .rc-select-trigger.has-value {
+  background-color: var(--bg-canvas);
+  color: var(--ink-primary);
+  font-weight: 700;
+}
+
+.raise-complaint-form .rc-select-trigger.open {
+  background-color: var(--surface-white);
+  border-color: var(--brand-orange);
+  box-shadow: 0 0 0 3px rgba(224, 83, 10, 0.12);
+}

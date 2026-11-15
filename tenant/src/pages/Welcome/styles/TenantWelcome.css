@@ -1,0 +1,290 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
+:root {
+  --brand-orange: #e0530a;
+  --brand-orange-dark: #c94707;
+  --brand-peach: #faf0e6;
+  --brand-peach-soft: #fcf5ee;
+  --brand-peach-border: #f1dcc8;
+  --bg-canvas: #faf7f4;
+  --surface-white: #ffffff;
+  --ink-primary: #141414;
+  --ink-secondary: #6b6b6b;
+  --ink-muted: #9a948e;
+  --border-subtle: #ece6df;
+  --shadow-card: 0 6px 20px -4px rgba(20, 20, 20, 0.05);
+  --shadow-btn: 0 8px 20px -4px rgba(224, 83, 10, 0.36);
+}
+
+.tenant-welcome-page,
+.tenant-welcome-page * {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  box-sizing: border-box;
+}
+
+.tenant-welcome-page {
+  width: 100%;
+  max-width: 440px;
+  min-height: 100vh;
+  margin: 0 auto;
+  background-color: var(--bg-canvas);
+  color: var(--ink-primary);
+  padding: 20px 18px 40px 18px;
+  display: flex;
+  flex-direction: column;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* =========================================
+   Light Editorial Brand Header
+   ========================================= */
+.tenant-welcome-brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 24px;
+}
+
+.tenant-welcome-brand-icon {
+  width: 34px;
+  height: 34px;
+  border-radius: 11px;
+  background-color: var(--brand-orange);
+  color: #ffffff;
+  font-size: 16px;
+  font-weight: 800;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 12px -2px rgba(224, 83, 10, 0.32);
+}
+
+.tenant-welcome-brand-name {
+  font-size: 16px;
+  font-weight: 800;
+  letter-spacing: -0.025em;
+  color: var(--ink-primary);
+}
+
+/* =========================================
+   Welcome Intro Section
+   ========================================= */
+.tenant-welcome-intro {
+  margin-bottom: 22px;
+}
+
+.tenant-welcome-eyebrow {
+  margin: 0 0 8px 0;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--brand-orange);
+}
+
+.tenant-welcome-intro h1 {
+  margin: 0 0 12px 0;
+  font-size: 27px;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  line-height: 1.18;
+  color: var(--ink-primary);
+}
+
+.tenant-welcome-intro h1 span {
+  color: var(--brand-orange);
+}
+
+.tenant-welcome-message {
+  margin: 0 0 14px 0;
+  font-size: 13.5px;
+  font-weight: 500;
+  line-height: 1.55;
+  color: var(--ink-secondary);
+}
+
+.tenant-welcome-address {
+  margin: 0;
+  display: inline-flex;
+  align-items: flex-start;
+  gap: 8px;
+  background-color: var(--surface-white);
+  border: 1px solid var(--border-subtle);
+  border-radius: 14px;
+  padding: 10px 13px;
+  font-size: 12.5px;
+  font-weight: 600;
+  line-height: 1.4;
+  color: var(--ink-primary);
+  box-shadow: 0 2px 8px rgba(20, 20, 20, 0.03);
+}
+
+.tenant-welcome-address svg {
+  color: var(--brand-orange);
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+/* =========================================
+   Apartment Details Bento Card
+   ========================================= */
+.tenant-welcome-details {
+  background-color: var(--surface-white);
+  border: 1px solid var(--border-subtle);
+  border-radius: 26px;
+  padding: 18px;
+  box-shadow: var(--shadow-card);
+  margin-bottom: 22px;
+}
+
+.tenant-welcome-details-heading {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  padding-bottom: 14px;
+  margin-bottom: 14px;
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.tenant-welcome-heading-icon {
+  width: 38px;
+  height: 38px;
+  border-radius: 12px;
+  background-color: var(--brand-peach);
+  color: var(--brand-orange);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.tenant-welcome-details-heading h2 {
+  margin: 0;
+  font-size: 16.5px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: var(--ink-primary);
+}
+
+.tenant-welcome-details-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.tenant-welcome-detail {
+  background-color: var(--bg-canvas);
+  border: 1px solid var(--border-subtle);
+  border-radius: 18px;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+  min-width: 0;
+}
+
+.tenant-welcome-detail-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 11px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.tenant-welcome-detail-icon svg {
+  width: 18px;
+  height: 18px;
+}
+
+.tenant-welcome-detail-icon.cream {
+  background-color: var(--brand-peach);
+  color: var(--brand-orange);
+}
+
+.tenant-welcome-detail-icon.cream,
+.tenant-welcome-detail-icon.green {
+  background-color: var(--brand-peach);
+  color: var(--brand-orange);
+}
+
+.tenant-welcome-detail-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.tenant-welcome-detail-text span {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--ink-secondary);
+}
+
+.tenant-welcome-detail-text strong {
+  font-size: 14px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: var(--ink-primary);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* =========================================
+   Primary CTA Button & Security Footer
+   ========================================= */
+.tenant-welcome-continue {
+  width: 100%;
+  height: 52px;
+  background-color: var(--brand-orange);
+  border: none;
+  border-radius: 16px;
+  color: #ffffff;
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  cursor: pointer;
+  box-shadow: var(--shadow-btn);
+  transition: background-color 0.15s ease, transform 0.14s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.tenant-welcome-continue:hover {
+  background-color: var(--brand-orange-dark);
+}
+
+.tenant-welcome-continue:active {
+  transform: scale(0.98);
+}
+
+.tenant-welcome-footer {
+  margin: 14px 0 0 0;
+  text-align: center;
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 1.45;
+  color: var(--ink-muted);
+}
+
+/* Fallback Error State */
+.tenant-welcome-page > button:not(.tenant-welcome-continue) {
+  margin-top: 12px;
+  height: 44px;
+  padding: 0 18px;
+  background-color: var(--brand-peach);
+  border: 1px solid var(--brand-peach-border);
+  border-radius: 14px;
+  color: var(--brand-orange);
+  font-size: 13.5px;
+  font-weight: 700;
+  cursor: pointer;
+  align-self: flex-start;
+}

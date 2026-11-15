@@ -1,0 +1,204 @@
+.rent-status-page-skeleton {
+  width: 100%;
+  max-width: 440px;
+  min-height: 100vh;
+  margin: 0 auto;
+  background-color: #faf7f4;
+  color: #141414;
+  padding: 0 18px 116px 18px;
+  box-sizing: border-box;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+/* Warm Alabaster Shimmer */
+.rent-status-page-skeleton .rent-page-skeleton-line,
+.rent-status-page-skeleton .rent-page-skeleton-month,
+.rent-status-page-skeleton .rent-page-skeleton-tab,
+.rent-status-page-skeleton .rent-page-skeleton-icon,
+.rent-status-page-skeleton .rent-page-skeleton-action,
+.rent-status-page-skeleton .rent-page-skeleton-dropdown {
+  background: linear-gradient(
+    90deg,
+    #f2ece6 25%,
+    #faf5f0 50%,
+    #f2ece6 75%
+  );
+  background-size: 200% 100%;
+  animation: rspSkeletonShimmer 1.4s ease-in-out infinite;
+}
+
+@keyframes rspSkeletonShimmer {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+/* Full-Bleed Burnt-Orange Hero Header */
+.rent-status-page-skeleton .rent-status-page-header {
+  margin: 0 -18px;
+  background: linear-gradient(155deg, #e0530a 0%, #cf4906 100%);
+  color: #ffffff;
+  border-radius: 0 0 32px 32px;
+  padding: 28px 20px 48px 20px;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  box-shadow: 0 14px 30px -10px rgba(224, 83, 10, 0.36);
+}
+
+.rent-status-page-skeleton .rent-status-page-header h1 {
+  margin: 0 0 6px 0;
+  font-size: 31px;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  line-height: 1.1;
+  color: #ffffff;
+}
+
+.rent-status-page-skeleton .rent-subtitle {
+  margin: 0;
+  font-size: 13.5px;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.92);
+}
+
+/* Overlapping Search & Month Toolbar Capsule */
+.rent-status-page-skeleton .rent-status-toolbar {
+  position: relative;
+  z-index: 10;
+  margin: -28px 0 14px 0;
+  background-color: #ffffff;
+  border: 1px solid #ece6df;
+  border-radius: 22px;
+  padding: 10px;
+  box-shadow: 0 10px 26px -6px rgba(20, 20, 20, 0.09);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.rent-status-page-skeleton .rent-status-search {
+  flex: 1;
+  height: 42px;
+  background-color: #faf7f4;
+  border: 1px solid #ece6df;
+  border-radius: 14px;
+  padding: 0 12px;
+  display: flex;
+  align-items: center;
+}
+
+.rent-page-skeleton-line.search {
+  width: 68%;
+  height: 13px;
+  border-radius: 6px;
+}
+
+.rent-page-skeleton-month {
+  width: 112px;
+  height: 42px;
+  border-radius: 14px;
+  flex-shrink: 0;
+}
+
+/* 4-Tab Filter Row */
+.rent-status-page-skeleton .rent-status-tabs {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 7px;
+  margin-bottom: 16px;
+}
+
+.rent-page-skeleton-tab {
+  height: 36px;
+  border-radius: 999px;
+  border: 1px solid #ece6df;
+}
+
+/* Payment Record Cards */
+.rent-status-page-skeleton .rent-status-records {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.rent-status-page-skeleton .rent-status-record {
+  background-color: #ffffff;
+  border: 1px solid #ece6df;
+  border-radius: 22px;
+  padding: 15px 16px;
+  box-shadow: 0 6px 20px -4px rgba(20, 20, 20, 0.05);
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.rent-page-skeleton-icon {
+  width: 42px;
+  height: 42px;
+  border-radius: 13px;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.rent-page-skeleton-record-main {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+
+.rent-page-skeleton-line.unit {
+  width: 52%;
+  height: 16px;
+  border-radius: 7px;
+}
+
+.rent-page-skeleton-line.property {
+  width: 68%;
+  height: 12px;
+  border-radius: 6px;
+}
+
+.rent-page-skeleton-line.tenant {
+  width: 58%;
+  height: 12px;
+  border-radius: 6px;
+}
+
+.rent-page-skeleton-line.amount {
+  width: 44%;
+  height: 15px;
+  border-radius: 7px;
+  margin-top: 2px;
+}
+
+.rent-page-skeleton-line.date {
+  width: 64%;
+  height: 11px;
+  border-radius: 5px;
+}
+
+.rent-page-skeleton-actions {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.rent-page-skeleton-action {
+  width: 72px;
+  height: 26px;
+  border-radius: 999px;
+}
+
+.rent-page-skeleton-dropdown {
+  width: 84px;
+  height: 32px;
+  border-radius: 11px;
+}

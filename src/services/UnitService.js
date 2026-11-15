@@ -94,32 +94,65 @@ const UnitService = {
 },
 
 
-  async updateUnit(unitId, unitData) {
-    const { data, error } = await supabase
-      .from("property_units")
-      .update({
-        unit_name: unitData.unitName.trim(),
-        floor_number:
-          unitData.floorNumber === ""
-            ? null
-            : Number(unitData.floorNumber),
-        bedrooms:
-          unitData.bedrooms === ""
-            ? null
-            : Number(unitData.bedrooms),
-        monthly_rent: Number(unitData.monthlyRent),
-        security_deposit: Number(unitData.securityDeposit || 0),
-        maintenance_amount: Number(unitData.maintenanceAmount || 0),
-        rent_due_day: Number(unitData.rentDueDay),
-      })
-      .eq("id", unitId)
-      .select()
-      .single();
 
-    if (error) throw error;
+async updateUnit(unitId, unitData) {
+  // Get existing values before updating
+  const { data: oldUnit, error: fetchError } = await supabase
+    .from("property_units")
+    .select(`
+      unit_name,
+      floor_number,
+      bedrooms,
+      monthly_rent,
+      security_deposit,
+      maintenance_amount,
+      rent_due_day
+    `)
+    .eq("id", unitId)
+    .single();
 
-    return data;
-  },
+  if (fetchError) throw fetchError;
+
+  // Update flat details
+  const { data, error } = await supabase
+    .from("property_units")
+    .update({
+      unit_name: unitData.unitName.trim(),
+      floor_number:
+        unitData.floorNumber === ""
+          ? null
+          : Number(unitData.floorNumber),
+      bedrooms:
+        unitData.bedrooms === ""
+          ? null
+          : Number(unitData.bedrooms),
+      monthly_rent: Number(unitData.monthlyRent),
+      security_deposit: Number(unitData.securityDeposit || 0),
+      maintenance_amount: Number(unitData.maintenanceAmount || 0),
+      rent_due_day: Number(unitData.rentDueDay),
+    })
+    .eq("id", unitId)
+    .select()
+    .single();
+
+  if (error) throw error;
+
+  // Send notification with specific changes
+  const { error: notificationError } = await supabase.rpc(
+    "notify_tenant_unit_updated",
+    {
+      p_unit_id: unitId,
+      p_old_values: oldUnit,
+    }
+  );
+
+  if (notificationError) {
+    console.error("Tenant unit notification error:", notificationError);
+  }
+
+  return data;
+},
+
 
   async deleteUnit(unitId) {
     const { error } = await supabase

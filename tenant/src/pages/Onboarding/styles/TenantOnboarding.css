@@ -1,0 +1,223 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
+:root {
+  --brand-orange: #e0530a;
+  --brand-orange-dark: #c94707;
+  --brand-peach: #faf0e6;
+  --brand-peach-soft: #fcf5ee;
+  --brand-peach-border: #f1dcc8;
+  --bg-canvas: #faf7f4;
+  --surface-white: #ffffff;
+  --ink-primary: #141414;
+  --ink-secondary: #6b6b6b;
+  --ink-muted: #9a948e;
+  --border-subtle: #ece6df;
+  --shadow-card: 0 6px 20px -4px rgba(20, 20, 20, 0.05);
+  --shadow-btn: 0 8px 20px -4px rgba(224, 83, 10, 0.36);
+}
+
+.tenant-details-page:has(.tenant-registration-form),
+.tenant-details-page:has(.tenant-registration-form) * {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  box-sizing: border-box;
+}
+
+.tenant-details-page:has(.tenant-registration-form) {
+  width: 100%;
+  max-width: 440px;
+  min-height: 100vh;
+  margin: 0 auto;
+  background-color: var(--bg-canvas);
+  color: var(--ink-primary);
+  padding: 20px 18px 44px 18px;
+  display: flex;
+  flex-direction: column;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* =========================================
+   Light Editorial Brand Header
+   ========================================= */
+.tenant-details-page:has(.tenant-registration-form) .tenant-details-brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 24px;
+}
+
+.tenant-details-page:has(.tenant-registration-form) .tenant-details-brand span {
+  width: 34px;
+  height: 34px;
+  border-radius: 11px;
+  background-color: var(--brand-orange);
+  color: #ffffff;
+  font-size: 16px;
+  font-weight: 800;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 12px -2px rgba(224, 83, 10, 0.32);
+}
+
+.tenant-details-page:has(.tenant-registration-form) .tenant-details-brand strong {
+  font-size: 16px;
+  font-weight: 800;
+  letter-spacing: -0.025em;
+  color: var(--ink-primary);
+}
+
+/* =========================================
+   Onboarding Intro Section
+   ========================================= */
+.tenant-details-intro {
+  margin-bottom: 20px;
+}
+
+.tenant-details-intro .tenant-details-eyebrow {
+  margin: 0 0 8px 0;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--brand-orange);
+}
+
+.tenant-details-intro h1 {
+  margin: 0 0 10px 0;
+  font-size: 27px;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  line-height: 1.18;
+  color: var(--ink-primary);
+}
+
+.tenant-details-intro > p:last-child {
+  margin: 0;
+  font-size: 13.5px;
+  font-weight: 500;
+  line-height: 1.55;
+  color: var(--ink-secondary);
+}
+
+.tenant-details-intro strong {
+  color: var(--ink-primary);
+  font-weight: 700;
+}
+
+/* =========================================
+   Registration Form Bento Card
+   ========================================= */
+.tenant-registration-form {
+  background-color: var(--surface-white);
+  border: 1px solid var(--border-subtle);
+  border-radius: 26px;
+  padding: 20px 18px;
+  box-shadow: var(--shadow-card);
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px 12px;
+}
+
+/* Full-width fields */
+.tenant-registration-form label {
+  grid-column: 1 / -1;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 12.5px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  color: var(--ink-primary);
+}
+
+/* Compact 2-column row for Family Members & Age */
+.tenant-registration-form label:has(input[name="family_members"]),
+.tenant-registration-form label:has(input[name="age"]) {
+  grid-column: span 1;
+}
+
+.tenant-registration-form input {
+  width: 100%;
+  height: 46px;
+  background-color: var(--bg-canvas);
+  border: 1px solid var(--border-subtle);
+  border-radius: 14px;
+  padding: 0 14px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--ink-primary);
+  outline: none;
+  font-variant-numeric: tabular-nums;
+  transition: border-color 0.15s ease, background-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.tenant-registration-form input::placeholder {
+  color: var(--ink-muted);
+  font-weight: 500;
+}
+
+.tenant-registration-form input:focus {
+  background-color: var(--surface-white);
+  border-color: var(--brand-orange);
+  box-shadow: 0 0 0 3px rgba(224, 83, 10, 0.12);
+}
+
+/* =========================================
+   Error Banner, Submit CTA & Privacy Footer
+   ========================================= */
+.tenant-details-error {
+  grid-column: 1 / -1;
+  margin: 0;
+  background-color: #fef2f2;
+  border: 1px solid #fecaca;
+  color: #b91c1c;
+  font-size: 13px;
+  font-weight: 600;
+  padding: 11px 14px;
+  border-radius: 14px;
+}
+
+.tenant-details-submit {
+  grid-column: 1 / -1;
+  margin-top: 4px;
+  width: 100%;
+  height: 52px;
+  background-color: var(--brand-orange);
+  border: none;
+  border-radius: 16px;
+  color: #ffffff;
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: var(--shadow-btn);
+  transition: background-color 0.15s ease, transform 0.14s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.tenant-details-submit:hover:not(:disabled) {
+  background-color: var(--brand-orange-dark);
+}
+
+.tenant-details-submit:active:not(:disabled) {
+  transform: scale(0.98);
+}
+
+.tenant-details-submit:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+}
+
+.tenant-details-privacy {
+  grid-column: 1 / -1;
+  margin: 2px 0 0 0;
+  text-align: center;
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 1.45;
+  color: var(--ink-muted);
+}

@@ -1,3 +1,4 @@
+import "../styles/RentStatusSkeleton.css";
 
 export default function RentStatusSkeleton() {
   return (
@@ -6,11 +7,15 @@ export default function RentStatusSkeleton() {
       aria-busy="true"
       aria-label="Loading rent summary"
     >
-      <div className="rent-skeleton-heading" />
+      <div className="rent-skeleton-header-row">
+        <div className="rent-skeleton-heading" />
+        <div className="rent-skeleton-pill" />
+      </div>
 
       <div className="rent-status-grid">
         {[1, 2, 3].map((item) => (
           <div className="rent-status-card" key={item}>
+            <div className="rent-skeleton-icon" />
             <div className="rent-skeleton-line label" />
             <div className="rent-skeleton-line count" />
             <div className="rent-skeleton-line amount" />

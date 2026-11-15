@@ -9,6 +9,7 @@ import {
 } from "../cache/rentStatusCache";
 import RentStatusSkeleton from "../components/RentStatusSkeleton";
 
+
 function RentStatus() {
   const navigate = useNavigate();
   const [payments, setPayments] = useState([]);

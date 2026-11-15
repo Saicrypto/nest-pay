@@ -5,13 +5,10 @@ const PropertyService = {
   async getMyProperties() {
     const { data, error } = await supabase
       .from("properties")
-      .select(
-        "id, property_name, property_type, address, city, state, pincode, total_units, created_at"
-      )
+      .select("id, property_name, property_type, address, city, state, pincode, created_at, property_units(count)")
       .order("created_at", { ascending: false });
 
     if (error) throw error;
-
     return data;
   },
 

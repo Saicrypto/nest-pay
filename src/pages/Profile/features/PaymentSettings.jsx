@@ -1,5 +1,5 @@
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import {
   LuArrowLeft,
@@ -7,8 +7,8 @@ import {
   LuShieldCheck,
   LuSmartphone,
   LuChevronRight,
-  LuLockKeyhole,
 } from "react-icons/lu";
+import { supabase } from "../../../lib/supabase";
 import "../styles/PaymentSettings.css";
 
 const paymentApps = [
@@ -21,27 +21,120 @@ const paymentApps = [
 function PaymentSettings() {
   const [upiId, setUpiId] = useState("");
   const [preferredApp, setPreferredApp] = useState("any");
+  const [savedUpiId, setSavedUpiId] = useState("");
+  const [savedApp, setSavedApp] = useState("any");
   const [editing, setEditing] = useState(false);
-  const [verificationPending, setVerificationPending] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
 
-  function handleContinue(event) {
+  useEffect(() => {
+    let active = true;
+
+    async function loadPaymentSettings() {
+      setLoading(true);
+      setError("");
+
+      try {
+        const {
+          data: { user },
+          error: authError,
+        } = await supabase.auth.getUser();
+
+        if (authError) throw authError;
+        if (!user) throw new Error("Please log in again.");
+
+        const { data, error: profileError } = await supabase
+          .from("profiles")
+          .select("full_name, upi_id, preferred_upi_app")
+          .eq("id", user.id)
+          .maybeSingle();
+
+        if (profileError) throw profileError;
+
+        if (active) {
+          const savedId = data?.upi_id || "";
+          const savedPreferredApp = data?.preferred_upi_app || "any";
+
+          setUpiId(savedId);
+          setPreferredApp(savedPreferredApp);
+          setSavedUpiId(savedId);
+          setSavedApp(savedPreferredApp);
+        }
+      } catch (err) {
+        if (active) {
+          setError(err.message || "Unable to load payment settings.");
+        }
+      } finally {
+        if (active) setLoading(false);
+      }
+    }
+
+    loadPaymentSettings();
+
+    return () => {
+      active = false;
+    };
+  }, []);
+
+  async function handleSave(event) {
     event.preventDefault();
 
-    if (!upiId.trim() || !upiId.includes("@")) {
+const cleanUpiId = upiId.trim();
+
+    if (!cleanUpiId) {
+      setError("Please enter a UPI ID.");
       return;
     }
 
-    // UI placeholder only. No payment details are saved.
-    // Real OTP verification will be connected later.
-    setVerificationPending(true);
+    setSaving(true);
+    setError("");
+    setSuccess("");
+
+    try {
+      const {
+        data: { user },
+        error: authError,
+      } = await supabase.auth.getUser();
+
+      if (authError) throw authError;
+      if (!user) throw new Error("Please log in again.");
+
+      const { error: saveError } = await supabase
+        .from("profiles")
+        .upsert(
+          {
+            id: user.id,
+            upi_id: cleanUpiId,
+            preferred_upi_app: preferredApp,
+          },
+          { onConflict: "id" }
+        );
+
+      if (saveError) throw saveError;
+
+      setSavedUpiId(cleanUpiId);
+      setSavedApp(preferredApp);
+      setUpiId(cleanUpiId);
+      setEditing(false);
+      setSuccess("UPI payment details saved successfully.");
+    } catch (err) {
+      setError(err.message || "Unable to save payment details.");
+    } finally {
+      setSaving(false);
+    }
   }
 
   function handleCancel() {
+    setUpiId(savedUpiId);
+    setPreferredApp(savedApp);
     setEditing(false);
-    setVerificationPending(false);
-    setUpiId("");
-    setPreferredApp("any");
+    setError("");
   }
+
+  const selectedAppLabel =
+    paymentApps.find((app) => app.id === savedApp)?.label || "Any UPI app";
 
   return (
     <main className="payment-settings-page">
@@ -61,7 +154,7 @@ function PaymentSettings() {
         <p className="payment-eyebrow">OWNER SETTINGS</p>
         <h1>Payment method</h1>
         <p className="payment-intro">
-          Manage where you receive rent from all your properties.
+          Manage where tenants send rent for your properties.
         </p>
 
         <section className="payment-method-card">
@@ -75,7 +168,30 @@ function PaymentSettings() {
             </div>
           </div>
 
-          {!editing && !verificationPending && (
+          {loading ? (
+            <p>Loading payment settings...</p>
+          ) : !editing && savedUpiId ? (
+            <div className="payment-empty-state">
+              <div className="payment-empty-icon">
+                <LuSmartphone />
+              </div>
+              <h3>{savedUpiId}</h3>
+              <p>Preferred app: {selectedAppLabel}</p>
+
+              <button
+                type="button"
+                className="payment-primary-button"
+                onClick={() => {
+                  setEditing(true);
+                  setError("");
+                  setSuccess("");
+                }}
+              >
+                Edit payment method
+                <LuChevronRight />
+              </button>
+            </div>
+          ) : !editing ? (
             <div className="payment-empty-state">
               <div className="payment-empty-icon">
                 <LuSmartphone />
@@ -88,19 +204,17 @@ function PaymentSettings() {
               <button
                 type="button"
                 className="payment-primary-button"
-                onClick={() => setEditing(true)}
+                onClick={() => {
+                  setEditing(true);
+                  setError("");
+                }}
               >
                 Add payment method
                 <LuChevronRight />
               </button>
             </div>
-          )}
-
-          {editing && !verificationPending && (
-            <form
-              className="payment-form"
-              onSubmit={handleContinue}
-            >
+          ) : (
+            <form className="payment-form" onSubmit={handleSave}>
               <label htmlFor="upi-id">Your UPI ID</label>
               <input
                 id="upi-id"
@@ -111,12 +225,13 @@ function PaymentSettings() {
                 autoComplete="off"
                 required
               />
+
               <p className="payment-field-hint">
                 Enter the UPI ID where you want to receive rent.
               </p>
 
               <fieldset className="payment-app-fieldset">
-                <legend>Preferred UPI app</legend>
+                <legend>Preferred UPI app for tenants</legend>
                 <div className="payment-app-grid">
                   {paymentApps.map((app) => (
                     <button
@@ -128,9 +243,7 @@ function PaymentSettings() {
                       onClick={() => setPreferredApp(app.id)}
                       aria-pressed={preferredApp === app.id}
                     >
-                      <span className="payment-app-icon">
-                        {app.icon}
-                      </span>
+                      <span className="payment-app-icon">{app.icon}</span>
                       <span>{app.label}</span>
                     </button>
                   ))}
@@ -140,8 +253,8 @@ function PaymentSettings() {
               <div className="payment-notice">
                 <LuShieldCheck />
                 <p>
-                  Your payment details will only be updated after
-                  verification.
+                  Tenants will see these details when they open
+                  the payment page for your property.
                 </p>
               </div>
 
@@ -150,47 +263,25 @@ function PaymentSettings() {
                   type="button"
                   className="payment-secondary-button"
                   onClick={handleCancel}
+                  disabled={saving}
                 >
                   Cancel
                 </button>
+
                 <button
                   type="submit"
                   className="payment-primary-button"
+                  disabled={saving}
                 >
-                  Continue
-                  <LuChevronRight />
+                  {saving ? "Saving..." : "Save payment method"}
+                  {!saving && <LuChevronRight />}
                 </button>
               </div>
             </form>
           )}
 
-          {verificationPending && (
-            <div className="payment-verification-placeholder">
-              <div className="payment-lock-icon">
-                <LuLockKeyhole />
-              </div>
-              <h3>Verification will be available soon</h3>
-              <p>
-                Your UPI ID has not been saved. We'll connect
-                phone OTP verification before enabling payment
-                method changes.
-              </p>
-              <button
-                type="button"
-                className="payment-primary-button"
-                onClick={() => setVerificationPending(false)}
-              >
-                Back to payment details
-              </button>
-              <button
-                type="button"
-                className="payment-text-button"
-                onClick={handleCancel}
-              >
-                Cancel changes
-              </button>
-            </div>
-          )}
+          {error && <p className="tenants-error" role="alert">{error}</p>}
+          {success && <p className="tenants-success" role="status">{success}</p>}
         </section>
 
         <div className="payment-security-note">
@@ -198,8 +289,8 @@ function PaymentSettings() {
           <div>
             <strong>Your security matters</strong>
             <p>
-              Payment changes will require verification of your
-              registered phone number.
+              Your UPI ID is shared with tenants linked to your properties
+              so they can initiate rent payments.
             </p>
           </div>
         </div>

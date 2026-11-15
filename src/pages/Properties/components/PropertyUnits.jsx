@@ -3,6 +3,7 @@ import UnitForm from "./UnitForm";
 import UnitCard from "./UnitCard";
 import "../styles/PropertyUnits.css";
 import "../styles/UnitForm.css";
+import { useState } from "react";
 
 function PropertyUnits({
   units,
@@ -26,51 +27,37 @@ function PropertyUnits({
   showUnitForm,
   setShowUnitForm,
   tenantsByUnit,
-  showTenantFormFor,
-  tenantName,
-  setTenantName,
-  tenantPhone,
-  setTenantPhone,
-  tenantEmail,
-  setTenantEmail,
-  savingTenant,
-  tenantError,
-  tenantSuccess,
   toastMessage,
   closeDuplicateToast,
   handleCreateUnit,
-  handleOccupancyChange,
-  handleTenantFormToggle,
-  handleCreateTenant,
-  handleUpdateTenant,
   occupancyConfirmation,
-setOccupancyConfirmation,
-deletingTenantUnitId,
-handleConfirmVacate,
-editingUnit,
-setEditingUnit,
-unitToDelete,
-setUnitToDelete,
-deletingUnitId,
-handleEditUnit,
-handleUpdateUnit,
-handleRequestDeleteUnit,
-handleConfirmDeleteUnit,
-
-editingUnitName,
-setEditingUnitName,
-editingFloorNumber,
-setEditingFloorNumber,
-editingBedrooms,
-setEditingBedrooms,
-editingMonthlyRent,
-setEditingMonthlyRent,
-editingSecurityDeposit,
-setEditingSecurityDeposit,
-editingMaintenanceAmount,
-setEditingMaintenanceAmount,
-editingRentDueDay,
-setEditingRentDueDay,
+  setOccupancyConfirmation,
+  deletingTenantUnitId,
+  handleConfirmVacate,
+  editingUnit,
+  setEditingUnit,
+  unitToDelete,
+  setUnitToDelete,
+  deletingUnitId,
+  handleEditUnit,
+  handleUpdateUnit,
+  handleRequestDeleteUnit,
+  handleConfirmDeleteUnit,
+  editingUnitName,
+  setEditingUnitName,
+  editingFloorNumber,
+  setEditingFloorNumber,
+  editingBedrooms,
+  setEditingBedrooms,
+  editingMonthlyRent,
+  setEditingMonthlyRent,
+  editingSecurityDeposit,
+  setEditingSecurityDeposit,
+  editingMaintenanceAmount,
+  setEditingMaintenanceAmount,
+  editingRentDueDay,
+  setEditingRentDueDay,
+  handleOccupancyChange,
 }) {
   const sortedUnits = [...units].sort((a, b) => {
     const nameA = a.unit_name.replace(/^flat\s*/i, "").trim();
@@ -82,23 +69,74 @@ setEditingRentDueDay,
     });
   });
 
+  const [unitFilter, setUnitFilter] = useState("all"); // "all" | "occupied" | "vacant"
+
+const occupiedCount = sortedUnits.filter(
+    (unit) => unit.occupancy_status === "occupied"
+  ).length;
+  const vacantCount = sortedUnits.length - occupiedCount;
+
+  const filteredUnits = sortedUnits.filter((unit) => {
+    const isOccupied = unit.occupancy_status === "occupied";
+    if (unitFilter === "occupied") return isOccupied;
+    if (unitFilter === "vacant") return !isOccupied;
+    return true;
+  });
+
   return (
     <section className="property-units-section">
      <div className="property-units-heading">
-  <h2>Flats and tenants</h2>
+        <div className="property-units-title-group">
+          <h2>Flats &amp; Tenants</h2>
+          <p className="property-units-description">
+            Manage your flats, tenants, and rent.
+          </p>
+        </div>
 
-  <button
-    type="button"
-    className="toggle-unit-form"
-    onClick={() => setShowUnitForm((current) => !current)}
-  >
-    {showUnitForm ? "− Cancel" : "+ Add Flat"}
-  </button>
-</div>
+        <button
+          type="button"
+          className="toggle-unit-form"
+          onClick={() => setShowUnitForm((current) => !current)}
+        >
+          {showUnitForm ? "− Cancel" : "+ Add Flat"}
+        </button>
+      </div>
 
-<p className="property-units-description">
-  Manage your flats, tenants, and rent.
-</p>
+      {/* Filter Tabs: All / Occupied / Vacant */}
+      {units.length > 0 && (
+        <div className="unit-filter-tabs" role="tablist" aria-label="Filter flats">
+          <button
+            type="button"
+            role="tab"
+            aria-selected={unitFilter === "all"}
+            className={`unit-filter-pill ${unitFilter === "all" ? "active" : ""}`}
+            onClick={() => setUnitFilter("all")}
+          >
+            All ({sortedUnits.length})
+          </button>
+
+          <button
+            type="button"
+            role="tab"
+            aria-selected={unitFilter === "occupied"}
+            className={`unit-filter-pill ${unitFilter === "occupied" ? "active" : ""}`}
+            onClick={() => setUnitFilter("occupied")}
+          >
+            Occupied ({occupiedCount})
+          </button>
+
+          <button
+            type="button"
+            role="tab"
+            aria-selected={unitFilter === "vacant"}
+            className={`unit-filter-pill ${unitFilter === "vacant" ? "active" : ""}`}
+            onClick={() => setUnitFilter("vacant")}
+          >
+            Vacant ({vacantCount})
+          </button>
+        </div>
+      )}
+      
 
       {unitError && (
         <p className="property-details-error" role="alert">
@@ -113,10 +151,7 @@ setEditingRentDueDay,
       )}
 
       {toastMessage && (
-        <div
-          className="duplicate-toast duplicate-toast-inline"
-          role="alert"
-        >
+        <div className="duplicate-toast duplicate-toast-inline" role="alert">
           <div className="duplicate-toast-content">
             <strong>Flat already exists</strong>
             <p>{toastMessage}</p>
@@ -157,59 +192,62 @@ setEditingRentDueDay,
       )}
 
       {editingUnit && (
-  <UnitForm
-    isEditing
-    unitName={editingUnitName}
-    setUnitName={setEditingUnitName}
-    floorNumber={editingFloorNumber}
-    setFloorNumber={setEditingFloorNumber}
-    bedrooms={editingBedrooms}
-    setBedrooms={setEditingBedrooms}
-    monthlyRent={editingMonthlyRent}
-    setMonthlyRent={setEditingMonthlyRent}
-    securityDeposit={editingSecurityDeposit}
-    setSecurityDeposit={setEditingSecurityDeposit}
-    maintenanceAmount={editingMaintenanceAmount}
-    setMaintenanceAmount={setEditingMaintenanceAmount}
-    rentDueDay={editingRentDueDay}
-    setRentDueDay={setEditingRentDueDay}
-    saving={savingUnit}
-    error={unitError}
-    onSubmit={(event) =>
-      handleUpdateUnit(event, editingUnit.id, {
-        unitName: editingUnitName,
-        floorNumber: editingFloorNumber,
-        bedrooms: editingBedrooms,
-        monthlyRent: editingMonthlyRent,
-        securityDeposit: editingSecurityDeposit,
-        maintenanceAmount: editingMaintenanceAmount,
-        rentDueDay: editingRentDueDay,
-      })
-    }
-    onCancel={() => {
-      setEditingUnit(null);
-    }}
-  />
-)}
-     
+        <UnitForm
+          isEditing
+          unitName={editingUnitName}
+          setUnitName={setEditingUnitName}
+          floorNumber={editingFloorNumber}
+          setFloorNumber={setEditingFloorNumber}
+          bedrooms={editingBedrooms}
+          setBedrooms={setEditingBedrooms}
+          monthlyRent={editingMonthlyRent}
+          setMonthlyRent={setEditingMonthlyRent}
+          securityDeposit={editingSecurityDeposit}
+          setSecurityDeposit={setEditingSecurityDeposit}
+          maintenanceAmount={editingMaintenanceAmount}
+          setMaintenanceAmount={setEditingMaintenanceAmount}
+          rentDueDay={editingRentDueDay}
+          setRentDueDay={setEditingRentDueDay}
+          saving={savingUnit}
+          error={unitError}
+          onSubmit={(event) =>
+            handleUpdateUnit(event, editingUnit.id, {
+              unitName: editingUnitName,
+              floorNumber: editingFloorNumber,
+              bedrooms: editingBedrooms,
+              monthlyRent: editingMonthlyRent,
+              securityDeposit: editingSecurityDeposit,
+              maintenanceAmount: editingMaintenanceAmount,
+              rentDueDay: editingRentDueDay,
+            })
+          }
+          onCancel={() => setEditingUnit(null)}
+        />
+      )}
+
       <div className="unit-list">
         {units.length === 0 ? (
           <p className="unit-empty-state">
             No units added yet. Use the form above to add your first unit.
           </p>
         ) : (
-          <div className="unit-list-grid">
-            {sortedUnits.map((unit) => (
-              <UnitCard
-                key={unit.id}
-                unit={unit}
-                tenants={tenantsByUnit[unit.id] || []}
-                onOccupancyChange={handleOccupancyChange}
-                onEdit={handleEditUnit}
-  onDelete={handleRequestDeleteUnit}
-  onUpdateTenant={handleUpdateTenant}
-              />
-            ))}
+         <div className="unit-list-grid">
+            {filteredUnits.length === 0 ? (
+              <p className="unit-empty-state">
+                No {unitFilter} flats found.
+              </p>
+            ) : (
+              filteredUnits.map((unit) => (
+                <UnitCard
+                  key={unit.id}
+                  unit={unit}
+                  tenants={tenantsByUnit[unit.id] || []}
+                  onEdit={handleEditUnit}
+                  onDelete={handleRequestDeleteUnit}
+                  onOccupancyChange={handleOccupancyChange}
+                />
+              ))
+            )}
           </div>
         )}
       </div>
@@ -251,11 +289,9 @@ setEditingRentDueDay,
                 onClick={handleConfirmVacate}
               >
                 {deletingTenantUnitId === occupancyConfirmation.unitId && (
-                  <span
-                    className="vacate-spinner"
-                    aria-hidden="true"
-                  />
+                  <span className="vacate-spinner" aria-hidden="true" />
                 )}
+
                 {deletingTenantUnitId === occupancyConfirmation.unitId
                   ? "Deleting..."
                   : "Proceed"}
@@ -265,65 +301,62 @@ setEditingRentDueDay,
         </div>
       )}
 
-
-{unitToDelete && (
-  <div
-    className="vacate-modal-overlay"
-    onClick={() => {
-      if (deletingUnitId === null) setUnitToDelete(null);
-    }}
-  >
-    <div
-      className="vacate-modal"
-      role="dialog"
-      aria-modal="true"
-      aria-labelledby="delete-flat-title"
-      onClick={(event) => event.stopPropagation()}
-    >
-      <h3 id="delete-flat-title">Delete this flat?</h3>
-
-      <p>
-        You are about to delete <strong>{unitToDelete.unit_name}</strong>.
-        Linked tenant details or rent-payment records may prevent deletion
-        or be affected depending on your database rules.
-      </p>
-
-      <p className="vacate-modal-warning">
-        Before proceeding, check unpaid rent, pending dues, security deposits,
-        and any payment history you need to retain. This action may not be
-        reversible.
-      </p>
-
-      <div className="vacate-modal-actions">
-        <button
-          type="button"
-          className="vacate-cancel-btn"
-          disabled={deletingUnitId !== null}
-          onClick={() => setUnitToDelete(null)}
+      {unitToDelete && (
+        <div
+          className="vacate-modal-overlay"
+          onClick={() => {
+            if (deletingUnitId === null) setUnitToDelete(null);
+          }}
         >
-          Cancel
-        </button>
+          <div
+            className="vacate-modal"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="delete-flat-title"
+            onClick={(event) => event.stopPropagation()}
+          >
+            <h3 id="delete-flat-title">Delete this flat?</h3>
 
-        <button
-          type="button"
-          className="vacate-proceed-btn"
-          disabled={deletingUnitId !== null}
-          onClick={handleConfirmDeleteUnit}
-        >
-          {deletingUnitId === unitToDelete.id && (
-            <span className="vacate-spinner" aria-hidden="true" />
-          )}
+            <p>
+              You are about to delete <strong>{unitToDelete.unit_name}</strong>.
+              Linked tenant details or rent-payment records may prevent
+              deletion or be affected depending on your database rules.
+            </p>
 
-          {deletingUnitId === unitToDelete.id
-            ? "Deleting..."
-            : "Delete Flat"}
-        </button>
-      </div>
-    </div>
-  </div>
-)}
+            <p className="vacate-modal-warning">
+              Before proceeding, check unpaid rent, pending dues, security
+              deposits, and any payment history you need to retain.
+              This action may not be reversible.
+            </p>
 
+            <div className="vacate-modal-actions">
+              <button
+                type="button"
+                className="vacate-cancel-btn"
+                disabled={deletingUnitId !== null}
+                onClick={() => setUnitToDelete(null)}
+              >
+                Cancel
+              </button>
 
+              <button
+                type="button"
+                className="vacate-proceed-btn"
+                disabled={deletingUnitId !== null}
+                onClick={handleConfirmDeleteUnit}
+              >
+                {deletingUnitId === unitToDelete.id && (
+                  <span className="vacate-spinner" aria-hidden="true" />
+                )}
+
+                {deletingUnitId === unitToDelete.id
+                  ? "Deleting..."
+                  : "Delete Flat"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </section>
   );
 }

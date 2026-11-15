@@ -1,0 +1,344 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
+:root {
+  --brand-orange: #e0530a;
+  --brand-orange-dark: #c94707;
+  --brand-peach: #faf0e6;
+  --brand-peach-soft: #fcf5ee;
+  --brand-peach-border: #f1dcc8;
+  --bg-canvas: #faf7f4;
+  --surface-white: #ffffff;
+  --ink-primary: #141414;
+  --ink-secondary: #6b6b6b;
+  --ink-muted: #9a948e;
+  --border-subtle: #ece6df;
+  --shadow-card: 0 6px 20px -4px rgba(20, 20, 20, 0.05);
+  --shadow-capsule: 0 10px 26px -6px rgba(20, 20, 20, 0.09);
+  --shadow-btn: 0 8px 20px -4px rgba(224, 83, 10, 0.36);
+}
+
+.tenant-complaints-page,
+.tenant-complaints-page * {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  box-sizing: border-box;
+}
+
+.tenant-complaints-page {
+  width: 100%;
+  max-width: 440px;
+  min-height: 100vh;
+  margin: 0 auto;
+  background-color: var(--bg-canvas);
+  color: var(--ink-primary);
+  padding: 0 18px 116px 18px;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* =========================================
+   Full-Bleed Burnt-Orange Hero Header
+   ========================================= */
+.tenant-complaints-header {
+  margin: 0 -18px;
+  background: linear-gradient(155deg, #e0530a 0%, #cf4906 100%);
+  color: #ffffff;
+  border-radius: 0 0 32px 32px;
+  padding: 28px 20px 48px 20px;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  box-shadow: 0 14px 30px -10px rgba(224, 83, 10, 0.36);
+}
+
+.tenant-complaints-header h1 {
+  margin: 0 0 6px 0;
+  font-size: 31px;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  line-height: 1.1;
+  color: #ffffff;
+}
+
+.tenant-complaints-header p {
+  margin: 0;
+  font-size: 13.5px;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.92);
+}
+
+.tc-raise-btn {
+  margin-top: 4px;
+  height: 38px;
+  padding: 0 13px;
+  border-radius: 999px;
+  background-color: #ffffff;
+  border: none;
+  color: var(--brand-orange);
+  font-size: 12.5px;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  white-space: nowrap;
+  flex-shrink: 0;
+  cursor: pointer;
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.12);
+  transition: transform 0.14s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.tc-raise-btn:active {
+  transform: scale(0.96);
+}
+
+/* =========================================
+   Overlapping Bento Summary Capsule
+   ========================================= */
+.tc-summary-capsule {
+  position: relative;
+  z-index: 10;
+  margin: -28px 0 18px 0;
+  background-color: var(--surface-white);
+  border: 1px solid var(--border-subtle);
+  border-radius: 22px;
+  padding: 13px 10px;
+  box-shadow: var(--shadow-capsule);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.tc-stat-box {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+}
+
+.tc-stat-box span {
+  font-size: 9.5px;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  color: var(--ink-secondary);
+}
+
+.tc-stat-box strong {
+  font-size: 18px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: var(--ink-primary);
+  font-variant-numeric: tabular-nums;
+}
+
+.tc-stat-box.active strong {
+  color: var(--brand-orange);
+}
+
+.tc-stat-box.resolved strong {
+  color: #15803d;
+}
+
+.tc-stat-divider {
+  width: 1px;
+  height: 28px;
+  background-color: var(--border-subtle);
+}
+
+/* =========================================
+   Error & Empty States
+   ========================================= */
+.tc-error-banner {
+  background-color: #fef2f2;
+  border: 1px solid #fecaca;
+  color: #b91c1c;
+  font-size: 13px;
+  font-weight: 600;
+  padding: 11px 14px;
+  border-radius: 14px;
+  margin: 0 0 14px 0;
+}
+
+.tenant-complaints-empty {
+  background-color: var(--surface-white);
+  border: 1px dashed var(--border-subtle);
+  border-radius: 26px;
+  padding: 34px 20px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  box-shadow: var(--shadow-card);
+}
+
+.tc-empty-icon {
+  width: 54px;
+  height: 54px;
+  border-radius: 16px;
+  background-color: var(--brand-peach);
+  color: var(--brand-orange);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 4px;
+}
+
+.tenant-complaints-empty h3 {
+  margin: 0;
+  font-size: 17px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: var(--ink-primary);
+}
+
+.tenant-complaints-empty p {
+  margin: 0 0 6px 0;
+  max-width: 280px;
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 1.5;
+  color: var(--ink-secondary);
+}
+
+.tenant-complaints-empty button {
+  height: 46px;
+  padding: 0 20px;
+  background-color: var(--brand-orange);
+  border: none;
+  border-radius: 15px;
+  color: #ffffff;
+  font-size: 13.5px;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  cursor: pointer;
+  box-shadow: var(--shadow-btn);
+  transition: background-color 0.15s ease, transform 0.14s ease;
+}
+
+.tenant-complaints-empty button:hover {
+  background-color: var(--brand-orange-dark);
+}
+
+.tenant-complaints-empty button:active {
+  transform: scale(0.97);
+}
+
+/* =========================================
+   Complaints Feed Cards
+   ========================================= */
+.tenant-complaints-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.tenant-complaint-card {
+  background-color: var(--surface-white);
+  border: 1px solid var(--border-subtle);
+  border-radius: 22px;
+  padding: 16px;
+  box-shadow: var(--shadow-card);
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.tc-card-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 13px;
+  background-color: var(--brand-peach);
+  color: var(--brand-orange);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+.tc-card-icon.in_progress {
+  background-color: #fef3c7;
+  color: #b45309;
+}
+
+.tc-card-icon.resolved,
+.tc-card-icon.closed {
+  background-color: #ecfdf3;
+  color: #15803d;
+}
+
+.tc-card-body {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.tc-card-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.tc-card-top h3 {
+  margin: 0;
+  font-size: 15.5px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  line-height: 1.3;
+  color: var(--ink-primary);
+  word-break: break-word;
+}
+
+.tc-card-desc {
+  margin: 0;
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 1.48;
+  color: var(--ink-secondary);
+  word-break: break-word;
+}
+
+.tc-card-date {
+  margin-top: 2px;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 11.5px;
+  font-weight: 600;
+  color: var(--ink-muted);
+}
+
+/* Status Pill Badges */
+.complaint-status {
+  flex-shrink: 0;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: capitalize;
+  padding: 4px 10px;
+  border-radius: 999px;
+  white-space: nowrap;
+  background-color: var(--brand-peach);
+  border: 1px solid var(--brand-peach-border);
+  color: var(--brand-orange);
+}
+
+.complaint-status.in_progress {
+  background-color: #fef3c7;
+  border-color: #fde68a;
+  color: #b45309;
+}
+
+.complaint-status.resolved,
+.complaint-status.closed {
+  background-color: #ecfdf3;
+  border-color: #bbf7d0;
+  color: #15803d;
+}

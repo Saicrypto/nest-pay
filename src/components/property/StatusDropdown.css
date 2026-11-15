@@ -8,6 +8,14 @@
   z-index: 2;
 }
 
+.status-dropdown.is-open {
+  z-index: 50;
+}
+
+.status-dropdown-menu {
+  z-index: 60;
+}
+
 .status-dropdown:has(.status-dropdown-menu) {
   z-index: 100;
 }

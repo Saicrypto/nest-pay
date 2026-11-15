@@ -1,0 +1,652 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
+:root {
+  --brand-orange: #e0530a;
+  --brand-orange-dark: #c94707;
+  --brand-peach: #faf0e6;
+  --brand-peach-soft: #fcf5ee;
+  --brand-peach-border: #f1dcc8;
+  --bg-canvas: #faf7f4;
+  --surface-white: #ffffff;
+  --ink-primary: #141414;
+  --ink-secondary: #6b6b6b;
+  --ink-muted: #9a948e;
+  --border-subtle: #ece6df;
+  --shadow-card: 0 6px 20px -4px rgba(20, 20, 20, 0.05);
+  --shadow-capsule: 0 10px 26px -6px rgba(20, 20, 20, 0.09);
+  --shadow-btn: 0 8px 20px -4px rgba(224, 83, 10, 0.36);
+}
+
+.tenant-services-page,
+.tenant-services-page * {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  box-sizing: border-box;
+}
+
+.tenant-services-page {
+  width: 100%;
+  max-width: 440px;
+  min-height: 100vh;
+  margin: 0 auto;
+  background-color: var(--bg-canvas);
+  color: var(--ink-primary);
+  padding: 0 18px 116px 18px;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Hide floating bottom nav while add/edit contact sheet is open */
+body:has(.tenant-add-contact-modal) .tenant-bottom-nav,
+body:has(.tenant-add-contact-modal) .tenant-bottom-navigation {
+  display: none !important;
+}
+
+/* =========================================
+   Full-Bleed Burnt-Orange Hero Header
+   ========================================= */
+.tenant-services-header {
+  margin: 0 -18px;
+  background: linear-gradient(155deg, #e0530a 0%, #cf4906 100%);
+  color: #ffffff;
+  border-radius: 0 0 32px 32px;
+  padding: 28px 20px 48px 20px;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  box-shadow: 0 14px 30px -10px rgba(224, 83, 10, 0.36);
+}
+
+.tenant-services-header h1 {
+  margin: 0 0 6px 0;
+  font-size: 31px;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  line-height: 1.1;
+  color: #ffffff;
+}
+
+.tenant-services-header p {
+  margin: 0;
+  font-size: 13.5px;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.92);
+}
+
+.tenant-add-contact-btn {
+  margin-top: 4px;
+  height: 38px;
+  padding: 0 13px;
+  border-radius: 999px;
+  background-color: #ffffff;
+  border: none;
+  color: var(--brand-orange);
+  font-size: 12.5px;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  white-space: nowrap;
+  flex-shrink: 0;
+  cursor: pointer;
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.12);
+  transition: transform 0.14s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.tenant-add-contact-btn:active {
+  transform: scale(0.96);
+}
+
+/* =========================================
+   Overlapping Floating Segmented Tab Capsule
+   ========================================= */
+.tenant-services-tabs-wrap {
+  position: relative;
+  z-index: 10;
+  margin: -28px 0 20px 0;
+  background-color: var(--surface-white);
+  border: 1px solid var(--border-subtle);
+  border-radius: 22px;
+  padding: 6px;
+  box-shadow: var(--shadow-capsule);
+}
+
+.tenant-services-tabs {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+}
+
+.tenant-services-tabs button {
+  height: 42px;
+  border: none;
+  border-radius: 16px;
+  background: transparent;
+  color: var(--ink-secondary);
+  font-size: 13px;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  cursor: pointer;
+  transition: all 0.16s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.tenant-services-tabs button.active {
+  background-color: var(--brand-orange);
+  color: #ffffff;
+  box-shadow: 0 6px 14px -4px rgba(224, 83, 10, 0.36);
+}
+
+/* =========================================
+   Feedback Banners
+   ========================================= */
+.tenant-contact-success {
+  background-color: #ecfdf3;
+  border: 1px solid #bbf7d0;
+  color: #15803d;
+  font-size: 13px;
+  font-weight: 600;
+  padding: 11px 14px;
+  border-radius: 14px;
+  margin: 0 0 14px 0;
+}
+
+.tenant-services-error,
+.tenant-contact-error {
+  background-color: #fef2f2;
+  border: 1px solid #fecaca;
+  color: #b91c1c;
+  font-size: 13px;
+  font-weight: 600;
+  padding: 11px 14px;
+  border-radius: 14px;
+  margin: 0 0 14px 0;
+}
+
+/* =========================================
+   Provider Sections & Empty Cards
+   ========================================= */
+.tenant-services-section {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.ts-group-block,
+.tenant-my-contacts-section {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.tenant-my-contacts-divider {
+  height: 1px;
+  background-color: var(--border-subtle);
+  margin-bottom: 4px;
+}
+
+.ts-group-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 2px;
+}
+
+.ts-group-heading h2 {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: var(--ink-primary);
+}
+
+.ts-count-pill {
+  background-color: var(--brand-peach);
+  border: 1px solid var(--brand-peach-border);
+  color: var(--brand-orange);
+  font-size: 11.5px;
+  font-weight: 800;
+  padding: 2px 9px;
+  border-radius: 999px;
+  font-variant-numeric: tabular-nums;
+}
+
+.tenant-services-list {
+  display: flex;
+  flex-direction: column;
+  gap: 11px;
+}
+
+.ts-empty-card {
+  background-color: var(--surface-white);
+  border: 1px dashed var(--border-subtle);
+  border-radius: 22px;
+  padding: 24px 18px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+.ts-empty-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 14px;
+  background-color: var(--brand-peach);
+  color: var(--brand-orange);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.ts-empty-card p {
+  margin: 0;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--ink-secondary);
+}
+
+.ts-empty-add-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  background-color: var(--brand-peach);
+  border: 1px solid var(--brand-peach-border);
+  color: var(--brand-orange);
+  font-size: 12.5px;
+  font-weight: 700;
+  padding: 7px 14px;
+  border-radius: 999px;
+  cursor: pointer;
+}
+
+/* =========================================
+   Add / Edit Custom Contact Slide-Up Sheet
+   ========================================= */
+.tenant-add-contact-modal {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(20, 20, 20, 0.48);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  z-index: 2200;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  align-items: center;
+}
+
+.tenant-add-contact-form {
+  width: 100%;
+  max-width: 440px;
+  max-height: 92vh;
+  overflow-y: auto;
+  background-color: var(--surface-white);
+  border-top-left-radius: 28px;
+  border-top-right-radius: 28px;
+  padding: 10px 20px 28px 20px;
+  box-shadow: 0 -16px 40px -8px rgba(20, 20, 20, 0.22);
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  animation: tsSlideUp 0.28s cubic-bezier(0.22, 1, 0.36, 1);
+  -webkit-overflow-scrolling: touch;
+}
+
+@keyframes tsSlideUp {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+.ts-sheet-handle-wrap {
+  display: flex;
+  justify-content: center;
+  padding: 2px 0 4px 0;
+}
+
+.ts-sheet-handle {
+  width: 40px;
+  height: 4px;
+  border-radius: 999px;
+  background-color: #ded8d0;
+}
+
+.tenant-add-contact-heading {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.ts-modal-eyebrow {
+  margin: 0 0 2px 0;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  color: var(--brand-orange);
+}
+
+.tenant-add-contact-heading h2 {
+  margin: 0 0 3px 0;
+  font-size: 20px;
+  font-weight: 800;
+  letter-spacing: -0.025em;
+  color: var(--ink-primary);
+}
+
+.tenant-add-contact-heading p:last-child {
+  margin: 0;
+  font-size: 12.5px;
+  font-weight: 500;
+  color: var(--ink-secondary);
+}
+
+.ts-modal-close {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background-color: var(--bg-canvas);
+  border: 1px solid var(--border-subtle);
+  color: var(--ink-primary);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.tenant-add-contact-form form {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.tenant-add-contact-form label {
+  margin-top: 4px;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--ink-primary);
+}
+
+.tenant-contact-category {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-bottom: 4px;
+}
+
+.tenant-contact-category button {
+  height: 42px;
+  border-radius: 13px;
+  background-color: var(--bg-canvas);
+  border: 1px solid var(--border-subtle);
+  color: var(--ink-secondary);
+  font-size: 12.5px;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  cursor: pointer;
+}
+
+.tenant-contact-category button.active {
+  background-color: var(--brand-peach);
+  border-color: var(--brand-orange);
+  color: var(--brand-orange);
+}
+
+.tenant-add-contact-form input,
+.tenant-add-contact-form textarea {
+  width: 100%;
+  background-color: var(--bg-canvas);
+  border: 1px solid var(--border-subtle);
+  border-radius: 14px;
+  padding: 11px 14px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--ink-primary);
+  outline: none;
+  transition: border-color 0.15s ease, background-color 0.15s ease;
+}
+
+.tenant-add-contact-form input {
+  height: 45px;
+  padding: 0 14px;
+}
+
+.tenant-add-contact-form textarea {
+  resize: vertical;
+  min-height: 78px;
+}
+
+.tenant-add-contact-form input:focus,
+.tenant-add-contact-form textarea:focus {
+  background-color: var(--surface-white);
+  border-color: var(--brand-orange);
+}
+
+.tenant-contact-form-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 8px;
+}
+
+.tenant-contact-form-actions button {
+  flex: 1;
+  height: 48px;
+  border-radius: 15px;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.tenant-contact-form-actions button[type="button"] {
+  background-color: var(--brand-peach);
+  border: 1px solid var(--brand-peach-border);
+  color: var(--ink-primary);
+}
+
+.tenant-contact-form-actions button[type="submit"] {
+  background-color: var(--brand-orange);
+  border: none;
+  color: #ffffff;
+  box-shadow: var(--shadow-btn);
+}
+
+/* =========================================
+   Provider & Custom Utility Contact Cards
+   ========================================= */
+.tenant-provider-card {
+  position: relative;
+  background-color: var(--surface-white);
+  border: 1px solid var(--border-subtle);
+  border-radius: 22px;
+  padding: 15px 16px;
+  box-shadow: var(--shadow-card);
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.tp-card-badge {
+  width: 42px;
+  height: 42px;
+  border-radius: 13px;
+  background-color: var(--brand-peach);
+  color: var(--brand-orange);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+.tp-card-badge.utility {
+  background-color: #fef3c7;
+  color: #d97706;
+}
+
+.tenant-provider-info {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.tenant-provider-info h3 {
+  margin: 0;
+  font-size: 15.5px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: var(--ink-primary);
+  line-height: 1.3;
+  word-break: break-word;
+}
+
+.tp-card-person {
+  margin: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--ink-secondary);
+}
+
+.tp-card-person svg {
+  color: var(--brand-orange);
+  flex-shrink: 0;
+}
+
+.tp-card-desc {
+  margin: 2px 0 0 0;
+  font-size: 12.5px;
+  font-weight: 500;
+  line-height: 1.4;
+  color: var(--ink-secondary);
+}
+
+.tp-card-phone {
+  margin: 4px 0 0 0;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--ink-primary);
+  font-variant-numeric: tabular-nums;
+}
+
+/* Right Action Controls (Call Pill + Kebab Menu) */
+.tenant-provider-actions {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+.tenant-provider-call {
+  height: 36px;
+  padding: 0 13px;
+  border-radius: 999px;
+  background-color: var(--brand-orange);
+  color: #ffffff;
+  text-decoration: none;
+  font-size: 12.5px;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  box-shadow: 0 4px 12px -2px rgba(224, 83, 10, 0.35);
+  transition: background-color 0.15s ease, transform 0.14s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.tenant-provider-call:hover {
+  background-color: var(--brand-orange-dark);
+}
+
+.tenant-provider-call:active {
+  transform: scale(0.96);
+}
+
+/* Custom Contact 3-Dot Kebab Menu */
+.tenant-provider-menu {
+  position: relative;
+}
+
+.tenant-provider-menu-trigger {
+  width: 34px;
+  height: 36px;
+  border-radius: 12px;
+  background-color: var(--bg-canvas);
+  border: 1px solid var(--border-subtle);
+  color: var(--ink-secondary);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background-color 0.14s ease, color 0.14s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.tenant-provider-menu-trigger:hover {
+  background-color: var(--brand-peach);
+  color: var(--brand-orange);
+}
+
+.tenant-provider-dropdown {
+  position: absolute;
+  top: calc(100% + 6px);
+  right: 0;
+  min-width: 136px;
+  background-color: var(--surface-white);
+  border: 1px solid var(--border-subtle);
+  border-radius: 16px;
+  padding: 6px;
+  box-shadow: 0 12px 28px -6px rgba(20, 20, 20, 0.16);
+  z-index: 50;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.tenant-provider-dropdown button {
+  width: 100%;
+  height: 38px;
+  padding: 0 11px;
+  border: none;
+  border-radius: 11px;
+  background: transparent;
+  color: var(--ink-primary);
+  font-size: 13px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  text-align: left;
+  transition: background-color 0.14s ease;
+}
+
+.tenant-provider-dropdown button:hover {
+  background-color: var(--bg-canvas);
+}
+
+.tenant-provider-dropdown button.delete-option {
+  color: #dc2626;
+}
+
+.tenant-provider-dropdown button.delete-option:hover {
+  background-color: #fef2f2;
+}

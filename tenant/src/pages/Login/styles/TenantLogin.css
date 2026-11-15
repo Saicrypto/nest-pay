@@ -1,0 +1,68 @@
+
+.tenant-login-card {
+  width: 100%;
+  max-width: 420px;
+  margin: 0 auto;
+  padding: 28px;
+  background: #fff;
+  border-radius: 16px;
+}
+
+.tenant-login-heading h1 {
+  margin: 0 0 10px;
+  font-size: 28px;
+  color: #171717;
+}
+
+.tenant-login-heading p,
+.tenant-login-help {
+  color: #737373;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.tenant-login-card form {
+  display: flex;
+  flex-direction: column;
+  margin-top: 28px;
+}
+
+.tenant-login-card label {
+  margin-bottom: 9px;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.tenant-login-card input {
+  width: 100%;
+  padding: 14px;
+  border: 1px solid #e5e5e5;
+  border-radius: 9px;
+  outline: none;
+  font-size: 16px;
+  letter-spacing: 2px;
+}
+
+.tenant-login-card input:focus {
+  border-color: #dd6013;
+}
+
+.tenant-login-card form button {
+  margin-top: 18px;
+  padding: 14px;
+  border: 0;
+  border-radius: 9px;
+  background: #dd6013;
+  color: white;
+  font-weight: 600;
+}
+
+.tenant-login-card form button:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.tenant-login-help {
+  margin: 22px 0 0;
+  text-align: center;
+}

@@ -1,4 +1,3 @@
-
 import { useEffect, useRef, useState } from "react";
 import { LuChevronDown, LuCheck } from "react-icons/lu";
 import "./StatusDropdown.css";
@@ -18,6 +17,8 @@ function StatusDropdown({
   const currentOption = options.find((option) => option.value === value);
 
   useEffect(() => {
+    if (!open) return;
+
     function handleOutsideClick(event) {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
         setOpen(false);
@@ -28,25 +29,30 @@ function StatusDropdown({
       if (event.key === "Escape") setOpen(false);
     }
 
-    document.addEventListener("mousedown", handleOutsideClick);
+    document.addEventListener("pointerdown", handleOutsideClick);
     document.addEventListener("keydown", handleKeyDown);
 
     return () => {
-      document.removeEventListener("mousedown", handleOutsideClick);
+      document.removeEventListener("pointerdown", handleOutsideClick);
       document.removeEventListener("keydown", handleKeyDown);
     };
-  }, []);
+  }, [open]);
 
   return (
     <div
       ref={dropdownRef}
-      className={`status-dropdown ${variant} ${value}`}
+      className={`status-dropdown ${variant} ${value} ${open ? "is-open" : ""}`}
+      onClick={(event) => event.stopPropagation()}
+      onPointerDown={(event) => event.stopPropagation()}
     >
       <button
         type="button"
         className="status-dropdown-trigger"
         disabled={disabled}
-        onClick={() => setOpen((previous) => !previous)}
+        onClick={(event) => {
+          event.stopPropagation();
+          setOpen((previous) => !previous);
+        }}
         aria-expanded={open}
         aria-haspopup="listbox"
         aria-label={label}
@@ -60,7 +66,12 @@ function StatusDropdown({
       </button>
 
       {open && (
-        <div className="status-dropdown-menu" role="listbox" aria-label={label}>
+        <div
+          className="status-dropdown-menu"
+          role="listbox"
+          aria-label={label}
+          onClick={(event) => event.stopPropagation()}
+        >
           {options.map((option) => (
             <button
               key={option.value}
@@ -70,9 +81,12 @@ function StatusDropdown({
               className={`status-dropdown-option ${option.value} ${
                 option.value === value ? "selected" : ""
               }`}
-              onClick={() => {
-                if (option.value !== value) onChange(option.value);
+              onClick={(event) => {
+                event.stopPropagation();
                 setOpen(false);
+                if (option.value !== value) {
+                  onChange(option.value);
+                }
               }}
             >
               {showDot && <span className="status-dropdown-dot" />}

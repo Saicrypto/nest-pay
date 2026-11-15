@@ -1,0 +1,90 @@
+.rent-status-skeleton {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.rent-status-skeleton .rent-skeleton-heading,
+.rent-status-skeleton .rent-skeleton-pill,
+.rent-status-skeleton .rent-skeleton-icon,
+.rent-status-skeleton .rent-skeleton-line {
+  background: linear-gradient(
+    90deg,
+    #f2ece6 25%,
+    #faf5f0 50%,
+    #f2ece6 75%
+  );
+  background-size: 200% 100%;
+  animation: rsSkeletonShimmer 1.4s ease-in-out infinite;
+}
+
+@keyframes rsSkeletonShimmer {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+.rent-skeleton-header-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 2px;
+}
+
+.rent-skeleton-heading {
+  width: 132px;
+  height: 18px;
+  border-radius: 8px;
+}
+
+.rent-skeleton-pill {
+  width: 68px;
+  height: 22px;
+  border-radius: 999px;
+}
+
+.rent-status-skeleton .rent-status-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+}
+
+.rent-status-skeleton .rent-status-card {
+  background-color: #ffffff;
+  border: 1px solid #ece6df;
+  border-radius: 22px;
+  padding: 14px 12px;
+  box-shadow: 0 6px 20px -4px rgba(20, 20, 20, 0.05);
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+.rent-skeleton-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 10px;
+  margin-bottom: 2px;
+}
+
+.rent-skeleton-line.label {
+  width: 64%;
+  height: 11px;
+  border-radius: 5px;
+}
+
+.rent-skeleton-line.count {
+  width: 44%;
+  height: 20px;
+  border-radius: 7px;
+}
+
+.rent-skeleton-line.amount {
+  width: 82%;
+  height: 12px;
+  border-radius: 6px;
+}

@@ -1,0 +1,60 @@
+.tenant-bottom-nav {
+  position: fixed;
+  bottom: 16px;
+  left: 0;
+  right: 0;
+  margin: 0 auto;
+  width: calc(100% - 32px);
+  max-width: 408px;
+  background-color: #ffffff;
+  border: 1px solid #ece6df;
+  border-radius: 999px;
+  padding: 7px;
+  box-shadow: 0 12px 30px -6px rgba(20, 20, 20, 0.14);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  z-index: 1000;
+  box-sizing: border-box;
+}
+
+.tenant-bottom-nav-item {
+  height: 44px;
+  padding: 0 13px;
+  border-radius: 999px;
+  text-decoration: none;
+  color: #6b6b6b;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  transition: background-color 0.18s ease, color 0.18s ease, padding 0.18s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.tenant-bottom-nav-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+}
+
+.tenant-bottom-nav-label {
+  display: none;
+  white-space: nowrap;
+}
+
+.tenant-bottom-nav-item.active {
+  background-color: #e0530a;
+  color: #ffffff;
+  padding: 0 18px;
+  box-shadow: 0 6px 14px -4px rgba(224, 83, 10, 0.4);
+}
+
+.tenant-bottom-nav-item.active .tenant-bottom-nav-label {
+  display: inline-block;
+}

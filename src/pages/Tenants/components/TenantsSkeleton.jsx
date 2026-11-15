@@ -1,6 +1,6 @@
 
 import { LuSearch, LuHouse } from "react-icons/lu";
-
+import "../styles/TenantsSkeleton.css";
 export default function TenantsSkeleton() {
   return (
     <main

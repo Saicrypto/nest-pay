@@ -1,3 +1,4 @@
+import "../styles/RentStatusPageSkeleton.css";
 
 export default function RentStatusPageSkeleton() {
   return (
@@ -6,18 +7,18 @@ export default function RentStatusPageSkeleton() {
       aria-busy="true"
       aria-label="Loading rent records"
     >
-      {/* Header */}
+      {/* Full-Bleed Curved Burnt-Orange Hero Header */}
       <header className="rent-status-page-header">
-        <span>
-          Rent Status
+        <div>
+          <h1>Rent Status</h1>
           <p className="rent-subtitle">
             Track rent payments and pending dues.
           </p>
-        </span>
+        </div>
         <span className="rent-status-header-spacer" />
       </header>
 
-      {/* Search and month selector */}
+      {/* Overlapping Search & Month Selector Capsule */}
       <div className="rent-status-toolbar">
         <div className="rent-status-search">
           <div className="rent-page-skeleton-line search" />
@@ -26,14 +27,14 @@ export default function RentStatusPageSkeleton() {
         <div className="rent-page-skeleton-month" />
       </div>
 
-      {/* Filter tabs */}
-      <nav className="rent-status-tabs">
+      {/* 4-Tab Filter Row */}
+      <nav className="rent-status-tabs" aria-hidden="true">
         {[1, 2, 3, 4].map((item) => (
           <div className="rent-page-skeleton-tab" key={item} />
         ))}
       </nav>
 
-      {/* Payment records */}
+      {/* Payment Record Cards */}
       <div className="rent-status-records">
         {[1, 2, 3, 4].map((item) => (
           <article className="rent-status-record" key={item}>

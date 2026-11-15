@@ -1,0 +1,259 @@
+.home-dashboard-skeleton {
+  width: 100%;
+  max-width: 440px;
+  min-height: 100vh;
+  margin: 0 auto;
+  background-color: #faf7f4;
+  padding: 0 18px 116px 18px;
+  box-sizing: border-box;
+  overflow-x: hidden;
+}
+
+/* Warm Alabaster Shimmer */
+.home-dashboard-skeleton .home-skeleton-line,
+.home-dashboard-skeleton .home-skeleton-property-image,
+.home-dashboard-skeleton .home-skeleton-stat-icon,
+.home-dashboard-skeleton .home-skeleton-pill,
+.home-dashboard-skeleton .home-skeleton-status-row {
+  background: linear-gradient(
+    90deg,
+    #f2ece6 25%,
+    #faf5f0 50%,
+    #f2ece6 75%
+  );
+  background-size: 200% 100%;
+  animation: hdSkeletonShimmer 1.4s ease-in-out infinite;
+}
+
+/* Translucent Hero Shimmer inside Burnt-Orange Header */
+.home-dashboard-skeleton .home-skeleton-hero-shimmer {
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0.2) 25%,
+    rgba(255, 255, 255, 0.34) 50%,
+    rgba(255, 255, 255, 0.2) 75%
+  );
+  background-size: 200% 100%;
+  animation: hdSkeletonShimmer 1.4s ease-in-out infinite;
+  border-radius: 10px;
+}
+
+@keyframes hdSkeletonShimmer {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+/* Full-Bleed Burnt-Orange Hero Header */
+.home-skeleton-hero {
+  margin: 0 -18px;
+  background: linear-gradient(155deg, #e0530a 0%, #cf4906 100%);
+  border-radius: 0 0 32px 32px;
+  padding: 18px 20px 54px 20px;
+  box-shadow: 0 14px 30px -10px rgba(224, 83, 10, 0.36);
+}
+
+.home-skeleton-brand-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 18px;
+}
+
+.home-skeleton-hero-shimmer.brand {
+  width: 112px;
+  height: 32px;
+  border-radius: 11px;
+}
+
+.home-skeleton-hero-shimmer.bell {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+}
+
+.home-skeleton-property-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.home-skeleton-hero-copy {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  flex: 1;
+}
+
+.home-skeleton-hero-shimmer.title {
+  width: 170px;
+  height: 28px;
+}
+
+.home-skeleton-hero-shimmer.subtitle {
+  width: 130px;
+  height: 14px;
+  border-radius: 7px;
+}
+
+.home-skeleton-hero-shimmer.button {
+  width: 110px;
+  height: 38px;
+  border-radius: 999px;
+  flex-shrink: 0;
+}
+
+/* Overlapping Property Carousel */
+.home-skeleton-property-carousel {
+  position: relative;
+  z-index: 10;
+  margin: -34px -18px 18px 0;
+  padding-right: 18px;
+  display: flex;
+  gap: 12px;
+  overflow: hidden;
+}
+
+.home-skeleton-property-card {
+  min-width: 245px;
+  flex-shrink: 0;
+  background-color: #ffffff;
+  border: 1px solid #ece6df;
+  border-radius: 24px;
+  padding: 12px;
+  box-shadow: 0 10px 26px -6px rgba(20, 20, 20, 0.09);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.home-skeleton-property-image {
+  width: 56px;
+  height: 56px;
+  border-radius: 16px;
+  flex-shrink: 0;
+}
+
+.home-skeleton-property-details {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+/* 2x2 Bento Stats Grid */
+.home-skeleton-stats {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 11px;
+  margin-bottom: 14px;
+}
+
+.home-skeleton-stat-card {
+  background-color: #ffffff;
+  border: 1px solid #ece6df;
+  border-radius: 22px;
+  padding: 15px 14px;
+  box-shadow: 0 6px 20px -4px rgba(20, 20, 20, 0.05);
+  display: flex;
+  align-items: center;
+  gap: 11px;
+}
+
+.home-skeleton-stat-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 13px;
+  flex-shrink: 0;
+}
+
+.home-skeleton-stat-info {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+
+/* Rent Collection Summary Card */
+.home-skeleton-rent-card {
+  background-color: #ffffff;
+  border: 1px solid #ece6df;
+  border-radius: 24px;
+  padding: 16px;
+  box-shadow: 0 6px 20px -4px rgba(20, 20, 20, 0.05);
+  margin-bottom: 14px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.home-skeleton-pill {
+  width: 74px;
+  height: 28px;
+  border-radius: 999px;
+  flex-shrink: 0;
+}
+
+.home-skeleton-pill.small {
+  width: 64px;
+  height: 24px;
+}
+
+/* Rent Status Section Card */
+.home-skeleton-rent-status {
+  background-color: #ffffff;
+  border: 1px solid #ece6df;
+  border-radius: 24px;
+  padding: 18px 16px;
+  box-shadow: 0 6px 20px -4px rgba(20, 20, 20, 0.05);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.home-skeleton-status-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 2px;
+}
+
+.home-skeleton-status-row {
+  width: 100%;
+  height: 54px;
+  border-radius: 16px;
+}
+
+/* Line Sizing Utilities */
+.home-skeleton-line {
+  height: 13px;
+  border-radius: 6px;
+}
+
+.home-skeleton-line.title {
+  width: 124px;
+  height: 18px;
+  border-radius: 8px;
+}
+
+.home-skeleton-line.medium {
+  width: 78%;
+  height: 12px;
+}
+
+.home-skeleton-line.short {
+  width: 52%;
+  height: 11px;
+}
+
+.home-skeleton-line.number {
+  width: 58%;
+  height: 20px;
+  border-radius: 8px;
+}

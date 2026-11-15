@@ -1,0 +1,527 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
+:root {
+  --brand-orange: #e0530a;
+  --brand-orange-dark: #c94707;
+  --brand-peach: #faf0e6;
+  --brand-peach-soft: #fcf5ee;
+  --brand-peach-border: #f1dcc8;
+  --bg-canvas: #faf7f4;
+  --surface-white: #ffffff;
+  --ink-primary: #141414;
+  --ink-secondary: #6b6b6b;
+  --ink-muted: #9a948e;
+  --border-subtle: #ece6df;
+  --shadow-card: 0 6px 20px -4px rgba(20, 20, 20, 0.05);
+  --shadow-capsule: 0 10px 26px -6px rgba(20, 20, 20, 0.09);
+  --shadow-btn: 0 8px 20px -4px rgba(224, 83, 10, 0.36);
+}
+
+.tenant-profile-page,
+.tenant-profile-page * {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  box-sizing: border-box;
+}
+
+.tenant-profile-page {
+  width: 100%;
+  max-width: 440px;
+  min-height: 100vh;
+  margin: 0 auto;
+  background-color: var(--bg-canvas);
+  color: var(--ink-primary);
+  padding: 0 18px 116px 18px;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Hide floating bottom nav while personal details sheet is open */
+body:has(.tenant-profile-overlay) .tenant-bottom-nav,
+body:has(.tenant-profile-overlay) .tenant-bottom-navigation {
+  display: none !important;
+}
+
+/* =========================================
+   Full-Bleed Burnt-Orange Hero Header
+   ========================================= */
+.tenant-profile-header {
+  margin: 0 -18px;
+  background: linear-gradient(155deg, #e0530a 0%, #cf4906 100%);
+  color: #ffffff;
+  border-radius: 0 0 32px 32px;
+  padding: 28px 22px 48px 22px;
+  text-align: left;
+  box-shadow: 0 14px 30px -10px rgba(224, 83, 10, 0.36);
+}
+
+.tenant-profile-header h1 {
+  margin: 0 0 6px 0;
+  font-size: 31px;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  line-height: 1.1;
+  color: #ffffff;
+}
+
+.tenant-profile-header p {
+  margin: 0;
+  font-size: 13.5px;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.92);
+}
+
+/* =========================================
+   Overlapping Resident Identity Card
+   ========================================= */
+.tenant-profile-identity {
+  position: relative;
+  z-index: 10;
+  margin: -30px 0 20px 0;
+  background-color: var(--surface-white);
+  border: 1px solid var(--border-subtle);
+  border-radius: 24px;
+  padding: 15px 16px;
+  box-shadow: var(--shadow-capsule);
+  display: flex;
+  align-items: center;
+  gap: 13px;
+}
+
+.tenant-profile-avatar {
+  width: 50px;
+  height: 50px;
+  border-radius: 16px;
+  background-color: var(--brand-orange);
+  color: #ffffff;
+  font-size: 17px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  box-shadow: 0 6px 14px -4px rgba(224, 83, 10, 0.35);
+}
+
+.tenant-profile-identity-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.tp-identity-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 3px;
+}
+
+.tp-identity-top h2 {
+  margin: 0;
+  font-size: 17px;
+  font-weight: 800;
+  letter-spacing: -0.025em;
+  color: var(--ink-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.tp-resident-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background-color: var(--brand-peach);
+  border: 1px solid var(--brand-peach-border);
+  color: var(--brand-orange);
+  font-size: 10.5px;
+  font-weight: 700;
+  padding: 3px 9px;
+  border-radius: 999px;
+  flex-shrink: 0;
+}
+
+.tenant-profile-identity-info p {
+  margin: 0;
+  font-size: 12.5px;
+  font-weight: 500;
+  color: var(--ink-secondary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* =========================================
+   Profile Options Bento Card
+   ========================================= */
+.tenant-profile-options {
+  background-color: var(--surface-white);
+  border: 1px solid var(--border-subtle);
+  border-radius: 24px;
+  padding: 4px 16px;
+  box-shadow: var(--shadow-card);
+  margin-bottom: 18px;
+  display: flex;
+  flex-direction: column;
+}
+
+.tenant-profile-option {
+  width: 100%;
+  background: none;
+  border: none;
+  border-bottom: 1px solid var(--border-subtle);
+  padding: 15px 0;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 13px;
+  text-align: left;
+  cursor: pointer;
+  transition: opacity 0.14s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.tenant-profile-option:last-child {
+  border-bottom: none;
+}
+
+.tenant-profile-option:active {
+  opacity: 0.72;
+}
+
+.tenant-profile-option-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 13px;
+  background-color: var(--brand-peach);
+  color: var(--brand-orange);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.tenant-profile-option-info {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.tenant-profile-option-info strong {
+  font-size: 14.5px;
+  font-weight: 700;
+  letter-spacing: -0.015em;
+  color: var(--ink-primary);
+}
+
+.tenant-profile-option-info span {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--ink-secondary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.tenant-profile-chevron {
+  color: var(--ink-muted);
+  flex-shrink: 0;
+}
+
+/* =========================================
+   Logout CTA & Footer
+   ========================================= */
+.tenant-profile-logout {
+  width: 100%;
+  height: 50px;
+  background-color: #fef2f2;
+  border: 1px solid #fecaca;
+  border-radius: 18px;
+  color: #dc2626;
+  font-size: 14.5px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  cursor: pointer;
+  transition: background-color 0.15s ease, transform 0.14s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.tenant-profile-logout:hover {
+  background-color: #fee2e2;
+}
+
+.tenant-profile-logout:active {
+  transform: scale(0.98);
+}
+
+.tenant-profile-footer {
+  margin: 16px 0 0 0;
+  text-align: center;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--ink-muted);
+}
+
+/* =========================================
+   Personal Details Slide-Up Bottom Sheet
+   ========================================= */
+.tenant-profile-overlay {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(20, 20, 20, 0.48);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  z-index: 2200;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  align-items: center;
+}
+
+.tenant-personal-modal {
+  width: 100%;
+  max-width: 440px;
+  max-height: 92vh;
+  overflow-y: auto;
+  background-color: var(--surface-white);
+  border-top-left-radius: 28px;
+  border-top-right-radius: 28px;
+  padding: 10px 20px 28px 20px;
+  box-shadow: 0 -16px 40px -8px rgba(20, 20, 20, 0.22);
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  animation: tpSheetUp 0.28s cubic-bezier(0.22, 1, 0.36, 1);
+  -webkit-overflow-scrolling: touch;
+}
+
+@keyframes tpSheetUp {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+.tp-sheet-handle-wrap {
+  display: flex;
+  justify-content: center;
+  padding: 2px 0 2px 0;
+}
+
+.tp-sheet-handle {
+  width: 40px;
+  height: 4px;
+  border-radius: 999px;
+  background-color: #ded8d0;
+}
+
+.tenant-personal-modal-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.tenant-modal-back {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background-color: var(--bg-canvas);
+  border: 1px solid var(--border-subtle);
+  color: var(--brand-orange);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.tp-modal-eyebrow {
+  margin: 0 0 2px 0;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  color: var(--brand-orange);
+}
+
+.tenant-personal-modal-header h2 {
+  margin: 0 0 3px 0;
+  font-size: 20px;
+  font-weight: 800;
+  letter-spacing: -0.025em;
+  color: var(--ink-primary);
+}
+
+.tenant-personal-modal-header p:last-child {
+  margin: 0;
+  font-size: 12.5px;
+  font-weight: 500;
+  color: var(--ink-secondary);
+}
+
+/* Read-Only Personal Details List */
+.tenant-personal-fields {
+  background-color: var(--bg-canvas);
+  border: 1px solid var(--border-subtle);
+  border-radius: 20px;
+  padding: 4px 16px;
+  display: flex;
+  flex-direction: column;
+}
+
+.tenant-personal-field {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 13px 0;
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.tenant-personal-field:last-child {
+  border-bottom: none;
+}
+
+.tenant-personal-field span {
+  font-size: 12.5px;
+  font-weight: 500;
+  color: var(--ink-secondary);
+  flex-shrink: 0;
+}
+
+.tenant-personal-field strong {
+  font-size: 13.5px;
+  font-weight: 700;
+  color: var(--ink-primary);
+  text-align: right;
+  word-break: break-word;
+}
+
+/* Edit Mode Form Grid */
+.tenant-personal-form {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.tenant-personal-form label {
+  grid-column: 1 / -1;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--ink-primary);
+}
+
+.tenant-personal-form label:has(input[name="family_members"]),
+.tenant-personal-form label:has(input[name="age"]) {
+  grid-column: span 1;
+}
+
+.tenant-personal-form input {
+  width: 100%;
+  height: 45px;
+  background-color: var(--bg-canvas);
+  border: 1px solid var(--border-subtle);
+  border-radius: 14px;
+  padding: 0 13px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--ink-primary);
+  outline: none;
+  font-variant-numeric: tabular-nums;
+  transition: border-color 0.15s ease, background-color 0.15s ease;
+}
+
+.tenant-personal-form input:focus {
+  background-color: var(--surface-white);
+  border-color: var(--brand-orange);
+}
+
+/* Feedback & Sheet Action Buttons */
+.tenant-profile-error {
+  grid-column: 1 / -1;
+  margin: 0;
+  background-color: #fef2f2;
+  border: 1px solid #fecaca;
+  color: #b91c1c;
+  font-size: 13px;
+  font-weight: 600;
+  padding: 10px 13px;
+  border-radius: 13px;
+}
+
+.tenant-profile-success {
+  margin: 0;
+  background-color: #ecfdf3;
+  border: 1px solid #bbf7d0;
+  color: #15803d;
+  font-size: 13px;
+  font-weight: 600;
+  padding: 10px 13px;
+  border-radius: 13px;
+}
+
+.tenant-personal-actions {
+  grid-column: 1 / -1;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 4px;
+}
+
+.tenant-profile-cancel,
+.tenant-profile-save {
+  flex: 1 0 auto;
+  height: 50px;
+  min-height: 50px;
+  border-radius: 16px;
+  font-size: 14.5px;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  cursor: pointer;
+  transition: background-color 0.15s ease, transform 0.14s ease;
+}
+
+.tenant-profile-save.tenant-profile-edit {
+  flex: none;
+  width: 100%;
+  height: 50px;
+  min-height: 50px;
+}
+
+.tenant-profile-cancel {
+  background-color: var(--brand-peach);
+  border: 1px solid var(--brand-peach-border);
+  color: var(--ink-primary);
+}
+
+.tenant-profile-save {
+  width: 100%;
+  background-color: var(--brand-orange);
+  border: none;
+  color: #ffffff;
+  box-shadow: var(--shadow-btn);
+}
+
+.tenant-profile-save:hover:not(:disabled) {
+  background-color: var(--brand-orange-dark);
+}
+
+.tenant-profile-save:disabled,
+.tenant-profile-cancel:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+}

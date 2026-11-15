@@ -1,7 +1,7 @@
-
 import { useState } from "react";
 import AuthService from "../services/AuthService";
 import "../styles/Login.css";
+import { useNavigate } from "react-router-dom";
 
 function Login() {
   const [isSignup, setIsSignup] = useState(false);
@@ -10,6 +10,7 @@ function Login() {
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
 
   async function handleSubmit(event) {
     event.preventDefault();
@@ -18,39 +19,31 @@ function Login() {
     setError("");
     setLoading(true);
 
-    
-try {
-  if (isSignup) {
-    const data = await AuthService.signUp(email, password);
+    try {
+      if (isSignup) {
+        const data = await AuthService.signUp(email, password);
 
-    if (data.session) {
-      setMessage("Account created successfully. You can now continue.");
-    } else {
-      setMessage(
-        "Account created. Please check your email to confirm your account."
-      );
+        if (data.session) {
+          setMessage("Account created successfully. You can now continue.");
+        } else {
+          setMessage(
+            "Account created. Please check your email to confirm your account."
+          );
+        }
+      } else {
+        await AuthService.signIn(email, password);
+        navigate("/home", { replace: true });
+      }
+    } catch (err) {
+      setError(err.message || "Something went wrong. Please try again.");
+    } finally {
+      setLoading(false);
     }
-  } else {
-    await AuthService.signIn(email, password);
-
-    setMessage("Login successful! Authentication is working.");
-  }
-} catch (err) {
-  setError(err.message || "Something went wrong. Please try again.");
-} finally {
-  setLoading(false);
-}
-
   }
 
   return (
     <main className="login-page">
       <section className="login-card">
-        <div className="brand">
-          <div className="brand-icon">N</div>
-          <span>Nest Pay</span>
-        </div>
-
         <div className="welcome">
           <h1>{isSignup ? "Create your account." : "Welcome home."}</h1>
           <p>
@@ -100,8 +93,8 @@ try {
             {loading
               ? "Please wait..."
               : isSignup
-                ? "Create account"
-                : "Sign in"}
+              ? "Create account"
+              : "Sign in"}
           </button>
         </form>
 
@@ -120,9 +113,7 @@ try {
           </button>
         </p>
 
-        <p className="footer-text">
-          Property management, made simpler.
-        </p>
+        <p className="footer-text">Property management, made simpler.</p>
       </section>
     </main>
   );

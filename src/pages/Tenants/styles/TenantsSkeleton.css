@@ -1,0 +1,205 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
+.tenants-page-skeleton,
+.tenants-page-skeleton * {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  box-sizing: border-box;
+}
+
+.tenants-page-skeleton {
+  width: 100%;
+  max-width: 440px;
+  min-height: 100vh;
+  margin: 0 auto;
+  background-color: #faf7f4;
+  color: #141414;
+  padding: 0 18px 116px 18px;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Warm Alabaster Shimmer */
+.tenants-page-skeleton .tenants-skeleton-line,
+.tenants-page-skeleton .tenants-skeleton-status {
+  background: linear-gradient(
+    90deg,
+    #f2ece6 25%,
+    #faf5f0 50%,
+    #f2ece6 75%
+  );
+  background-size: 200% 100%;
+  animation: tenantsSkeletonShimmer 1.4s ease-in-out infinite;
+}
+
+@keyframes tenantsSkeletonShimmer {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+/* =========================================
+   Full-Bleed Burnt-Orange Hero Header
+   ========================================= */
+.tenants-page-skeleton .tenants-header {
+  margin: 0 -18px;
+  background: linear-gradient(155deg, #e0530a 0%, #cf4906 100%);
+  color: #ffffff;
+  border-radius: 0 0 32px 32px;
+  padding: 28px 20px 48px 20px;
+  box-shadow: 0 14px 30px -10px rgba(224, 83, 10, 0.36);
+}
+
+.tenants-page-skeleton .tenants-header h1 {
+  margin: 0 0 6px 0;
+  font-size: 31px;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  line-height: 1.1;
+  color: #ffffff;
+}
+
+.tenants-page-skeleton .tenants-subtitle {
+  margin: 0;
+  font-size: 13.5px;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.92);
+}
+
+/* =========================================
+   Overlapping Search Capsule
+   ========================================= */
+.tenants-page-skeleton .tenants-search {
+  position: relative;
+  z-index: 10;
+  margin: -28px 0 20px 0;
+  height: 54px;
+  background-color: #ffffff;
+  border: 1px solid #ece6df;
+  border-radius: 20px;
+  padding: 0 16px;
+  box-shadow: 0 10px 26px -6px rgba(20, 20, 20, 0.09);
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  color: #e0530a;
+}
+
+.tenants-skeleton-line.search {
+  width: 62%;
+  height: 14px;
+  border-radius: 7px;
+}
+
+/* =========================================
+   Property Group & Unit Bento Cards
+   ========================================= */
+.tenants-skeleton-property-list {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.tenants-page-skeleton .tenants-property {
+  display: flex;
+  flex-direction: column;
+  gap: 11px;
+}
+
+.tenants-page-skeleton .tenants-property-heading {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  padding: 0 2px;
+}
+
+.tenants-page-skeleton .tenants-property-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 13px;
+  background-color: #faf0e6;
+  border: 1px solid #f1dcc8;
+  color: #e0530a;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.tenants-skeleton-property-info {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.tenants-skeleton-line.property-name {
+  width: 48%;
+  height: 16px;
+  border-radius: 7px;
+}
+
+.tenants-skeleton-line.property-address {
+  width: 72%;
+  height: 12px;
+  border-radius: 6px;
+}
+
+.tenants-page-skeleton .tenants-unit-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.tenants-page-skeleton .tenants-unit {
+  background-color: #ffffff;
+  border: 1px solid #ece6df;
+  border-radius: 22px;
+  padding: 15px 16px;
+  box-shadow: 0 6px 20px -4px rgba(20, 20, 20, 0.05);
+}
+
+.tenants-page-skeleton .tenants-unit-content {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.tenants-page-skeleton .tenants-unit-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.tenants-page-skeleton .tenants-unit-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.tenants-skeleton-line.unit-name {
+  width: 44%;
+  height: 16px;
+  border-radius: 7px;
+}
+
+.tenants-skeleton-status {
+  width: 76px;
+  height: 25px;
+  border-radius: 999px;
+  flex-shrink: 0;
+}
+
+.tenants-page-skeleton .tenants-current-tenant {
+  padding-top: 10px;
+  border-top: 1px solid #ece6df;
+}
+
+.tenants-skeleton-line.tenant-name {
+  width: 56%;
+  height: 13px;
+  border-radius: 6px;
+}

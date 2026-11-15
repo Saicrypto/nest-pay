@@ -1,0 +1,192 @@
+.tenant-services-skeleton {
+  width: 100%;
+  max-width: 440px;
+  min-height: 100vh;
+  margin: 0 auto;
+  background-color: #faf7f4;
+  padding: 0 18px 116px 18px;
+  box-sizing: border-box;
+}
+
+/* Warm Alabaster Shimmer Animation */
+.tenant-services-skeleton .skeleton {
+  background: linear-gradient(
+    90deg,
+    #f2ece6 25%,
+    #faf5f0 50%,
+    #f2ece6 75%
+  );
+  background-size: 200% 100%;
+  animation: tsSkeletonShimmer 1.4s ease-in-out infinite;
+  border-radius: 10px;
+}
+
+/* Translucent Hero Shimmer inside Burnt-Orange Header */
+.tenant-services-skeleton .skeleton-hero {
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0.2) 25%,
+    rgba(255, 255, 255, 0.34) 50%,
+    rgba(255, 255, 255, 0.2) 75%
+  );
+  background-size: 200% 100%;
+  animation: tsSkeletonShimmer 1.4s ease-in-out infinite;
+  border-radius: 10px;
+}
+
+@keyframes tsSkeletonShimmer {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+/* Hero Header Skeleton */
+.tenant-services-skeleton .tenant-services-header {
+  margin: 0 -18px;
+  background: linear-gradient(155deg, #e0530a 0%, #cf4906 100%);
+  border-radius: 0 0 32px 32px;
+  padding: 28px 20px 48px 20px;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  box-shadow: 0 14px 30px -10px rgba(224, 83, 10, 0.36);
+}
+
+.ts-skel-hero-copy {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  flex: 1;
+}
+
+.skeleton-heading {
+  width: 132px;
+  height: 30px;
+  border-radius: 10px;
+}
+
+.skeleton-subheading {
+  width: 200px;
+  height: 14px;
+  border-radius: 7px;
+}
+
+.skeleton-hero-btn {
+  margin-top: 4px;
+  width: 108px;
+  height: 38px;
+  border-radius: 999px;
+  flex-shrink: 0;
+}
+
+/* Overlapping Segmented Capsule Skeleton */
+.tenant-services-skeleton .tenant-services-tabs-wrap {
+  position: relative;
+  z-index: 10;
+  margin: -28px 0 20px 0;
+  background-color: #ffffff;
+  border: 1px solid #ece6df;
+  border-radius: 22px;
+  padding: 6px;
+  box-shadow: 0 10px 26px -6px rgba(20, 20, 20, 0.09);
+}
+
+.services-skeleton-tabs {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+}
+
+.skeleton-tab {
+  height: 42px;
+  border-radius: 16px;
+}
+
+/* Section Heading Row Skeleton */
+.services-skeleton-section-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+  padding: 0 2px;
+}
+
+.skeleton-section-heading {
+  width: 175px;
+  height: 18px;
+  border-radius: 8px;
+}
+
+.skeleton-count-pill {
+  width: 28px;
+  height: 22px;
+  border-radius: 999px;
+}
+
+/* Provider Card Skeletons */
+.services-skeleton-list {
+  display: flex;
+  flex-direction: column;
+  gap: 11px;
+}
+
+.services-skeleton-card {
+  background-color: #ffffff;
+  border: 1px solid #ece6df;
+  border-radius: 22px;
+  padding: 15px 16px;
+  box-shadow: 0 6px 20px -4px rgba(20, 20, 20, 0.05);
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.skeleton-provider-image {
+  width: 42px;
+  height: 42px;
+  border-radius: 13px;
+  flex-shrink: 0;
+}
+
+.services-skeleton-details {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+
+.skeleton-provider-name {
+  width: 65%;
+  height: 16px;
+  border-radius: 7px;
+}
+
+.skeleton-provider-category {
+  width: 45%;
+  height: 12px;
+  border-radius: 6px;
+}
+
+.skeleton-provider-description {
+  width: 90%;
+  height: 12px;
+  border-radius: 6px;
+}
+
+.skeleton-provider-description.short {
+  width: 52%;
+  height: 13px;
+  margin-top: 2px;
+}
+
+.skeleton-provider-action {
+  width: 68px;
+  height: 36px;
+  border-radius: 999px;
+  flex-shrink: 0;
+}

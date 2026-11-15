@@ -17,6 +17,9 @@ import {
 } from "../cache/propertyDetailsCache";
 import { clearHomeCache } from "../../Home/cache/homeCache";
 import "../styles/PropertySummary.css";
+import { clearTenantsCache } from "../../Tenants/cache/tenantsCache";
+import { clearTenantDetailsCache } from "../../Tenants/cache/tenantDetailsCache";
+import { clearRentStatusCache } from "../../RentStatus/cache/rentStatusCache";
 
 function PropertySummary({ property, unitCount }) {
   const navigate = useNavigate();
@@ -37,12 +40,7 @@ function PropertySummary({ property, unitCount }) {
     totalUnits: String(property.total_units ?? unitCount ?? 1),
   });
 
-  const address = [
-    property.address,
-    property.city,
-    property.state,
-    property.pincode,
-  ].filter(Boolean).join(", ");
+const address = property.city || "City not provided";
 
   function changeField(event) {
     const { name, value } = event.target;
@@ -57,9 +55,12 @@ function PropertySummary({ property, unitCount }) {
     try {
       await PropertyService.updateProperty(property.id, form);
 
-      clearPropertiesCache();
-      clearHomeCache();
-      clearPropertyDetailsCache(property.id);
+clearPropertiesCache();
+clearHomeCache();
+clearPropertyDetailsCache(property.id);
+clearTenantsCache();
+clearTenantDetailsCache();
+clearRentStatusCache();
 
       // Reload to display the updated property and its address.
       window.location.reload();
@@ -77,9 +78,12 @@ function PropertySummary({ property, unitCount }) {
     try {
       await PropertyService.deleteProperty(property.id);
 
-      clearPropertiesCache();
-      clearHomeCache();
-      clearPropertyDetailsCache();
+clearPropertiesCache();
+clearHomeCache();
+clearPropertyDetailsCache();
+clearTenantsCache();
+clearTenantDetailsCache();
+clearRentStatusCache();
 
       navigate("/properties", { replace: true });
     } catch (err) {
@@ -93,19 +97,26 @@ function PropertySummary({ property, unitCount }) {
 
   return (
     <>
-      <section className="property-summary">
+<section className="property-summary">
         <div className="property-summary-heading">
-          <div>
-            <h1>{property.property_name}</h1>
-            <p className="property-summary-type">
-              {(property.property_type || "").replaceAll("_", " ")}
-            </p>
+          <div className="ps-title-row">
+            <div className="ps-building-badge">
+              <LuBuilding2 size={24} />
+            </div>
+
+            <div className="ps-title-meta">
+              <h1>{property.property_name}</h1>
+              <span className="property-summary-type">
+                {(property.property_type || "Property").replaceAll("_", " ")}
+              </span>
+            </div>
           </div>
 
           <div className="property-summary-actions">
             <button
               type="button"
               className="property-summary-edit"
+              aria-label="Edit property"
               onClick={() => {
                 setForm({
                   propertyName: property.property_name || "",
@@ -120,41 +131,36 @@ function PropertySummary({ property, unitCount }) {
                 setEditing(true);
               }}
             >
-              <LuPencil aria-hidden="true" />
-              
+              <LuPencil size={16} aria-hidden="true" />
             </button>
 
             <button
               type="button"
               className="property-summary-delete"
+              aria-label="Delete property"
               onClick={() => {
                 setError("");
                 setConfirmDelete(true);
               }}
             >
-              <LuTrash2 aria-hidden="true" />
-              
+              <LuTrash2 size={16} aria-hidden="true" />
             </button>
           </div>
         </div>
 
-        <div className="property-summary-location">
-          <LuMapPin
-            className="property-summary-location-icon"
-            aria-hidden="true"
-          />
-          <p>{address || "Address not provided"}</p>
-        </div>
-
-        <div className="property-summary-stats">
-          <div className="property-summary-stat">
-            <span className="property-summary-stat-icon" aria-hidden="true">
-              <LuBuilding2 />
+        <div className="ps-meta-footer">
+          <div className="ps-meta-pill">
+            <LuMapPin size={15} />
+            <span>
+              {[property.city, property.state].filter(Boolean).join(", ") ||
+                "City not provided"}
             </span>
-            <div>
-              <strong>{unitCount}</strong>
-              <span>Flats</span>
-            </div>
+          </div>
+
+          <div className="ps-units-pill">
+            <LuBuilding2 size={15} />
+            <strong>{unitCount}</strong>
+            <span>{unitCount === 1 ? "Flat" : "Flats"}</span>
           </div>
         </div>
       </section>

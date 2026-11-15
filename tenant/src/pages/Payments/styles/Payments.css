@@ -1,0 +1,391 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
+:root {
+  --brand-orange: #e0530a;
+  --brand-orange-dark: #c94707;
+  --brand-peach: #faf0e6;
+  --brand-peach-soft: #fcf5ee;
+  --brand-peach-border: #f1dcc8;
+  --bg-canvas: #faf7f4;
+  --surface-white: #ffffff;
+  --ink-primary: #141414;
+  --ink-secondary: #6b6b6b;
+  --ink-muted: #9a948e;
+  --border-subtle: #ece6df;
+  --shadow-card: 0 6px 20px -4px rgba(20, 20, 20, 0.05);
+  --shadow-capsule: 0 12px 28px -8px rgba(20, 20, 20, 0.1);
+  --shadow-btn: 0 8px 20px -4px rgba(224, 83, 10, 0.36);
+}
+
+.tenant-payments-page,
+.tenant-payments-page * {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  box-sizing: border-box;
+}
+
+.tenant-payments-page {
+  width: 100%;
+  max-width: 440px;
+  min-height: 100vh;
+  margin: 0 auto;
+  background-color: var(--bg-canvas);
+  color: var(--ink-primary);
+  padding: 0 18px 116px 18px;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* =========================================
+   Full-Bleed Burnt-Orange Hero Header
+   ========================================= */
+.tenant-payments-header {
+  margin: 0 -18px;
+  background: linear-gradient(155deg, #e0530a 0%, #cf4906 100%);
+  color: #ffffff;
+  border-radius: 0 0 32px 32px;
+  padding: 28px 22px 48px 22px;
+  text-align: left;
+  box-shadow: 0 14px 30px -10px rgba(224, 83, 10, 0.36);
+}
+
+.tenant-payments-header h1 {
+  margin: 0 0 6px 0;
+  font-size: 31px;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  line-height: 1.1;
+  color: #ffffff;
+}
+
+.tenant-payments-header p {
+  margin: 0;
+  font-size: 13.5px;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.92);
+}
+
+/* =========================================
+   Overlapping Monthly Rent Summary Card
+   ========================================= */
+.tenant-payment-summary {
+  position: relative;
+  z-index: 10;
+  margin: -30px 0 16px 0;
+  background-color: var(--surface-white);
+  border: 1px solid var(--border-subtle);
+  border-radius: 26px;
+  padding: 20px;
+  box-shadow: var(--shadow-capsule);
+}
+
+.tp-summary-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.tenant-payment-eyebrow {
+  margin: 0 0 5px 0;
+  font-size: 10.5px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  color: var(--brand-orange);
+}
+
+.tenant-payment-summary h2 {
+  margin: 0;
+  font-size: 32px;
+  font-weight: 800;
+  letter-spacing: -0.035em;
+  line-height: 1.1;
+  color: var(--ink-primary);
+  font-variant-numeric: tabular-nums;
+}
+
+.tp-summary-right {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 8px;
+}
+
+.tenant-payment-summary-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 13px;
+  background-color: var(--brand-peach);
+  color: var(--brand-orange);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.tenant-payment-status {
+  background-color: var(--brand-peach-soft);
+  border: 1px solid var(--brand-peach-border);
+  color: var(--brand-orange);
+  font-size: 11px;
+  font-weight: 700;
+  padding: 3px 10px;
+  border-radius: 999px;
+  white-space: nowrap;
+}
+
+.tenant-payment-summary-divider {
+  height: 1px;
+  background-color: var(--border-subtle);
+  margin: 16px 0;
+}
+
+.tp-summary-rows {
+  display: flex;
+  flex-direction: column;
+  gap: 11px;
+}
+
+.tenant-payment-summary-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  font-size: 13px;
+}
+
+.tenant-payment-summary-row span {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font-weight: 500;
+  color: var(--ink-secondary);
+}
+
+.tenant-payment-summary-row span svg {
+  color: var(--brand-orange);
+  flex-shrink: 0;
+}
+
+.tenant-payment-summary-row strong {
+  font-weight: 700;
+  color: var(--ink-primary);
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+/* =========================================
+   Payment Destination & UPI Card
+   ========================================= */
+.tenant-payment-owner-card {
+  background-color: var(--surface-white);
+  border: 1px solid var(--border-subtle);
+  border-radius: 26px;
+  padding: 20px;
+  box-shadow: var(--shadow-card);
+  margin-bottom: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.tenant-payment-section-label {
+  margin: 0;
+  font-size: 10.5px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  color: var(--brand-orange);
+}
+
+.tenant-payment-owner-details {
+  background-color: var(--bg-canvas);
+  border: 1px solid var(--border-subtle);
+  border-radius: 18px;
+  padding: 4px 14px;
+  display: flex;
+  flex-direction: column;
+}
+
+.tp-detail-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.tp-detail-item:last-child {
+  border-bottom: none;
+}
+
+.tp-detail-item > span {
+  font-size: 12.5px;
+  font-weight: 500;
+  color: var(--ink-secondary);
+  flex-shrink: 0;
+}
+
+.tp-detail-item strong {
+  font-size: 13.5px;
+  font-weight: 700;
+  color: var(--ink-primary);
+  text-align: right;
+  word-break: break-all;
+}
+
+.tp-upi-copy-wrap {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+
+.tp-copy-upi-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background-color: var(--surface-white);
+  border: 1px solid var(--brand-peach-border);
+  color: var(--brand-orange);
+  font-size: 11.5px;
+  font-weight: 700;
+  padding: 4px 9px;
+  border-radius: 999px;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: background-color 0.14s ease;
+}
+
+.tp-copy-upi-btn:hover {
+  background-color: var(--brand-peach);
+}
+
+.tp-preferred-pill {
+  background-color: var(--brand-peach);
+  border: 1px solid var(--brand-peach-border);
+  color: var(--brand-orange) !important;
+  font-size: 12px !important;
+  padding: 3px 10px;
+  border-radius: 999px;
+}
+
+/* Primary & Fallback UPI Action Buttons */
+.tenant-pay-rent-button {
+  width: 100%;
+  height: 52px;
+  background-color: var(--brand-orange);
+  border: none;
+  border-radius: 16px;
+  color: #ffffff;
+  font-size: 14.5px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  cursor: pointer;
+  box-shadow: var(--shadow-btn);
+  transition: background-color 0.15s ease, transform 0.14s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.tenant-pay-rent-button:hover:not(:disabled) {
+  background-color: var(--brand-orange-dark);
+}
+
+.tenant-pay-rent-button:active:not(:disabled) {
+  transform: scale(0.98);
+}
+
+.tenant-pay-rent-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.tenant-payment-fallback-button {
+  width: 100%;
+  height: 46px;
+  background-color: var(--brand-peach-soft);
+  border: 1px solid var(--brand-peach-border);
+  border-radius: 15px;
+  color: var(--brand-orange);
+  font-size: 13.5px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.tenant-payment-fallback-button:hover {
+  background-color: var(--brand-peach);
+}
+
+/* Security Callout Box */
+.tenant-payment-security-note {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  background-color: #ecfdf3;
+  border: 1px solid #bbf7d0;
+  border-radius: 15px;
+  padding: 12px 13px;
+  color: #15803d;
+}
+
+.tenant-payment-security-note svg {
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+.tenant-payment-security-note p {
+  margin: 0;
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1.45;
+  color: #166534;
+}
+
+/* Not Configured & Empty States */
+.tenant-payment-not-configured,
+.tp-empty-state {
+  text-align: center;
+  padding: 20px 10px;
+}
+
+.tp-not-configured-icon {
+  width: 50px;
+  height: 50px;
+  border-radius: 15px;
+  background-color: var(--brand-peach);
+  color: var(--brand-orange);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 12px;
+}
+
+.tenant-payment-not-configured h3 {
+  margin: 0 0 6px 0;
+  font-size: 16px;
+  font-weight: 800;
+  color: var(--ink-primary);
+}
+
+.tenant-payment-not-configured p,
+.tp-empty-state p {
+  margin: 0;
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 1.5;
+  color: var(--ink-secondary);
+}
+
+/* Bottom Disclaimer */
+.tenant-payment-disclaimer {
+  margin: 0 4px;
+  text-align: center;
+  font-size: 11.5px;
+  font-weight: 500;
+  line-height: 1.55;
+  color: var(--ink-muted);
+}

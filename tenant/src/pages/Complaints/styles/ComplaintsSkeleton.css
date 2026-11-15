@@ -1,0 +1,80 @@
+.tenant-complaints-skeleton {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.tenant-complaints-skeleton .tc-skel-icon,
+.tenant-complaints-skeleton .tenant-skeleton-line,
+.tenant-complaints-skeleton .tenant-skeleton-status {
+  background: linear-gradient(
+    90deg,
+    #f2ece6 25%,
+    #faf5f0 50%,
+    #f2ece6 75%
+  );
+  background-size: 200% 100%;
+  animation: tcSkeletonShimmer 1.4s ease-in-out infinite;
+}
+
+@keyframes tcSkeletonShimmer {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+.tenant-complaints-skeleton .tc-skel-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 13px;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+.tenant-complaints-skeleton .tc-card-body {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.tenant-complaints-skeleton .tc-card-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.tenant-skeleton-line.complaint-title {
+  width: 56%;
+  height: 17px;
+  border-radius: 7px;
+}
+
+.tenant-skeleton-status {
+  width: 72px;
+  height: 24px;
+  border-radius: 999px;
+  flex-shrink: 0;
+}
+
+.tenant-skeleton-line.complaint-description {
+  width: 94%;
+  height: 13px;
+  border-radius: 6px;
+}
+
+.tenant-skeleton-line.complaint-description.short {
+  width: 68%;
+}
+
+.tenant-skeleton-line.complaint-date {
+  width: 118px;
+  height: 12px;
+  border-radius: 6px;
+  margin-top: 2px;
+}

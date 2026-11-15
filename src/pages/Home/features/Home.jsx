@@ -1,16 +1,11 @@
 
 import { useEffect, useState, useRef } from "react";
-import AuthService from "../../../services/AuthService";
 import DashboardService from "../../../services/DashboardService";
 import PropertyService from "../../../services/PropertyService";
 import { Link } from "react-router-dom";
 import RentStatus from "../../RentStatus/components/RentStatus";
 import "../styles/Home.css";
-import {
-  getHomeCache,
-  setHomeCache,
-  clearHomeCache,
-} from "../cache/homeCache";
+import { getHomeCache, setHomeCache, clearHomeCache} from "../cache/homeCache";
 import {
   LuHouse,
   LuUsers,
@@ -24,6 +19,7 @@ LuChevronRight,
   LuWallet,
 } from "react-icons/lu";
 import HomeDashboardSkeleton from "../components/HomeDashboardSkeleton";
+import NotificationBell from "../components/NotificationBell";
 
 function Home() {
 
@@ -99,14 +95,7 @@ useEffect(() => {
 }, []);
 
 
-  async function handleSignOut() {
-    try {
-      await AuthService.signOut();
-      clearHomeCache();
-    } catch (err) {
-      setError(err.message || "Sign out failed.");
-    }
-  }
+  
 
   function formatCurrency(amount) {
     return new Intl.NumberFormat("en-IN", {
@@ -124,19 +113,7 @@ useEffect(() => {
     <div className="home-brand-icon">N</div>
     <span>Nest Pay</span>
   </div>
-
-  <div className="home-header-actions">
-
-    <button
-      type="button"
-      className="home-signout"
-      onClick={handleSignOut}
-    >
-      Sign out
-    </button>
-  </div>
-
-
+  <NotificationBell />
 </header>
 
 
@@ -183,7 +160,7 @@ useEffect(() => {
 
         <div className="property-carousel" ref={propertyCarouselRef}>
           {properties.map((property) => {
-            const total = Number(property.total_units || 0);
+           const total = Number(property.property_units?.[0]?.count ?? 0);
             const location = [property.city, property.state]
               .filter(Boolean)
               .join(", ");
@@ -208,8 +185,8 @@ useEffect(() => {
                     />
 
                     <span className="property-units-badge">
-                      <LuBuilding2 /> {total} Units
-                    </span>
+  <LuBuilding2 /> {total} {total === 1 ? "Flat" : "Flats"}
+</span>
                   </div>
 
                   <div className="property-card-details">

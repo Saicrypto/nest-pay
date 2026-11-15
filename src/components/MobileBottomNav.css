@@ -1,51 +1,121 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@500;600;700&display=swap');
+
+:root {
+  --brand-orange: #e0530a;
+  --surface-white: #ffffff;
+  --ink-inactive: #3b3735;
+  --border-pill: #efe8e1;
+  --shadow-nav: 0 12px 32px -4px rgba(20, 20, 20, 0.12), 0 2px 6px rgba(20, 20, 20, 0.04);
+}
+
+/* =========================================
+   Floating White Pill Bottom Navigation
+   ========================================= */
 .mobile-bottom-nav {
+  position: fixed;
+  bottom: 18px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: calc(100% - 32px);
+  max-width: 408px;
+  background-color: var(--surface-white);
+  border: 1px solid var(--border-pill);
+  border-radius: 999px;
+  padding: 7px 10px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 4px;
+  box-shadow: var(--shadow-nav);
+  z-index: 1000;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  box-sizing: border-box;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* =========================================
+   Inactive Nav Items (Icon Only)
+   ========================================= */
+.mobile-nav-item {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  color: var(--ink-inactive);
+  width: 46px;
+  height: 46px;
+  border-radius: 999px;
+  transition: all 0.2s cubic-bezier(0.22, 1, 0.36, 1);
+  flex-shrink: 0;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.mobile-nav-item:hover:not(.active) {
+  background-color: #faf5f0;
+  color: var(--brand-orange);
+}
+
+.mobile-nav-item svg {
+  width: 21px;
+  height: 21px;
+  flex-shrink: 0;
+}
+
+/* Hide labels on inactive tabs to match reference pill */
+.mobile-nav-item span {
   display: none;
 }
 
-@media (max-width: 768px) {
+/* =========================================
+   Active Nav Item (Burnt-Orange Expanded Pill)
+   ========================================= */
+.mobile-nav-item.active {
+  background-color: var(--brand-orange);
+  color: #ffffff;
+  width: auto;
+  height: 46px;
+  padding: 0 20px;
+  gap: 8px;
+  box-shadow: 0 6px 16px -4px rgba(224, 83, 10, 0.42);
+}
+
+.mobile-nav-item.active svg {
+  width: 20px;
+  height: 20px;
+  color: #ffffff;
+}
+
+.mobile-nav-item.active span {
+  display: inline-block;
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: -0.015em;
+  line-height: 1;
+  color: #ffffff;
+  white-space: nowrap;
+}
+
+/* =========================================
+   Small Screen Adaptation (< 360px)
+   ========================================= */
+@media (max-width: 360px) {
   .mobile-bottom-nav {
-    position: fixed;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    z-index: 1000;
-
-    display: grid;
-    grid-template-columns: repeat(5, minmax(0, 1fr));
-    align-items: center;
-
-    padding: 8px 4px calc(8px + env(safe-area-inset-bottom));
-    background: #ffffff;
-    border-top: 1px solid #eeeeee;
-    box-shadow: 0 -4px 18px rgba(0, 0, 0, 0.05);
+    width: calc(100% - 24px);
+    padding: 6px 8px;
   }
 
   .mobile-nav-item {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 4px;
-    min-width: 0;
-    padding: 6px 1px;
-    border-radius: 10px;
-
-    color: #777b73;
-    text-decoration: none;
-    font-size: 10px;
-    font-weight: 500;
-    -webkit-tap-highlight-color: transparent;
+    width: 40px;
+    height: 42px;
   }
 
   .mobile-nav-item.active {
-    color: #dd6013;
+    height: 42px;
+    padding: 0 15px;
+    gap: 6px;
   }
 
-  .mobile-nav-item span {
-    white-space: nowrap;
-  }
-
-  body {
-    padding-bottom: calc(76px + env(safe-area-inset-bottom));
+  .mobile-nav-item.active span {
+    font-size: 13px;
   }
 }

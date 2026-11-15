@@ -1,0 +1,231 @@
+.tenant-home-skeleton {
+  width: 100%;
+  max-width: 440px;
+  min-height: 100vh;
+  margin: 0 auto;
+  background-color: #faf7f4;
+  padding: 0 18px 116px 18px;
+  box-sizing: border-box;
+}
+
+/* Warm Alabaster Shimmer */
+.tenant-home-skeleton .skeleton {
+  background: linear-gradient(
+    90deg,
+    #f2ece6 25%,
+    #faf5f0 50%,
+    #f2ece6 75%
+  );
+  background-size: 200% 100%;
+  animation: thSkeletonShimmer 1.4s ease-in-out infinite;
+  border-radius: 10px;
+}
+
+/* Translucent Hero Shimmer inside Burnt-Orange Header */
+.tenant-home-skeleton .skeleton-hero {
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0.2) 25%,
+    rgba(255, 255, 255, 0.34) 50%,
+    rgba(255, 255, 255, 0.2) 75%
+  );
+  background-size: 200% 100%;
+  animation: thSkeletonShimmer 1.4s ease-in-out infinite;
+  border-radius: 10px;
+}
+
+@keyframes thSkeletonShimmer {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+/* Hero Header */
+.tenant-home-skeleton .th-hero-backdrop {
+  margin: 0 -18px;
+  background: linear-gradient(155deg, #e0530a 0%, #cf4906 100%);
+  border-radius: 0 0 34px 34px;
+  padding: 18px 20px 54px 20px;
+  box-shadow: 0 14px 30px -10px rgba(224, 83, 10, 0.36);
+}
+
+.tenant-home-skeleton .tenant-home-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.skeleton-brand {
+  width: 118px;
+  height: 34px;
+  border-radius: 11px;
+}
+
+.skeleton-bell {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+}
+
+.skeleton-welcome-title {
+  width: 215px;
+  height: 30px;
+  margin-bottom: 10px;
+}
+
+.skeleton-welcome-subtitle {
+  width: 136px;
+  height: 28px;
+  border-radius: 999px;
+}
+
+/* Overlapping Monthly Rent Card */
+.tenant-home-skeleton .skeleton-rent-card {
+  position: relative;
+  z-index: 10;
+  margin: -34px 0 22px 0;
+  background-color: #ffffff;
+  border: 1px solid #ece6df;
+  border-radius: 26px;
+  padding: 20px;
+  box-shadow: 0 12px 28px -8px rgba(20, 20, 20, 0.1);
+}
+
+.th-skel-rent-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.skeleton-rent-label {
+  width: 92px;
+  height: 12px;
+  border-radius: 6px;
+}
+
+.skeleton-rent-badge {
+  width: 36px;
+  height: 36px;
+  border-radius: 11px;
+}
+
+.skeleton-rent-amount {
+  width: 148px;
+  height: 34px;
+  margin-bottom: 14px;
+}
+
+.tenant-home-skeleton .tenant-rent-card-bottom {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-bottom: 16px;
+  margin-bottom: 16px;
+  border-bottom: 1px solid #ece6df;
+}
+
+.skeleton-rent-month {
+  width: 76px;
+  height: 14px;
+  border-radius: 7px;
+}
+
+.skeleton-rent-status {
+  width: 68px;
+  height: 24px;
+  border-radius: 999px;
+}
+
+.skeleton-pay-button {
+  width: 100%;
+  height: 48px;
+  border-radius: 16px;
+}
+
+/* Quick Actions 3-Column Bento Grid */
+.tenant-home-skeleton .th-shortcuts-section {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.skeleton-section-title {
+  width: 112px;
+  height: 18px;
+  margin-left: 2px;
+  border-radius: 8px;
+}
+
+.tenant-home-skeleton .tenant-home-shortcuts {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+}
+
+.tenant-home-skeleton .skeleton-shortcut {
+  background-color: #ffffff;
+  border: 1px solid #ece6df;
+  border-radius: 22px;
+  padding: 15px 10px 13px 10px;
+  box-shadow: 0 8px 24px -6px rgba(20, 20, 20, 0.06);
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 6px;
+}
+
+.skeleton-shortcut-icon {
+  width: 38px;
+  height: 38px;
+  border-radius: 12px;
+  margin-bottom: 4px;
+}
+
+.skeleton-shortcut-label {
+  width: 78%;
+  height: 13px;
+  border-radius: 6px;
+}
+
+.skeleton-shortcut-sublabel {
+  width: 62%;
+  height: 10px;
+  border-radius: 5px;
+}
+
+/* Floating Pill Bottom Nav */
+.tenant-home-skeleton .tenant-bottom-navigation {
+  position: fixed;
+  bottom: 16px;
+  left: 0;
+  right: 0;
+  margin: 0 auto;
+  width: calc(100% - 32px);
+  max-width: 408px;
+  background-color: #ffffff;
+  border: 1px solid #ece6df;
+  border-radius: 999px;
+  padding: 7px;
+  box-shadow: 0 12px 30px -6px rgba(20, 20, 20, 0.14);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  z-index: 1000;
+}
+
+.skeleton-nav-pill {
+  width: 92px;
+  height: 44px;
+  border-radius: 999px;
+}
+
+.skeleton-nav-item {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+}

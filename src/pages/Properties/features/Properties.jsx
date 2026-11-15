@@ -11,6 +11,7 @@ import {
 } from "../cache/propertiesCache";
 import PropertiesSkeleton from "../components/PropertiesSkeleton";
 
+
 function Properties() {
   const [properties, setProperties] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -106,45 +107,47 @@ useEffect(() => {
         ) : (
           <div className="properties-stack">
             {properties.map((property) => {
-              const location = [
-                property.city,
-                property.state,
-              ]
-                .filter(Boolean)
-                .join(", ");
+  const location = [property.city, property.state]
+    .filter(Boolean)
+    .join(", ");
 
-       return (
-  <Link
-    key={property.id}
-    to={`/properties/${property.id}`}
-    className="properties-list-card"
-  >
-    <div className="properties-list-image">
-      <img
-        src={
-          property.image_url ||
-          "/images/property-placeholder.jpg"
-        }
-        alt={property.property_name}
-        onError={(event) => {
-          event.currentTarget.style.display = "none";
-        }}
-      />
+  const actualUnitsCount = Array.isArray(property.units)
+    ? property.units.length
+    : 0;
 
-      <span className="properties-list-units">
-        <LuBuilding2 size={12} />
-        {Number(property.total_units || 0)} Units
-      </span>
-    </div>
+  return (
+    <Link
+      key={property.id}
+      to={`/properties/${property.id}`}
+      className="properties-list-card"
+    >
+      <div className="properties-list-image">
+        <img
+          src={
+            property.image_url ||
+            "/images/property-placeholder.jpg"
+          }
+          alt={property.property_name}
+          onError={(event) => {
+            event.currentTarget.style.display = "none";
+          }}
+        />
 
-    <div className="properties-list-details">
-      <h2>{property.property_name}</h2>
+        <span className="properties-list-units">
+  <LuBuilding2 size={12} />
+  {property.property_units?.[0]?.count ?? 0}{" "}
+  {(property.property_units?.[0]?.count ?? 0) === 1 ? "Flat" : "Flats"}
+</span>
+      </div>
 
-      {location && <p>{location}</p>}
-    </div>
-  </Link>
-);
-            })}
+      <div className="properties-list-details">
+        <h2>{property.property_name}</h2>
+
+        {location && <p>{location}</p>}
+      </div>
+    </Link>
+  );
+})}
           </div>
         )}
       </section>

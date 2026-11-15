@@ -1,0 +1,94 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
+.welcome-page,
+.welcome-page * {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  box-sizing: border-box;
+}
+
+.welcome-page {
+  width: 100%;
+  min-height: 100vh;
+  background-color: #faf7f4;
+  color: #141414;
+  padding: 28px 18px 40px 18px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.welcome-container {
+  width: 100%;
+  max-width: 404px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 18px;
+}
+
+/* Inline Nest Pay Brand Logo */
+.welcome-logo {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+
+.welcome-logo-badge {
+  width: 44px;
+  height: 44px;
+  border-radius: 14px;
+  background: linear-gradient(155deg, #e0530a 0%, #cf4906 100%);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 8px 18px -4px rgba(224, 83, 10, 0.36);
+  flex-shrink: 0;
+}
+
+.welcome-logo-text {
+  font-size: 20px;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  color: #141414;
+}
+
+/* Segmented Role Switcher */
+.welcome-tabs {
+  width: 100%;
+  background-color: #efeae4;
+  border: 1px solid #e6dfd7;
+  border-radius: 16px;
+  padding: 5px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+}
+
+.welcome-tabs button {
+  height: 40px;
+  margin: 0;
+  border: none;
+  border-radius: 12px;
+  background: transparent;
+  color: #6b6b6b;
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  cursor: pointer;
+  transition: background-color 0.16s ease, color 0.16s ease, box-shadow 0.16s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.welcome-tabs button.active {
+  background-color: #ffffff;
+  color: #e0530a;
+  box-shadow: 0 3px 10px -2px rgba(20, 20, 20, 0.08);
+}
+
+.welcome-login-board {
+  width: 100%;
+}

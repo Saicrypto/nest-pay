@@ -1,0 +1,80 @@
+.properties-skeleton {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.properties-skeleton .skeleton-shimmer,
+.properties-skeleton .properties-skeleton-line,
+.properties-skeleton .properties-skeleton-pill,
+.properties-skeleton .properties-skeleton-chevron {
+  background: linear-gradient(
+    90deg,
+    #f2ece6 25%,
+    #faf5f0 50%,
+    #f2ece6 75%
+  );
+  background-size: 200% 100%;
+  animation: propSkeletonShimmer 1.4s ease-in-out infinite;
+}
+
+@keyframes propSkeletonShimmer {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+.properties-skeleton .properties-list-card {
+  background-color: #ffffff;
+  border: 1px solid #ece6df;
+  border-radius: 24px;
+  padding: 14px;
+  box-shadow: 0 6px 20px -4px rgba(20, 20, 20, 0.05);
+  display: flex;
+  align-items: center;
+  gap: 13px;
+}
+
+.properties-skeleton .properties-list-image {
+  width: 66px;
+  height: 66px;
+  border-radius: 18px;
+  flex-shrink: 0;
+}
+
+.properties-skeleton .properties-list-details {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+
+.properties-skeleton-line.title {
+  width: 62%;
+  height: 17px;
+  border-radius: 7px;
+}
+
+.properties-skeleton-line.location {
+  width: 84%;
+  height: 12px;
+  border-radius: 6px;
+}
+
+.properties-skeleton-pill {
+  width: 78px;
+  height: 22px;
+  border-radius: 999px;
+  margin-top: 2px;
+}
+
+.properties-skeleton-chevron {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
