@@ -63,6 +63,37 @@ function ProtectedLoginRoute({ children }) {
   return user ? <Navigate to="/home" replace /> : children;
 }
 
+function RootRoute() {
+  const { user, loading: ownerLoading } = useUser();
+  const {
+    isAuthenticated: tenantAuthenticated,
+    loading: tenantLoading,
+    onboardingCompleted,
+  } = useTenant();
+
+  if (ownerLoading || tenantLoading) {
+    return <AppSkeleton />;
+  }
+
+  // 1. Owner is still logged in → go directly to Owner Home
+  if (user) {
+    return <Navigate to="/home" replace />;
+  }
+
+  // 2. Tenant is still logged in → go directly to Tenant Home (or onboarding if incomplete)
+  if (tenantAuthenticated) {
+    return (
+      <Navigate
+        to={onboardingCompleted ? "/tenant/home" : "/tenant/welcome"}
+        replace
+      />
+    );
+  }
+
+  // 3. Neither is logged in → show Welcome screen
+  return <Welcome />;
+}
+
 // Tenant protected route
 function TenantRouteLoader() {
   const { pathname } = useLocation();
@@ -283,7 +314,7 @@ const showNav =
   return (
     <>
       <Routes>
-<Route path="/" element={<Welcome />} />
+<Route path="/" element={<RootRoute />} />
 
         <Route
           path="/login"

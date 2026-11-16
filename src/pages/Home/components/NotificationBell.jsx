@@ -1,5 +1,5 @@
-
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { LuBell, LuX } from "react-icons/lu";
 import { supabase } from "../../../lib/supabase";
 import { useUser } from "../../../context/UserContext";
@@ -8,7 +8,8 @@ import { createPortal } from "react-dom";
 
 export default function NotificationBell() {
   const { user } = useUser();
-const currentUserId = user?.id;
+  const navigate = useNavigate();
+  const currentUserId = user?.id;
 
   const [notifications, setNotifications] = useState([]);
   const [unreadCount, setUnreadCount] = useState(0);
@@ -23,12 +24,12 @@ const currentUserId = user?.id;
       setLoading(true);
       setError("");
 
-      const { data, error } = await supabase
-        .from("notifications")
-        .select("*")
-        .eq("recipient_user_id", currentUserId)
-        .order("created_at", { ascending: false })
-        .limit(50);
+     const { data, error } = await supabase
+  .from("notifications")
+  .select("*, property_units(property_id)")
+  .eq("recipient_user_id", currentUserId)
+  .order("created_at", { ascending: false })
+  .limit(50);
 
       if (error) throw error;
 
@@ -56,6 +57,48 @@ const currentUserId = user?.id;
 
     await loadNotifications();
   }
+
+async function handleNotificationClick(item) {
+  if (!item.is_read) {
+    await handleMarkAsRead(item.id);
+  }
+
+  let propertyId = item.property_units?.property_id;
+
+  // 1. Primary path: resolve property_id from related_unit_id
+  if (!propertyId && item.related_unit_id) {
+    const { data, error } = await supabase
+      .from("property_units")
+      .select("property_id")
+      .eq("id", item.related_unit_id)
+      .maybeSingle();
+
+    if (error) {
+      console.error("Error resolving property from unit:", error);
+    } else {
+      propertyId = data?.property_id;
+    }
+  }
+
+  // 2. Fallback for older notifications where related_unit_id was null
+  if (!propertyId) {
+    const { data } = await supabase
+      .from("properties")
+      .select("id")
+      .eq("owner_id", currentUserId)
+      .order("created_at", { ascending: true })
+      .limit(1)
+      .maybeSingle();
+
+    propertyId = data?.id;
+  }
+
+  if (propertyId) {
+    setIsOpen(false);
+    navigate(`/properties/${propertyId}/complaints`);
+  }
+}
+
 
   async function handleMarkAllAsRead() {
     const { error } = await supabase
@@ -88,67 +131,59 @@ const currentUserId = user?.id;
         aria-label="Notifications"
       >
         <LuBell />
-        {unreadCount > 0 && (
-          <span className="owner-notification-dot" />
-        )}
+        {unreadCount > 0 && <span className="owner-notification-dot" />}
       </button>
 
-      {isOpen && (
+      {isOpen &&
         createPortal(
-        <div className="owner-notification-overlay">
-  <div className="owner-notification-header">
-    <button
-      type="button"
-      className="owner-notification-back"
-      onClick={() => setIsOpen(false)}
-    >
-      <LuX />
-      <span>Back</span>
-    </button>
-
-    <h3>Notifications</h3>
-            
-
-            {unreadCount > 0 && (
-              <button type="button" onClick={handleMarkAllAsRead}>
-                Mark all as read
+          <div className="owner-notification-overlay">
+            <div className="owner-notification-header">
+              <button
+                type="button"
+                className="owner-notification-back"
+                onClick={() => setIsOpen(false)}
+              >
+                <LuX />
+                <span>Back</span>
               </button>
-            )}
 
-          </div>
+              <h3>Notifications</h3>
 
-          {loading ? (
-            <p>Loading notifications...</p>
-          ) : error ? (
-            <p>{error}</p>
-          ) : notifications.length === 0 ? (
-            <p>No notifications yet.</p>
-          ) : (
-            <div className="owner-notification-list">
-              {notifications.map((item) => (
-                <article
-                  key={item.id}
-                  className={`owner-notification-item ${
-                    !item.is_read ? "unread" : ""
-                  }`}
-                  onClick={() =>
-                    !item.is_read && handleMarkAsRead(item.id)
-                  }
-                >
-                  <h4>{item.title}</h4>
-                  <p>{item.message}</p>
-                  <small>
-                    {new Date(item.created_at).toLocaleString()}
-                  </small>
-                </article>
-              ))}
+              {unreadCount > 0 && (
+                <button type="button" onClick={handleMarkAllAsRead}>
+                  Mark all as read
+                </button>
+              )}
             </div>
-          )}
-        </div>,
-        document.body
-      )
-      )}
+
+            {loading ? (
+              <p>Loading notifications...</p>
+            ) : error ? (
+              <p>{error}</p>
+            ) : notifications.length === 0 ? (
+              <p>No notifications yet.</p>
+            ) : (
+              <div className="owner-notification-list">
+                {notifications.map((item) => (
+                  <article
+                    key={item.id}
+                    className={`owner-notification-item ${
+                      !item.is_read ? "unread" : ""
+                    }`}
+                    onClick={() => handleNotificationClick(item)}
+                  >
+                    <h4>{item.title}</h4>
+                    <p>{item.message}</p>
+                    <small>
+                      {new Date(item.created_at).toLocaleString()}
+                    </small>
+                  </article>
+                ))}
+              </div>
+            )}
+          </div>,
+          document.body
+        )}
     </div>
   );
 }
-    

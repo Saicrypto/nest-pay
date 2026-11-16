@@ -1,6 +1,11 @@
-
 import { Link, useNavigate } from "react-router-dom";
-import {LuArrowLeft, LuWrench, LuZap, LuMessageSquareWarning, LuChevronRight,} from "react-icons/lu";
+import {
+  LuArrowLeft,
+  LuWrench,
+  LuZap,
+  LuMessageSquareWarning,
+  LuChevronRight,
+} from "react-icons/lu";
 import usePropertyDetails from "../hooks/usePropertyDetails";
 import PropertySummary from "../components/PropertySummary";
 import PropertyUnits from "../components/PropertyUnits";
@@ -8,9 +13,13 @@ import "../styles/PropertyDetails.css";
 import PropertyDetailsSkeleton from "../components/PropertyDetailsSkeleton";
 
 function PropertyDetails() {
-  
   const details = usePropertyDetails();
   const navigate = useNavigate();
+
+  if (details.loading) {
+    return <PropertyDetailsSkeleton />;
+  }
+  // ...rest of PropertyDetails unchanged
 
  if (details.loading) {
   return <PropertyDetailsSkeleton />;
