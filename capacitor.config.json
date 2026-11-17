@@ -1,0 +1,11 @@
+{
+  "appId": "com.nestpay.app",
+  "appName": "Nest Pay",
+  "webDir": "dist",
+  "server": {
+    "androidScheme": "https"
+  },
+  "android": {
+    "allowMixedContent": false
+  }
+}

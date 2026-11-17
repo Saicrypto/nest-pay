@@ -46,8 +46,9 @@ function Payments() {
     }).toString();
   }, [ownerPayment, rentAmount, property, unit]);
 
-  const preferredApp = ownerPayment?.preferred_upi_app || "any";
-  const preferredAppLabel = appLabels[preferredApp] || "UPI app";
+const preferredApp =
+  ownerPayment?.preferred_app || ownerPayment?.preferred_upi_app || "any";
+const preferredAppLabel = appLabels[preferredApp] || "UPI app";
 
   function openPaymentApp(app = preferredApp) {
     if (!paymentParams) return;

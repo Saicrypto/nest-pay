@@ -587,3 +587,56 @@ body:has(.owner-notification-overlay) .mobile-bottom-nav {
   opacity: 0.65;
   cursor: not-allowed;
 }
+
+/* =========================================
+   Square Feet Input & Right-Aligned Suffix
+   ========================================= */
+.uf-sqft-input-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+
+.uf-sqft-input-wrap input {
+  width: 100%;
+  padding-right: 64px;
+  font-variant-numeric: tabular-nums;
+}
+
+.uf-sqft-suffix {
+  position: absolute;
+  right: 14px;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  color: var(--ink-secondary, #6b6b6b);
+  background-color: var(--brand-peach, #faf0e6);
+  border: 1px solid var(--brand-peach-border, #f1dcc8);
+  padding: 3px 8px;
+  border-radius: 8px;
+  pointer-events: none;
+}
+
+/* =========================================
+   Square Feet Spec Badge on Flat/Unit Cards
+   ========================================= */
+.unit-sqft-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  color: var(--ink-secondary, #6b6b6b);
+  background-color: var(--bg-canvas, #faf7f4);
+  border: 1px solid var(--border-subtle, #ece6df);
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-variant-numeric: tabular-nums;
+}
+
+.unit-sqft-badge svg {
+  color: var(--brand-orange, #e0530a);
+  flex-shrink: 0;
+}

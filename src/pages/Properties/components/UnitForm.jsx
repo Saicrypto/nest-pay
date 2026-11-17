@@ -10,8 +10,9 @@ import {
   LuSave,
   LuX,
   LuCheck,
+  LuMaximize2,
 } from "react-icons/lu";
-
+import { useState } from "react";
 import "../styles/UnitForm.css";
 
 function UnitForm({
@@ -23,6 +24,8 @@ function UnitForm({
   setMonthlyRent,
   bedrooms,
   setBedrooms,
+  squareFeet,
+  setSquareFeet,
   securityDeposit,
   setSecurityDeposit,
   maintenanceAmount,
@@ -45,8 +48,10 @@ const filledCount = [
     String(securityDeposit ?? "").trim(),
     String(maintenanceAmount ?? "").trim(),
     String(rentDueDay ?? "").trim(),
+    String(squareFeet ?? "").trim(),
   ].filter(Boolean).length;
-  const completionPct = Math.round((filledCount / 7) * 100);
+  const completionPct = Math.round((filledCount / 8) * 100);
+
   const isReady = Boolean(
     String(unitName || "").trim() && Number(monthlyRent) > 0
   );
@@ -164,69 +169,86 @@ const filledCount = [
           </p>
         )}
 
+
         {/* Card 1: FLAT DETAILS */}
-        <div className="uf-section-card">
-          <div className="uf-section-header">
-            <h3>FLAT DETAILS</h3>
-            <span>Required</span>
-          </div>
+<div className="uf-section-card">
+  <div className="uf-section-header">
+    <h3>FLAT DETAILS</h3>
+    <span>Required</span>
+  </div>
 
-          <div className="uf-row-2col">
-            <div className="unit-form-field">
-              <label htmlFor="unitName">
-                <LuDoorClosed size={14} /> Flat number <span>*</span>
-              </label>
-              <input
-                id="unitName"
-                value={unitName}
-                onChange={(event) => setUnitName(event.target.value)}
-                placeholder="e.g. Flat 101"
-                required
-              />
-            </div>
+  <div className="uf-row-2col">
+    <div className="unit-form-field">
+      <label htmlFor="unitName">
+        <LuDoorClosed size={14} /> Flat number <span>*</span>
+      </label>
+      <input
+        id="unitName"
+        value={unitName}
+        onChange={(event) => setUnitName(event.target.value)}
+        placeholder="e.g. Flat 101"
+        required
+      />
+    </div>
 
-            <div className="unit-form-field">
-              <label htmlFor="floorNumber">
-                <LuLayers size={14} /> Floor
-              </label>
-              <input
-                id="floorNumber"
-                type="number"
-                value={floorNumber}
-                onChange={(event) => setFloorNumber(event.target.value)}
-                placeholder="e.g. 2"
-              />
-            </div>
-          </div>
+    <div className="unit-form-field">
+      <label htmlFor="floorNumber">
+        <LuLayers size={14} /> Floor
+      </label>
+      <input
+        id="floorNumber"
+        type="number"
+        value={floorNumber}
+        onChange={(event) => setFloorNumber(event.target.value)}
+        placeholder="e.g. 2"
+      />
+    </div>
+  </div>
 
-          {/* 5-Option Visual Configuration (BHK) Selector */}
-          <div className="unit-form-field">
-            <label>
-              <LuBedDouble size={14} /> Configuration (BHK)
-            </label>
+  {/* Square Feet (sq. ft.) */}
+  <div className="unit-form-field">
+    <label htmlFor="squareFeet">
+      <LuMaximize2 size={14} /> Area <span>(sq. ft.)</span>
+    </label>
+    <input
+      id="squareFeet"
+      type="number"
+      inputMode="numeric"
+      min="0"
+      value={squareFeet}
+      onChange={(event) => setSquareFeet(event.target.value)}
+      placeholder="e.g. 1150"
+    />
+  </div>
 
-            <div className="uf-bhk-grid">
-              {[
-                { val: "0", label: "Studio" },
-                { val: "1", label: "1 BHK" },
-                { val: "2", label: "2 BHK" },
-                { val: "3", label: "3 BHK" },
-                { val: "4", label: "4+ BHK" },
-              ].map((opt) => (
-                <button
-                  key={opt.val}
-                  type="button"
-                  className={`uf-bhk-pill ${
-                    String(bedrooms) === opt.val ? "selected" : ""
-                  }`}
-                  onClick={() => setBedrooms(opt.val)}
-                >
-                  {opt.label}
-                </button>
-              ))}
-            </div>
-          </div>
-        </div>
+  {/* 5-Option Visual Configuration (BHK) Selector */}
+  <div className="unit-form-field">
+    <label>
+      <LuBedDouble size={14} /> Configuration (BHK)
+    </label>
+
+    <div className="uf-bhk-grid">
+      {[
+        { val: "0", label: "Studio" },
+        { val: "1", label: "1 BHK" },
+        { val: "2", label: "2 BHK" },
+        { val: "3", label: "3 BHK" },
+        { val: "4", label: "4+ BHK" },
+      ].map((opt) => (
+        <button
+          key={opt.val}
+          type="button"
+          className={`uf-bhk-pill ${
+            String(bedrooms) === opt.val ? "selected" : ""
+          }`}
+          onClick={() => setBedrooms(opt.val)}
+        >
+          {opt.label}
+        </button>
+      ))}
+    </div>
+  </div>
+</div>
 
         {/* Card 2: RENT & BILLING */}
         <div className="uf-section-card">

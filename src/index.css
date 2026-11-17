@@ -1,127 +1,166 @@
-
+/* =========================================
+   1. Base Reset & Cross-Platform Defaults
+   ========================================= */
 :root {
-  font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI",
-    Roboto, sans-serif;
   font-size: 16px;
-  line-height: 1.5;
-  font-weight: 400;
-
-  color: #20251f;
-  background: #f5f6f2;
   color-scheme: light;
+  -webkit-text-size-adjust: 100%;
+  -moz-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
 
-  font-synthesis: none;
-  text-rendering: optimizeLegibility;
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
+}
+
+html {
+  width: 100%;
+  max-width: 100%;
+  overflow-x: clip;
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+body,
+#root {
+  width: 100%;
+  min-height: 100dvh;
+  margin: 0;
+  padding: 0;
+  overflow-x: clip;
+  overscroll-behavior-y: none;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-
-  --text: #6b6375;
-  --text-h: #20251f;
-  --bg: #f5f6f2;
-  --border: #e5e4e7;
-  --code-bg: #f4f3ec;
-  --accent: #dd6013;
-  --accent-bg: rgba(221, 96, 19, 0.1);
-  --accent-border: rgba(221, 96, 19, 0.5);
-
-  --sans: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI",
-    Roboto, sans-serif;
-  --heading: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI",
-    Roboto, sans-serif;
-  --mono: ui-monospace, Consolas, monospace;
 }
 
-* {
-  box-sizing: border-box;
+/* Neutralize Android Chrome & Capacitor WebView Font Boosting */
+body * {
+  max-height: 999999px;
 }
 
-body {
-  min-width: 320px;
-  min-height: 100vh;
-  margin: 0;
-  font-family: var(--sans);
-  font-size: 16px;
-  line-height: 1.5;
-  color: #20251f;
-  background: #f5f6f2;
-}
-
+/* =========================================
+   2. Form Controls, Inputs & Buttons Reset
+   ========================================= */
 button,
 input,
 select,
 textarea {
   font-family: inherit;
-  font-size: inherit;
-}
-
-#root {
-  width: 1126px;
-  max-width: 100%;
-  min-height: 100vh;
-  margin: 0 auto;
-  text-align: left;
-  border-inline: 1px solid var(--border);
-  display: flex;
-  flex-direction: column;
-}
-
-h1,
-h2,
-h3,
-h4 {
-  font-family: var(--heading);
-  color: var(--text-h);
-  line-height: 1.25;
-}
-
-h1 {
-  margin: 0 0 16px;
-  font-size: 32px;
-  font-weight: 700;
-  letter-spacing: -0.8px;
-}
-
-h2 {
-  margin: 0 0 10px;
-  font-size: 24px;
-  font-weight: 650;
-  letter-spacing: -0.3px;
-}
-
-h3 {
+  font-size: 16px; /* Prevents iOS Safari/Chrome auto-zoom on input focus */
+  color: inherit;
+  -webkit-appearance: none;
+  appearance: none;
+  border-radius: 0;
   margin: 0;
-  font-size: 18px;
-  font-weight: 650;
+  touch-action: manipulation;
 }
 
-p {
+button {
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  appearance: none;
   margin: 0;
 }
 
-code {
-  font-family: var(--mono);
-  font-size: 15px;
-  line-height: 1.5;
-  padding: 4px 8px;
-  border-radius: 4px;
-  color: var(--text-h);
-  background: var(--code-bg);
+input[type="number"] {
+  -moz-appearance: textfield;
+  appearance: textfield;
 }
 
-@media (max-width: 600px) {
-  body {
-    font-size: 16px;
-  }
+/* Clean hidden scrollbars across iOS Safari, Android Chrome & APK WebView */
+* {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
 
-  h1 {
-    font-size: 29px;
-  }
+*::-webkit-scrollbar {
+  display: none;
+}
 
-  h2 {
-    font-size: 22px;
+/* =========================================
+   3. Global Mobile Full-Bleed Navigation Dock
+      Applies to ALL mobile screens (iOS & Android <= 768px)
+   ========================================= */
+@media (max-width: 768px) {
+  .mobile-bottom-nav,
+  .tenant-bottom-nav {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    width: 100%;
+    max-width: 100%;
+    margin: 0;
+    border-radius: 0;
+    transform: translateZ(0);
+    -webkit-transform: translateZ(0);
+    padding-top: 6px;
+    padding-left: max(12px, env(safe-area-inset-left, 0px));
+    padding-right: max(12px, env(safe-area-inset-right, 0px));
+    padding-bottom: max(4px, env(safe-area-inset-bottom, 0px));
+    box-sizing: border-box;
+    -webkit-appearance: none;
+    appearance: none;
   }
+}
 
-  h3 {
-    font-size: 17px;
+/* =========================================
+   4. Android Mobile & Capacitor APK WebView Scaling
+      Equalizes 360dp–412dp Android viewports to match iOS proportions
+   ========================================= */
+@supports not (-webkit-touch-callout: none) {
+  @media (max-width: 430px) {
+    html {
+      font-size: 14.5px;
+    }
+
+    #root {
+      zoom: 0.95;
+    }
+
+    /* Keep fixed bottom nav bars anchored full-bleed without left shift */
+    .mobile-bottom-nav,
+    .tenant-bottom-nav {
+      zoom: 1;
+      left: 0;
+      right: 0;
+      width: 100%;
+      max-width: 100%;
+    }
+  }
+}
+
+/* =========================================
+   5. iOS Mobile Scaling (Safari / iOS Chrome / WKWebView)
+      Keeps 393px–430px iPhones at crisp 100%, gently adapts compact 375px iPhones
+   ========================================= */
+@supports (-webkit-touch-callout: none) {
+  @media (max-width: 380px) {
+    html {
+      font-size: 15px;
+    }
+
+    #root {
+      zoom: 0.95;
+    }
+
+    .mobile-bottom-nav,
+    .tenant-bottom-nav {
+      zoom: 1;
+      left: 0;
+      right: 0;
+      width: 100%;
+      max-width: 100%;
+    }
   }
 }

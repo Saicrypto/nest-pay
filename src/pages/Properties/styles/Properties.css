@@ -16,6 +16,10 @@
 /* =========================================
    Page Shell & Curved Burnt-Orange Header
    ========================================= */
+/* =========================================
+   Page Shell & Curved Burnt-Orange Header
+   (Matches .tenants-page exact dimensions)
+   ========================================= */
 .properties-page,
 .properties-page * {
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
@@ -23,49 +27,37 @@
 }
 
 .properties-page {
-  min-height: 100vh;
+  width: 100%;
+  max-width: 440px;
+  min-height: 100dvh;
+  margin: 0 auto;
   background-color: var(--bg-canvas);
   color: var(--ink-primary);
-  padding-bottom: 112px;
+  padding: 0 18px 116px 18px;
   position: relative;
-  overflow-x: hidden;
+  overflow-x: clip;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* Curved Burnt-Orange Header Backdrop */
+/* Remove the fixed-height ::before backdrop */
 .properties-page::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 152px;
-  background: var(--brand-orange);
-  border-bottom-left-radius: 36px;
-  border-bottom-right-radius: 36px;
-  z-index: 0;
-  pointer-events: none;
-}
-
-.properties-header,
-.properties-content {
-  position: relative;
-  z-index: 1;
-  max-width: 440px;
-  margin-left: auto;
-  margin-right: auto;
-  padding-left: 20px;
-  padding-right: 20px;
+  content: none;
+  display: none;
 }
 
 /* =========================================
-   Hero Title & Subtitle inside Orange Header
+   Full-Bleed Burnt-Orange Hero Header
+   (Exact same length, radius & padding as .tenants-header)
    ========================================= */
 .properties-header {
-  padding-top: 28px;
-  padding-bottom: 10px;
+  margin: 0 -18px;
+  background: linear-gradient(155deg, #e0530a 0%, #cf4906 100%);
   color: #ffffff;
+  border-radius: 0 0 32px 32px;
+  padding: 28px 22px 46px 22px;
+  text-align: left;
+  box-shadow: 0 14px 30px -10px rgba(224, 83, 10, 0.36);
 }
 
 .properties-brand {
@@ -74,8 +66,8 @@
   gap: 6px;
   font-size: 31px;
   font-weight: 800;
-  line-height: 1.15;
-  letter-spacing: -0.035em;
+  line-height: 1.1;
+  letter-spacing: -0.03em;
   color: #ffffff;
 }
 
@@ -84,25 +76,111 @@
   font-weight: 500;
   letter-spacing: -0.01em;
   line-height: 1.35;
-  color: rgba(255, 255, 255, 0.86);
+  color: rgba(255, 255, 255, 0.92);
   margin: 0;
 }
 
+.properties-content {
+  position: relative;
+  z-index: 1;
+  padding: 0;
+}
+
+
 /* =========================================
-   Overlapping Floating Action Bar
-   (Matches Expected Monthly Rent Card on Home)
+   Inline Editable Owner Short Name
+   ========================================= */
+.owner-heading-group {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  min-width: 0;
+  flex: 1;
+  cursor: pointer;
+}
+
+.owner-heading-group h1 {
+  font-size: 17px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: var(--ink-primary);
+  margin: 0;
+  line-height: 1.25;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.owner-name-edit-btn {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background-color: var(--brand-peach);
+  border: 1px solid var(--brand-peach-border);
+  color: var(--brand-orange);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  cursor: pointer;
+  transition: transform 0.14s ease, background-color 0.14s ease;
+}
+
+.owner-name-edit-btn:active {
+  transform: scale(0.92);
+}
+
+.owner-name-edit-form {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex: 1;
+  min-width: 0;
+}
+
+.owner-name-input {
+  width: 100%;
+  min-width: 0;
+  height: 36px;
+  background-color: var(--bg-canvas);
+  border: 1.5px solid var(--brand-orange);
+  border-radius: 11px;
+  padding: 0 10px;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--ink-primary);
+  outline: none;
+}
+
+.owner-name-save-btn {
+  width: 34px;
+  height: 34px;
+  border-radius: 10px;
+  background-color: var(--brand-orange);
+  color: #ffffff;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  cursor: pointer;
+}
+/* =========================================
+   Overlapping Floating Action Bar (-28px)
+   (Matches .tenants-search-wrap overlap)
    ========================================= */
 .properties-page-heading {
+  position: relative;
+  z-index: 10;
+  margin: -28px 0 18px 0;
   background: var(--surface-white);
-  border-radius: 24px;
-  padding: 18px 20px;
-  box-shadow: var(--shadow-float);
+  border: 1px solid var(--border-subtle);
+  border-radius: 22px;
+  padding: 14px 16px;
+  box-shadow: 0 10px 26px -6px rgba(20, 20, 20, 0.09);
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 12px;
-  margin-top: 12px;
-  margin-bottom: 22px;
 }
 
 .properties-page-heading h1 {

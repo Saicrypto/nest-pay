@@ -1,10 +1,10 @@
-
 import "../styles/UnitCard.css";
 import {
   LuDoorClosed,
   LuDoorOpen,
   LuLayers,
   LuBedDouble,
+  LuMaximize2,
   LuIndianRupee,
 } from "react-icons/lu";
 import StatusDropdown from "../../../components/property/StatusDropdown";
@@ -17,8 +17,6 @@ function UnitCard({
   onEdit,
   onDelete,
 }) {
-
-
   const [showDetails, setShowDetails] = useState(false);
   const isOccupied = unit.occupancy_status === "occupied";
 
@@ -66,6 +64,13 @@ function UnitCard({
               </span>
             )}
 
+            {unit.square_feet != null && unit.square_feet !== "" && (
+              <span className="unit-card-detail-item">
+                <LuMaximize2 size={13} />
+                <span>{Number(unit.square_feet).toLocaleString("en-IN")} sq. ft.</span>
+              </span>
+            )}
+
             {unit.monthly_rent && (
               <span className="unit-card-rent-pill">
                 <LuIndianRupee size={12} />
@@ -109,13 +114,17 @@ function UnitCard({
               <h2>{unit.unit_name}</h2>
               <p>Floor: {unit.floor_number ?? "—"}</p>
               <p>Bedrooms: {unit.bedrooms ?? "—"}</p>
+              <p>
+                Area:{" "}
+                {unit.square_feet != null && unit.square_feet !== ""
+                  ? `${Number(unit.square_feet).toLocaleString("en-IN")} sq. ft.`
+                  : "—"}
+              </p>
               <p>Occupancy: {unit.occupancy_status}</p>
               <p>Monthly rent: ₹{unit.monthly_rent ?? "—"}</p>
               <p>Security deposit: ₹{unit.security_deposit ?? "—"}</p>
               <p>Maintenance: ₹{unit.maintenance_amount ?? "—"}</p>
               <p>Rent due day: {unit.rent_due_day ?? "—"}</p>
-
-              
 
               <div className="unit-details-actions">
                 <button

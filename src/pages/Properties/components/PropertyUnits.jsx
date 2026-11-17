@@ -49,6 +49,8 @@ function PropertyUnits({
   setEditingFloorNumber,
   editingBedrooms,
   setEditingBedrooms,
+  editingSquareFeet,
+  setEditingSquareFeet,
   editingMonthlyRent,
   setEditingMonthlyRent,
   editingSecurityDeposit,
@@ -178,6 +180,8 @@ const occupiedCount = sortedUnits.filter(
           setMonthlyRent={setMonthlyRent}
           bedrooms={bedrooms}
           setBedrooms={setBedrooms}
+          squareFeet={squareFeet}
+          setSquareFeet={setSquareFeet}
           securityDeposit={securityDeposit}
           setSecurityDeposit={setSecurityDeposit}
           maintenanceAmount={maintenanceAmount}
@@ -200,6 +204,8 @@ const occupiedCount = sortedUnits.filter(
           setFloorNumber={setEditingFloorNumber}
           bedrooms={editingBedrooms}
           setBedrooms={setEditingBedrooms}
+          squareFeet={editingSquareFeet}
+          setSquareFeet={setEditingSquareFeet}
           monthlyRent={editingMonthlyRent}
           setMonthlyRent={setEditingMonthlyRent}
           securityDeposit={editingSecurityDeposit}
@@ -219,6 +225,7 @@ const occupiedCount = sortedUnits.filter(
               securityDeposit: editingSecurityDeposit,
               maintenanceAmount: editingMaintenanceAmount,
               rentDueDay: editingRentDueDay,
+              squareFeet: editingSquareFeet,
             })
           }
           onCancel={() => setEditingUnit(null)}

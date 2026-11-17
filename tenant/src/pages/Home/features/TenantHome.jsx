@@ -143,23 +143,7 @@ function TenantHome() {
       </section>
 
       {/* Floating Pill Bottom Navigation Bar */}
-      <nav className="tenant-bottom-navigation" aria-label="Tenant navigation">
-        {navigation.map((item) => {
-          const active = item.label === "Home";
-
-          return (
-            <button
-              type="button"
-              key={item.label}
-              className={active ? "active" : ""}
-              onClick={() => navigate(item.path)}
-            >
-              {item.icon}
-              {active && <span>{item.label}</span>}
-            </button>
-          );
-        })}
-      </nav>
+     
     </main>
   );
 }

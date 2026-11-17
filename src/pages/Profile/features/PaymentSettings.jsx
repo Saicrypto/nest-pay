@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import {
@@ -45,17 +44,17 @@ function PaymentSettings() {
         if (authError) throw authError;
         if (!user) throw new Error("Please log in again.");
 
-        const { data, error: profileError } = await supabase
-          .from("profiles")
-          .select("full_name, upi_id, preferred_upi_app")
-          .eq("id", user.id)
+        const { data, error: settingsError } = await supabase
+          .from("owner_payment_settings")
+          .select("upi_id, preferred_app")
+          .eq("owner_id", user.id)
           .maybeSingle();
 
-        if (profileError) throw profileError;
+        if (settingsError) throw settingsError;
 
         if (active) {
           const savedId = data?.upi_id || "";
-          const savedPreferredApp = data?.preferred_upi_app || "any";
+          const savedPreferredApp = data?.preferred_app || "any";
 
           setUpiId(savedId);
           setPreferredApp(savedPreferredApp);
@@ -81,10 +80,10 @@ function PaymentSettings() {
   async function handleSave(event) {
     event.preventDefault();
 
-const cleanUpiId = upiId.trim();
+    const cleanUpiId = upiId.trim();
 
-    if (!cleanUpiId) {
-      setError("Please enter a UPI ID.");
+    if (cleanUpiId.length < 3) {
+      setError("Please enter a valid UPI ID (at least 3 characters).");
       return;
     }
 
@@ -102,14 +101,15 @@ const cleanUpiId = upiId.trim();
       if (!user) throw new Error("Please log in again.");
 
       const { error: saveError } = await supabase
-        .from("profiles")
+        .from("owner_payment_settings")
         .upsert(
           {
-            id: user.id,
+            owner_id: user.id,
             upi_id: cleanUpiId,
-            preferred_upi_app: preferredApp,
+            preferred_app: preferredApp,
+            updated_at: new Date().toISOString(),
           },
-          { onConflict: "id" }
+          { onConflict: "owner_id" }
         );
 
       if (saveError) throw saveError;

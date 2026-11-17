@@ -10,6 +10,8 @@ import {
   setPropertiesCache,
 } from "../cache/propertiesCache";
 import PropertiesSkeleton from "../components/PropertiesSkeleton";
+import { LuPencil, LuCheck } from 'react-icons/lu';
+import { supabase } from '../../../lib/supabase.js';
 
 
 function Properties() {
@@ -23,7 +25,77 @@ const username =
   myProfile?.full_name ||
   "Your";
 
- 
+const [currentUserId, setCurrentUserId] = useState(null);
+const [ownerShortName, setOwnerShortName] = useState('');
+const [isEditingOwnerName, setIsEditingOwnerName] = useState(false);
+const [draftOwnerName, setDraftOwnerName] = useState('');
+const [isSavingOwnerName, setIsSavingOwnerName] = useState(false);
+
+useEffect(() => {
+  let isMounted = true;
+
+  const syncOwnerFromUser = (user) => {
+    if (!isMounted) return;
+    if (!user) {
+      setCurrentUserId(null);
+      setOwnerShortName('');
+      setIsEditingOwnerName(false);
+      return;
+    }
+
+    setCurrentUserId(user.id);
+    const savedName =
+      user.user_metadata?.short_name ||
+      user.user_metadata?.full_name?.split(' ')[0] ||
+      '';
+    setOwnerShortName(savedName);
+  };
+
+  supabase.auth.getUser().then(({ data: { user } }) => {
+    syncOwnerFromUser(user);
+  });
+
+  const { data: { subscription } } = supabase.auth.onAuthStateChange(
+    (_event, session) => {
+      syncOwnerFromUser(session?.user ?? null);
+    }
+  );
+
+  return () => {
+    isMounted = false;
+    subscription.unsubscribe();
+  };
+}, []);
+
+const handleStartEditOwnerName = () => {
+  setDraftOwnerName(ownerShortName);
+  setIsEditingOwnerName(true);
+};
+
+const handleSaveOwnerName = async (e) => {
+  if (e) e.preventDefault();
+  if (!currentUserId) return;
+
+  const trimmed = draftOwnerName.trim();
+  setIsSavingOwnerName(true);
+
+  const { data, error } = await supabase.auth.updateUser({
+    data: { short_name: trimmed || null }
+  });
+
+  setIsSavingOwnerName(false);
+
+  if (!error && data?.user?.id === currentUserId) {
+    setOwnerShortName(trimmed);
+    setIsEditingOwnerName(false);
+  }
+};
+
+const formattedHeading = ownerShortName
+  ? `${ownerShortName}${ownerShortName.toLowerCase().endsWith('s') ? "'" : "'s"} Properties`
+  : 'Your Properties';
+
+
 useEffect(() => {
   let active = true;
 
@@ -78,17 +150,47 @@ useEffect(() => {
 
      <section className="properties-content">
      
-  <div className="properties-page-heading">
-    <div>
-     <h1>{username}'s Properties</h1>
-
+<div className="properties-page-heading">
+  {isEditingOwnerName ? (
+    <form className="owner-name-edit-form" onSubmit={handleSaveOwnerName}>
+      <input
+        type="text"
+        className="owner-name-input"
+        value={draftOwnerName}
+        onChange={(e) => setDraftOwnerName(e.target.value)}
+        placeholder="Short name"
+        maxLength={18}
+        disabled={isSavingOwnerName}
+        autoFocus
+      />
+      <button
+        type="submit"
+        className="owner-name-save-btn"
+        aria-label="Save owner name"
+        disabled={isSavingOwnerName}
+      >
+        <LuCheck size={14} strokeWidth={2.5} />
+      </button>
+    </form>
+  ) : (
+    <div className="owner-heading-group" onClick={handleStartEditOwnerName}>
+      <h1>{formattedHeading}</h1>
+      <button
+        type="button"
+        className="owner-name-edit-btn"
+        aria-label="Edit owner name"
+        title="Edit display name"
+      >
+        <LuPencil size={13} strokeWidth={2.3} />
+      </button>
     </div>
+  )}
 
     <Link to="/add-property" className="add-property-button">
       <LuPlus size={18} />
       <span>Add Property</span>
     </Link>
-  </div>
+</div>
 
         {error && (
           <p className="property-error" role="alert">

@@ -1,3 +1,4 @@
+import { createPortal } from "react-dom";
 import { NavLink, useLocation } from "react-router-dom";
 import {
   LuHouse,
@@ -33,7 +34,7 @@ function MobileBottomNav() {
           ? "/rent-status"
           : pathname;
 
-  return (
+  return createPortal(
     <nav className="mobile-bottom-nav">
       {navItems.map(({ label, path, icon: Icon }) => (
         <NavLink
@@ -52,7 +53,8 @@ function MobileBottomNav() {
           <span>{label}</span>
         </NavLink>
       ))}
-    </nav>
+    </nav>,
+    document.body
   );
 }
 
