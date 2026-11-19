@@ -81,13 +81,11 @@ function sanitizeUpiNote(text) {
 
 function detectPlatform() {
   if (typeof navigator === "undefined") {
-    return { isIOS: false, isAndroid: false };
+    return { isAndroid: false };
   }
-  const isIOS =
-    /iPad|iPhone|iPod/.test(navigator.userAgent) ||
-    (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
-  const isAndroid = /Android/i.test(navigator.userAgent);
-  return { isIOS, isAndroid };
+  const ua = navigator.userAgent || "";
+  const isAndroid = /Android/i.test(ua);
+  return { isAndroid };
 }
 
 function Payments() {
@@ -97,7 +95,7 @@ function Payments() {
   const [showIosAppPicker, setShowIosAppPicker] = useState(false);
   const copyTimerRef = useRef(null);
 
-  const { isIOS, isAndroid } = useMemo(() => detectPlatform(), []);
+  const { isAndroid } = useMemo(() => detectPlatform(), []);
 
   useEffect(() => {
     return () => {
@@ -144,9 +142,9 @@ function Payments() {
   function openPaymentApp(app = preferredApp) {
     if (!paymentParams) return;
 
-    // On iOS, never fire bare "upi://pay" (which opens WhatsApp directly).
-    // Instead, show the custom UPI app chooser sheet.
-    if (app === "any" && isIOS) {
+    // On iOS / non-Android, never trigger bare "upi://pay" (which opens WhatsApp).
+    // Show our custom UPI app chooser sheet instead.
+    if (app === "any" && !isAndroid) {
       setShowIosAppPicker(true);
       return;
     }
@@ -155,10 +153,6 @@ function Payments() {
 
     const targetApp = UPI_APPS[app];
     if (targetApp) {
-      if (isIOS) {
-        window.location.href = `${targetApp.iosScheme}?${paymentParams}`;
-        return;
-      }
       if (isAndroid) {
         window.location.href = `intent://pay?${paymentParams}#Intent;scheme=upi;package=${targetApp.androidPackage};end`;
         return;
