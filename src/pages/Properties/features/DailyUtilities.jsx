@@ -44,22 +44,38 @@ export default function DailyUtilities() {
   const [error, setError] = useState("");
   const [activeFilter, setActiveFilter] = useState("All");
 
-  async function loadUtilities() {
+ async function loadUtilities(signal) {
+    if (!propertyId) return;
+
     try {
       setError("");
       const data =
         await PropertyManagementService.getUtilityProviders(propertyId);
-      setProviders(data);
+      if (!signal?.aborted) {
+        setProviders(Array.isArray(data) ? data : []);
+      }
     } catch (err) {
-      setError(err.message || "Unable to load utilities.");
+      if (!signal?.aborted) {
+        setError(err.message || "Unable to load utilities.");
+      }
     } finally {
-      setLoading(false);
+      if (!signal?.aborted) {
+        setLoading(false);
+      }
     }
   }
 
   useEffect(() => {
-    loadUtilities();
+    const controller = new AbortController();
+    setLoading(true);
+    setProviders([]);
+    setActiveFilter("All");
+    loadUtilities(controller.signal);
+
+    return () => controller.abort();
   }, [propertyId]);
+
+
 
   function handleChange(e) {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -84,27 +100,50 @@ export default function DailyUtilities() {
     setShowForm(true);
   }
 
-  async function handleSubmit(e) {
+async function handleSubmit(e) {
     e.preventDefault();
+    if (saving) return;
+
+    const cleanName = form.utility_name.trim();
+    const cleanPhone = form.phone.trim();
+
+    if (!cleanName) {
+      setError("Utility name is required.");
+      return;
+    }
+
+    if (!cleanPhone || !/^[+\d\s()-]{7,20}$/.test(cleanPhone)) {
+      setError("Please enter a valid phone number.");
+      return;
+    }
 
     try {
       setSaving(true);
       setError("");
 
-      const payload = { ...form, property_id: propertyId };
+      const cleanFields = {
+        utility_name: cleanName,
+        contact_person: form.contact_person.trim(),
+        phone: cleanPhone,
+        description: form.description.trim(),
+      };
 
       if (editingId) {
         await PropertyManagementService.updateUtilityProvider(
           editingId,
-          form
+          cleanFields
         );
       } else {
-        await PropertyManagementService.addUtilityProvider(payload);
+        await PropertyManagementService.addUtilityProvider({
+          ...cleanFields,
+          property_id: propertyId,
+        });
       }
 
       setShowForm(false);
       setForm(emptyForm);
       setEditingId(null);
+      setActiveFilter("All");
       await loadUtilities();
     } catch (err) {
       setError(err.message || "Unable to save utility.");
@@ -113,15 +152,19 @@ export default function DailyUtilities() {
     }
   }
 
-  async function handleDelete(id) {
+async function handleDelete(id) {
+    if (deletingId) return;
     if (!window.confirm("Delete this utility provider?")) return;
 
     try {
+      setDeletingId(id);
       setError("");
       await PropertyManagementService.deleteUtilityProvider(id);
       await loadUtilities();
     } catch (err) {
       setError(err.message || "Unable to delete utility.");
+    } finally {
+      setDeletingId(null);
     }
   }
 
@@ -257,9 +300,9 @@ export default function DailyUtilities() {
                 </div>
 
                 <div className="daily-utility-actions">
-                  {provider.phone && (
+                 {provider.phone && (
                     <a
-                      href={`tel:${provider.phone}`}
+                      href={`tel:${provider.phone.replace(/[^\d+]/g, "")}`}
                       className="du-action-btn du-call-btn"
                     >
                       <LuPhone size={14} />

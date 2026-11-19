@@ -1,14 +1,20 @@
+let propertiesCache = {
+  userId: null,
+  data: null,
+};
 
-let propertiesCache = null;
-
-export function getPropertiesCache() {
-  return propertiesCache;
+export function getPropertiesCache(userId) {
+  if (!userId || propertiesCache.userId !== userId) {
+    return null;
+  }
+  return propertiesCache.data;
 }
 
-export function setPropertiesCache(data) {
-  propertiesCache = data;
+export function setPropertiesCache(userId, data) {
+  if (!userId) return;
+  propertiesCache = { userId, data };
 }
 
 export function clearPropertiesCache() {
-  propertiesCache = null;
+  propertiesCache = { userId: null, data: null };
 }

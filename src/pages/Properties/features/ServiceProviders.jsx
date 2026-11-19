@@ -45,21 +45,35 @@ function ServiceProviders() {
 
   const [form, setForm] = useState(emptyForm);
 
-  async function loadProviders() {
+async function loadProviders(signal) {
+    if (!propertyId) return;
+
     try {
       setError("");
       const data =
         await PropertyManagementService.getServiceProviders(propertyId);
-      setProviders(data);
+      if (!signal?.aborted) {
+        setProviders(Array.isArray(data) ? data : []);
+      }
     } catch (err) {
-      setError(err.message || "Unable to load service providers.");
+      if (!signal?.aborted) {
+        setError(err.message || "Unable to load service providers.");
+      }
     } finally {
-      setLoading(false);
+      if (!signal?.aborted) {
+        setLoading(false);
+      }
     }
   }
 
   useEffect(() => {
-    loadProviders();
+    const controller = new AbortController();
+    setLoading(true);
+    setProviders([]);
+    setActiveFilter("All");
+    loadProviders(controller.signal);
+
+    return () => controller.abort();
   }, [propertyId]);
 
   function openAddForm() {
@@ -86,22 +100,39 @@ function ServiceProviders() {
     setForm((current) => ({ ...current, [name]: value }));
   }
 
-  async function handleSubmit(event) {
+async function handleSubmit(event) {
     event.preventDefault();
+    if (saving) return;
+
+    const cleanName = form.service_name.trim();
+    const cleanPhone = form.phone.trim();
+
+    if (!cleanName) {
+      setError("Service name is required.");
+      return;
+    }
+
+    if (!cleanPhone || !/^[+\d\s()-]{7,20}$/.test(cleanPhone)) {
+      setError("Please enter a valid contact number.");
+      return;
+    }
+
     setSaving(true);
     setError("");
 
     try {
-      const payload = {
-        ...form,
-        property_id: propertyId,
+      const cleanFields = {
+        service_name: cleanName,
+        contact_person: form.contact_person.trim(),
+        phone: cleanPhone,
+        description: form.description.trim(),
       };
 
       if (editingProvider) {
         const updated =
           await PropertyManagementService.updateServiceProvider(
             editingProvider.id,
-            form
+            cleanFields
           );
 
         setProviders((current) =>
@@ -111,7 +142,10 @@ function ServiceProviders() {
         );
       } else {
         const created =
-          await PropertyManagementService.addServiceProvider(payload);
+          await PropertyManagementService.addServiceProvider({
+            ...cleanFields,
+            property_id: propertyId,
+          });
 
         setProviders((current) => [created, ...current]);
       }
@@ -119,6 +153,7 @@ function ServiceProviders() {
       setShowForm(false);
       setForm(emptyForm);
       setEditingProvider(null);
+      setActiveFilter("All");
     } catch (err) {
       setError(err.message || "Unable to save service provider.");
     } finally {
@@ -126,7 +161,10 @@ function ServiceProviders() {
     }
   }
 
-  async function handleDelete(provider) {
+
+async function handleDelete(provider) {
+    if (deletingId) return;
+
     const confirmed = window.confirm(
       `Delete ${provider.service_name}?`
     );
@@ -134,12 +172,16 @@ function ServiceProviders() {
     if (!confirmed) return;
 
     try {
+      setDeletingId(provider.id);
+      setError("");
       await PropertyManagementService.deleteServiceProvider(provider.id);
       setProviders((current) =>
         current.filter((item) => item.id !== provider.id)
       );
     } catch (err) {
       setError(err.message || "Unable to delete service provider.");
+    } finally {
+      setDeletingId(null);
     }
   }
 
@@ -277,9 +319,9 @@ function ServiceProviders() {
                 </div>
 
                 <div className="service-provider-actions">
-                  {provider.phone && (
+                 {provider.phone && (
                     <a
-                      href={`tel:${provider.phone}`}
+                      href={`tel:${provider.phone.replace(/[^\d+]/g, "")}`}
                       className="sp-action-btn sp-call-btn"
                     >
                       <LuPhone size={14} />

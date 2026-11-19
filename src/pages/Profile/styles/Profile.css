@@ -197,6 +197,26 @@
   opacity: 0.75;
 }
 
+.profile-danger-row {
+  width: 100%;
+  background: transparent;
+  border-top: none;
+  border-left: none;
+  border-right: none;
+  text-align: left;
+  cursor: pointer;
+  font: inherit;
+}
+
+.profile-danger-row:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.profile-danger-row .profile-setting-label strong {
+  color: #b91c1c;
+}
+
 .profile-row-icon {
   width: 40px;
   height: 40px;
@@ -207,6 +227,12 @@
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
+}
+
+.profile-danger-icon {
+  background-color: #fef2f2;
+  border: 1px solid #fecaca;
+  color: #dc2626;
 }
 
 .profile-row-content,
@@ -296,4 +322,182 @@
   font-size: 12px;
   font-weight: 600;
   color: var(--ink-muted);
+}
+
+/* =========================================
+   Delete Account Confirmation Modal
+   ========================================= */
+.profile-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  background-color: rgba(20, 20, 20, 0.55);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 18px;
+}
+
+.profile-modal-card {
+  width: 100%;
+  max-width: 404px;
+  background-color: var(--surface-white);
+  border: 1px solid var(--border-subtle);
+  border-radius: 26px;
+  padding: 22px 20px 20px 20px;
+  box-shadow: 0 24px 50px -12px rgba(20, 20, 20, 0.28);
+}
+
+.profile-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 14px;
+}
+
+.profile-modal-warning-badge {
+  width: 42px;
+  height: 42px;
+  border-radius: 14px;
+  background-color: #fef2f2;
+  border: 1px solid #fecaca;
+  color: #dc2626;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.profile-modal-close {
+  width: 34px;
+  height: 34px;
+  border-radius: 12px;
+  border: 1px solid var(--border-subtle);
+  background-color: var(--bg-canvas);
+  color: var(--ink-secondary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background-color 0.14s ease;
+}
+
+.profile-modal-close:hover:not(:disabled) {
+  background-color: #f2ece5;
+}
+
+.profile-modal-close:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.profile-modal-card h3 {
+  margin: 0 0 8px 0;
+  font-size: 19px;
+  font-weight: 800;
+  letter-spacing: -0.025em;
+  color: var(--ink-primary);
+}
+
+.profile-modal-description {
+  margin: 0 0 16px 0;
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 1.5;
+  color: var(--ink-secondary);
+}
+
+.profile-modal-description strong {
+  color: var(--ink-primary);
+  font-weight: 700;
+}
+
+.profile-modal-input-label {
+  display: block;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--ink-primary);
+  margin-bottom: 7px;
+}
+
+.profile-modal-input {
+  width: 100%;
+  height: 46px;
+  padding: 0 14px;
+  border-radius: 14px;
+  border: 1.5px solid var(--border-subtle);
+  background-color: var(--bg-canvas);
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  color: var(--ink-primary);
+  margin-bottom: 12px;
+  transition: border-color 0.15s ease, background-color 0.15s ease;
+}
+
+.profile-modal-input:focus {
+  outline: none;
+  border-color: #dc2626;
+  background-color: var(--surface-white);
+}
+
+.profile-modal-error {
+  background-color: #fef2f2;
+  border: 1px solid #fecaca;
+  color: #b91c1c;
+  font-size: 12.5px;
+  font-weight: 600;
+  padding: 9px 12px;
+  border-radius: 12px;
+  margin: 0 0 12px 0;
+}
+
+.profile-modal-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 4px;
+}
+
+.profile-modal-cancel,
+.profile-modal-confirm-delete {
+  flex: 1;
+  height: 46px;
+  border-radius: 14px;
+  font-size: 13.5px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  cursor: pointer;
+  transition: background-color 0.15s ease, transform 0.14s ease, opacity 0.15s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.profile-modal-cancel {
+  background-color: var(--bg-canvas);
+  border: 1px solid var(--border-subtle);
+  color: var(--ink-primary);
+}
+
+.profile-modal-cancel:hover:not(:disabled) {
+  background-color: #f2ece5;
+}
+
+.profile-modal-confirm-delete {
+  background-color: #dc2626;
+  border: none;
+  color: #ffffff;
+}
+
+.profile-modal-confirm-delete:hover:not(:disabled) {
+  background-color: #b91c1c;
+}
+
+.profile-modal-confirm-delete:active:not(:disabled),
+.profile-modal-cancel:active:not(:disabled) {
+  transform: scale(0.98);
+}
+
+.profile-modal-confirm-delete:disabled,
+.profile-modal-cancel:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
 }

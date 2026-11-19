@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import {
   LuWallet,
   LuCalendarDays,
@@ -7,80 +7,185 @@ import {
   LuCopy,
   LuCheck,
   LuExternalLink,
+  LuX,
 } from "react-icons/lu";
 import { useTenant } from "../../../context/TenantContext";
 import "../styles/Payments.css";
 
-const appSchemes = {
-  google_pay: "tez://upi/pay",
-  phonepe: "phonepe://pay",
-  paytm: "paytmmp://pay",
-  any: "upi://pay",
+const UPI_APPS = {
+  google_pay: {
+    label: "Google Pay",
+    iosScheme: "tez://upi/pay",
+    androidPackage: "com.google.android.apps.nbu.paisa.user",
+    badge: "G",
+  },
+  phonepe: {
+    label: "PhonePe",
+    iosScheme: "phonepe://pay",
+    androidPackage: "com.phonepe.app",
+    badge: "P",
+  },
+  paytm: {
+    label: "Paytm",
+    iosScheme: "paytmmp://pay",
+    androidPackage: "net.one97.paytm",
+    badge: "₹",
+  },
+  bhim: {
+    label: "BHIM UPI",
+    iosScheme: "bhim://upi/pay",
+    androidPackage: "in.org.npci.upiapp",
+    badge: "B",
+  },
 };
 
 const appLabels = {
   google_pay: "Google Pay",
   phonepe: "PhonePe",
   paytm: "Paytm",
+  bhim: "BHIM UPI",
   any: "UPI app",
 };
+
+const UPI_ID_REGEX = /^[a-zA-Z0-9._-]{2,256}@[a-zA-Z]{2,64}$/;
+
+const inrFormatter = new Intl.NumberFormat("en-IN", {
+  style: "currency",
+  currency: "INR",
+  maximumFractionDigits: 0,
+});
+
+function formatCurrency(amount) {
+  const parsed = Number(amount);
+  return inrFormatter.format(Number.isFinite(parsed) ? parsed : 0);
+}
+
+function formatOrdinal(dayVal) {
+  const d = Number(dayVal);
+  if (!Number.isInteger(d) || d < 1 || d > 31) return "Not specified";
+  const mod10 = d % 10;
+  const mod100 = d % 100;
+  if (mod10 === 1 && mod100 !== 11) return `${d}st of every month`;
+  if (mod10 === 2 && mod100 !== 12) return `${d}nd of every month`;
+  if (mod10 === 3 && mod100 !== 13) return `${d}rd of every month`;
+  return `${d}th of every month`;
+}
+
+function sanitizeUpiNote(text) {
+  return String(text ?? "")
+    .replace(/[^a-zA-Z0-9\s-]/g, " ")
+    .replace(/\s+/g, " ")
+    .trim()
+    .slice(0, 50);
+}
+
+function detectPlatform() {
+  if (typeof navigator === "undefined") {
+    return { isIOS: false, isAndroid: false };
+  }
+  const isIOS =
+    /iPad|iPhone|iPod/.test(navigator.userAgent) ||
+    (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+  const isAndroid = /Android/i.test(navigator.userAgent);
+  return { isIOS, isAndroid };
+}
 
 function Payments() {
   const { unit, property, ownerPayment } = useTenant();
   const [copiedUpi, setCopiedUpi] = useState(false);
+  const [copyError, setCopyError] = useState("");
+  const [showIosAppPicker, setShowIosAppPicker] = useState(false);
+  const copyTimerRef = useRef(null);
 
-  const rentAmount = Number(unit?.monthly_rent || 0);
+  const { isIOS, isAndroid } = useMemo(() => detectPlatform(), []);
+
+  useEffect(() => {
+    return () => {
+      if (copyTimerRef.current) {
+        clearTimeout(copyTimerRef.current);
+      }
+    };
+  }, []);
+
+  const parsedRent = Number(unit?.monthly_rent);
+  const rentAmount =
+    Number.isFinite(parsedRent) && parsedRent > 0 ? parsedRent : 0;
   const dueDay = unit?.rent_due_day;
+  const cleanUpiId = String(ownerPayment?.upi_id ?? "").trim();
+  const isValidUpi = UPI_ID_REGEX.test(cleanUpiId);
 
   const paymentParams = useMemo(() => {
-    if (!ownerPayment?.upi_id || !rentAmount || !property || !unit) {
+    if (!isValidUpi || rentAmount <= 0 || !property || !unit) {
       return "";
     }
 
+    const payeeName =
+      String(ownerPayment?.full_name ?? "Property Owner")
+        .trim()
+        .slice(0, 60) || "Property Owner";
+
+    const note =
+      sanitizeUpiNote(`Rent ${property.property_name || ""} ${unit.unit_name || ""}`) ||
+      "Monthly Rent";
+
     return new URLSearchParams({
-      pa: ownerPayment.upi_id,
-      pn: ownerPayment.full_name || "Property Owner",
+      pa: cleanUpiId,
+      pn: payeeName,
       am: rentAmount.toFixed(2),
       cu: "INR",
-      tn: `Rent - ${property.property_name}, ${unit.unit_name}`,
+      tn: note,
     }).toString();
-  }, [ownerPayment, rentAmount, property, unit]);
+  }, [isValidUpi, cleanUpiId, ownerPayment?.full_name, rentAmount, property, unit]);
 
-const preferredApp =
-  ownerPayment?.preferred_app || ownerPayment?.preferred_upi_app || "any";
-const preferredAppLabel = appLabels[preferredApp] || "UPI app";
+  const preferredApp =
+    ownerPayment?.preferred_app || ownerPayment?.preferred_upi_app || "any";
+  const preferredAppLabel = appLabels[preferredApp] || "UPI app";
 
   function openPaymentApp(app = preferredApp) {
     if (!paymentParams) return;
 
-    const scheme = appSchemes[app] || appSchemes.any;
-    window.location.href = `${scheme}?${paymentParams}`;
+    // On iOS, never fire bare "upi://pay" (which opens WhatsApp directly).
+    // Instead, show the custom UPI app chooser sheet.
+    if (app === "any" && isIOS) {
+      setShowIosAppPicker(true);
+      return;
+    }
+
+    setShowIosAppPicker(false);
+
+    const targetApp = UPI_APPS[app];
+    if (targetApp) {
+      if (isIOS) {
+        window.location.href = `${targetApp.iosScheme}?${paymentParams}`;
+        return;
+      }
+      if (isAndroid) {
+        window.location.href = `intent://pay?${paymentParams}#Intent;scheme=upi;package=${targetApp.androidPackage};end`;
+        return;
+      }
+      window.location.href = `${targetApp.iosScheme}?${paymentParams}`;
+      return;
+    }
+
+    // Android native UPI chooser when app === "any"
+    window.location.href = `upi://pay?${paymentParams}`;
   }
 
-  function handleCopyUpi() {
-    if (!ownerPayment?.upi_id) return;
-    navigator.clipboard.writeText(ownerPayment.upi_id);
-    setCopiedUpi(true);
-    setTimeout(() => setCopiedUpi(false), 2000);
-  }
+  async function handleCopyUpi() {
+    if (!cleanUpiId) return;
+    setCopyError("");
 
-  function formatCurrency(amount) {
-    return new Intl.NumberFormat("en-IN", {
-      style: "currency",
-      currency: "INR",
-      maximumFractionDigits: 0,
-    }).format(Number(amount || 0));
-  }
-
-  function formatOrdinal(dayVal) {
-    const d = Number(dayVal);
-    if (!d) return "Not specified";
-    const mod10 = d % 10;
-    const mod100 = d % 100;
-    if (mod10 === 1 && mod100 !== 11) return `${d}st of every month`;
-    if (mod10 === 2 && mod100 !== 12) return `${d}nd of every month`;
-    if (mod10 === 3 && mod100 !== 13) return `${d}rd of every month`;
-    return `${d}th of every month`;
+    try {
+      if (!navigator.clipboard?.writeText) {
+        throw new Error("Clipboard unavailable");
+      }
+      await navigator.clipboard.writeText(cleanUpiId);
+      setCopiedUpi(true);
+      if (copyTimerRef.current) clearTimeout(copyTimerRef.current);
+      copyTimerRef.current = setTimeout(() => setCopiedUpi(false), 2000);
+    } catch {
+      setCopyError("Unable to copy automatically. Please copy the UPI ID manually.");
+    }
   }
 
   if (!unit || !property) {
@@ -96,6 +201,10 @@ const preferredAppLabel = appLabels[preferredApp] || "UPI app";
       </main>
     );
   }
+
+  const parsedMaintenance = Number(unit.maintenance_amount);
+  const hasMaintenance =
+    Number.isFinite(parsedMaintenance) && parsedMaintenance > 0;
 
   return (
     <main className="tenant-payments-page">
@@ -115,7 +224,7 @@ const preferredAppLabel = appLabels[preferredApp] || "UPI app";
 
           <div className="tp-summary-right">
             <div className="tenant-payment-summary-icon">
-              <LuWallet size={19} />
+              <LuWallet size={19} aria-hidden="true" />
             </div>
             <span className="tenant-payment-status">Rent amount</span>
           </div>
@@ -126,7 +235,7 @@ const preferredAppLabel = appLabels[preferredApp] || "UPI app";
         <div className="tp-summary-rows">
           <div className="tenant-payment-summary-row">
             <span>
-              <LuCalendarDays size={15} />
+              <LuCalendarDays size={15} aria-hidden="true" />
               Rent due day
             </span>
             <strong>{formatOrdinal(dueDay)}</strong>
@@ -134,18 +243,18 @@ const preferredAppLabel = appLabels[preferredApp] || "UPI app";
 
           <div className="tenant-payment-summary-row">
             <span>
-              <LuBuilding2 size={15} />
+              <LuBuilding2 size={15} aria-hidden="true" />
               Your flat
             </span>
             <strong>
-              {unit.unit_name} · {property.property_name}
+              {unit.unit_name || "Flat"} · {property.property_name || "Property"}
             </strong>
           </div>
 
-          {Number(unit.maintenance_amount || 0) > 0 && (
+          {hasMaintenance && (
             <div className="tenant-payment-summary-row">
               <span>Monthly maintenance</span>
-              <strong>{formatCurrency(unit.maintenance_amount)}</strong>
+              <strong>{formatCurrency(parsedMaintenance)}</strong>
             </div>
           )}
         </div>
@@ -155,7 +264,7 @@ const preferredAppLabel = appLabels[preferredApp] || "UPI app";
       <section className="tenant-payment-owner-card">
         <p className="tenant-payment-section-label">PAYMENT DESTINATION</p>
 
-        {ownerPayment?.upi_id ? (
+        {cleanUpiId ? (
           <>
             <div className="tenant-payment-owner-details">
               <div className="tp-detail-item">
@@ -168,7 +277,7 @@ const preferredAppLabel = appLabels[preferredApp] || "UPI app";
               <div className="tp-detail-item">
                 <span>UPI ID</span>
                 <div className="tp-upi-copy-wrap">
-                  <strong>{ownerPayment.upi_id}</strong>
+                  <strong>{cleanUpiId}</strong>
                   <button
                     type="button"
                     className="tp-copy-upi-btn"
@@ -177,18 +286,24 @@ const preferredAppLabel = appLabels[preferredApp] || "UPI app";
                   >
                     {copiedUpi ? (
                       <>
-                        <LuCheck size={13} />
+                        <LuCheck size={13} aria-hidden="true" />
                         <span>Copied</span>
                       </>
                     ) : (
                       <>
-                        <LuCopy size={13} />
+                        <LuCopy size={13} aria-hidden="true" />
                         <span>Copy</span>
                       </>
                     )}
                   </button>
                 </div>
               </div>
+
+              {copyError && (
+                <p className="tenant-payment-copy-error" role="alert">
+                  {copyError}
+                </p>
+              )}
 
               <div className="tp-detail-item">
                 <span>Preferred app</span>
@@ -207,10 +322,10 @@ const preferredAppLabel = appLabels[preferredApp] || "UPI app";
               <span>
                 Pay {formatCurrency(rentAmount)} using {preferredAppLabel}
               </span>
-              <LuExternalLink size={16} />
+              <LuExternalLink size={16} aria-hidden="true" />
             </button>
 
-            {preferredApp !== "any" && (
+            {preferredApp !== "any" && paymentParams && (
               <button
                 type="button"
                 className="tenant-payment-fallback-button"
@@ -221,7 +336,7 @@ const preferredAppLabel = appLabels[preferredApp] || "UPI app";
             )}
 
             <div className="tenant-payment-security-note">
-              <LuShieldCheck size={18} />
+              <LuShieldCheck size={18} aria-hidden="true" />
               <p>
                 Check the payee name and amount in your UPI app before approving
                 the payment.
@@ -231,7 +346,7 @@ const preferredAppLabel = appLabels[preferredApp] || "UPI app";
         ) : (
           <div className="tenant-payment-not-configured">
             <div className="tp-not-configured-icon">
-              <LuWallet size={24} />
+              <LuWallet size={24} aria-hidden="true" />
             </div>
             <h3>UPI payment not available yet</h3>
             <p>
@@ -247,6 +362,53 @@ const preferredAppLabel = appLabels[preferredApp] || "UPI app";
         records. Opening a UPI app does not automatically update your rent
         payment status in Nest Pay.
       </p>
+
+      {/* iOS UPI App Chooser Modal */}
+      {showIosAppPicker && (
+        <div
+          className="tp-upi-picker-backdrop"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="tp-upi-picker-title"
+          onClick={() => setShowIosAppPicker(false)}
+        >
+          <div
+            className="tp-upi-picker-sheet"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="tp-upi-picker-header">
+              <h3 id="tp-upi-picker-title">Choose UPI app</h3>
+              <button
+                type="button"
+                className="tp-upi-picker-close"
+                onClick={() => setShowIosAppPicker(false)}
+                aria-label="Close"
+              >
+                <LuX size={18} aria-hidden="true" />
+              </button>
+            </div>
+
+            <p className="tp-upi-picker-subtitle">
+              Select an installed app to pay {formatCurrency(rentAmount)}
+            </p>
+
+            <div className="tp-upi-picker-list">
+              {Object.entries(UPI_APPS).map(([appKey, appInfo]) => (
+                <button
+                  key={appKey}
+                  type="button"
+                  className="tp-upi-picker-option"
+                  onClick={() => openPaymentApp(appKey)}
+                >
+                  <span className="tp-upi-picker-badge">{appInfo.badge}</span>
+                  <span className="tp-upi-picker-name">{appInfo.label}</span>
+                  <LuExternalLink size={15} aria-hidden="true" />
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
     </main>
   );
 }

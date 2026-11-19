@@ -2,6 +2,19 @@ import { useState } from "react";
 import AuthService from "../services/AuthService";
 import "../styles/Login.css";
 import { useNavigate } from "react-router-dom";
+import { clearHomeCache } from "../pages/Home/cache/homeCache";
+import { clearPropertiesCache } from "../pages/Properties/cache/propertiesCache";
+import { clearTenantsCache } from "../pages/Tenants/cache/tenantsCache";
+import { clearTenantDetailsCache } from "../pages/Tenants/cache/tenantDetailsCache";
+import { clearRentStatusCache } from "../pages/RentStatus/cache/rentStatusCache";
+
+function clearAllOwnerCaches() {
+  clearHomeCache();
+  clearPropertiesCache();
+  clearTenantsCache();
+  clearTenantDetailsCache();
+  clearRentStatusCache();
+}
 
 function Login() {
   const [isSignup, setIsSignup] = useState(false);
@@ -14,24 +27,33 @@ function Login() {
 
   async function handleSubmit(event) {
     event.preventDefault();
+    if (loading) return;
+
+    const cleanEmail = email.trim();
+    if (!cleanEmail) {
+      setError("Please enter a valid email address.");
+      return;
+    }
 
     setMessage("");
     setError("");
     setLoading(true);
 
     try {
-      if (isSignup) {
-        const data = await AuthService.signUp(email, password);
+      clearAllOwnerCaches();
 
-        if (data.session) {
-          setMessage("Account created successfully. You can now continue.");
+      if (isSignup) {
+        const data = await AuthService.signUp(cleanEmail, password);
+
+        if (data?.session) {
+          navigate("/home", { replace: true });
         } else {
           setMessage(
             "Account created. Please check your email to confirm your account."
           );
         }
       } else {
-        await AuthService.signIn(email, password);
+        await AuthService.signIn(cleanEmail, password);
         navigate("/home", { replace: true });
       }
     } catch (err) {
@@ -103,6 +125,7 @@ function Login() {
           <button
             type="button"
             className="text-button"
+            disabled={loading}
             onClick={() => {
               setIsSignup(!isSignup);
               setMessage("");

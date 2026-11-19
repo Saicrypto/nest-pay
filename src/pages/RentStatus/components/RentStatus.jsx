@@ -8,76 +8,88 @@ import {
   setRentStatusCache,
 } from "../cache/rentStatusCache";
 import RentStatusSkeleton from "../components/RentStatusSkeleton";
-
+import { useUser } from "../../../context/UserContext";
 
 function RentStatus() {
   const navigate = useNavigate();
+  const { user } = useUser();
+  const userId = user?.id;
+
   const [payments, setPayments] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
- useEffect(() => {
-  let active = true;
+  useEffect(() => {
+    if (!userId) return;
 
-  async function loadRentStatus() {
-    const cached = getRentStatusCache();
+    let active = true;
 
-    if (cached !== null) {
-      setPayments(
-        cached.map(({ id, rent_amount, status }) => ({
-          id,
-          rent_amount,
-          status,
-        }))
-      );
-      setLoading(false);
-      return;
-    }
+    async function loadRentStatus() {
+      const cached = getRentStatusCache(userId);
 
-    try {
-      const { data, error } = await supabase
-        .from("rent_payments")
-        .select("id, rent_amount, status");
-
-      if (error) throw error;
-
-      const result = data || [];
-
-      if (active) {
-        setPayments(result);
-        setRentStatusCache(result);
-      }
-    } catch (err) {
-      if (active) {
-        setError(err.message || "Unable to load rent status.");
-      }
-    } finally {
-      if (active) {
+      if (Array.isArray(cached)) {
+        setPayments(
+          cached.map(({ id, rent_amount, status }) => ({
+            id,
+            rent_amount,
+            status,
+          }))
+        );
         setLoading(false);
+        return;
+      }
+
+      setLoading(true);
+      setError("");
+
+      try {
+        const { data, error } = await supabase
+          .from("rent_payments")
+          .select("id, rent_amount, status")
+          .limit(500);
+
+        if (error) throw error;
+
+        const result = Array.isArray(data) ? data : [];
+
+        if (active) {
+          setPayments(result);
+          setRentStatusCache(userId, result);
+        }
+      } catch (err) {
+        if (active) {
+          setError(err.message || "Unable to load rent status.");
+        }
+      } finally {
+        if (active) {
+          setLoading(false);
+        }
       }
     }
+
+    loadRentStatus();
+
+    return () => {
+      active = false;
+    };
+  }, [userId]);
+
+const inrFormatter = new Intl.NumberFormat("en-IN", {
+    style: "currency",
+    currency: "INR",
+    maximumFractionDigits: 0,
+  });
+
+  function formatCurrency(amount) {
+    const parsed = Number(amount);
+    return inrFormatter.format(Number.isFinite(parsed) ? parsed : 0);
   }
-
-  loadRentStatus();
-
-  return () => {
-    active = false;
-  };
-}, []);
 
   const counts = {
     paid: payments.filter((p) => p.status === "paid"),
     unpaid: payments.filter((p) => p.status === "unpaid"),
     overdue: payments.filter((p) => p.status === "overdue"),
   };
-
-  function formatCurrency(amount) {
-    return new Intl.NumberFormat("en-IN", {
-      style: "currency",
-      currency: "INR",
-      maximumFractionDigits: 0,
-    }).format(Number(amount || 0));
-  }
 
 if (loading) {
   return <RentStatusSkeleton />;

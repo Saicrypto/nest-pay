@@ -1,5 +1,4 @@
-
-import { useNavigate } from "react-router-dom";
+import { Navigate, useNavigate } from "react-router-dom";
 import { useTenant } from "../../../context/TenantContext";
 import {
   LuHouse,
@@ -12,12 +11,15 @@ import {
 
 import "../styles/TenantWelcome.css";
 
+const inrFormatter = new Intl.NumberFormat("en-IN", {
+  style: "currency",
+  currency: "INR",
+  maximumFractionDigits: 2,
+});
+
 function formatCurrency(value) {
-  return new Intl.NumberFormat("en-IN", {
-    style: "currency",
-    currency: "INR",
-    maximumFractionDigits: 2,
-  }).format(Number(value || 0));
+  const parsed = Number(value);
+  return inrFormatter.format(Number.isFinite(parsed) ? parsed : 0);
 }
 
 function TenantWelcome() {
@@ -25,23 +27,30 @@ function TenantWelcome() {
     useTenant();
   const navigate = useNavigate();
 
-  if (loading) return <p>Loading your apartment details...</p>;
+  if (loading) {
+    return (
+      <main className="tenant-welcome-page">
+        <p>Loading your apartment details...</p>
+      </main>
+    );
+  }
 
   if (!isAuthenticated) {
-    navigate("/tenant/login", { replace: true });
-    return null;
+    return <Navigate to="/tenant/login" replace />;
   }
 
   if (onboardingCompleted) {
-    navigate("/tenant/home", { replace: true });
-    return null;
+    return <Navigate to="/tenant/home" replace />;
   }
 
   if (!property || !unit) {
     return (
       <main className="tenant-welcome-page">
         <p>Unable to load your apartment details. Please log in again.</p>
-        <button onClick={() => navigate("/tenant/login", { replace: true })}>
+        <button
+          type="button"
+          onClick={() => navigate("/tenant/login", { replace: true })}
+        >
           Back to login
         </button>
       </main>
@@ -57,16 +66,16 @@ function TenantWelcome() {
     .filter(Boolean)
     .join(", ");
 
-  const details = [
+const details = [
     {
       label: "Apartment",
-      value: property.property_name,
+      value: property.property_name || "—",
       Icon: LuHouse,
       tone: "green",
     },
     {
       label: "Flat",
-      value: unit.unit_name,
+      value: unit.unit_name || "—",
       Icon: LuBuilding2,
       tone: "cream",
     },

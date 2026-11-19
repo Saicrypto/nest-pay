@@ -17,6 +17,9 @@ const paymentApps = [
   { id: "paytm", label: "Paytm", icon: "₹" },
 ];
 
+const ALLOWED_APPS = new Set(paymentApps.map((app) => app.id));
+const UPI_ID_REGEX = /^[a-zA-Z0-9.\-_]{2,256}@[a-zA-Z]{2,64}$/;
+
 function PaymentSettings() {
   const [upiId, setUpiId] = useState("");
   const [preferredApp, setPreferredApp] = useState("any");
@@ -54,7 +57,9 @@ function PaymentSettings() {
 
         if (active) {
           const savedId = data?.upi_id || "";
-          const savedPreferredApp = data?.preferred_app || "any";
+          const savedPreferredApp = ALLOWED_APPS.has(data?.preferred_app)
+            ? data.preferred_app
+            : "any";
 
           setUpiId(savedId);
           setPreferredApp(savedPreferredApp);
@@ -79,13 +84,16 @@ function PaymentSettings() {
 
   async function handleSave(event) {
     event.preventDefault();
+    if (saving) return;
 
     const cleanUpiId = upiId.trim();
 
-    if (cleanUpiId.length < 3) {
-      setError("Please enter a valid UPI ID (at least 3 characters).");
+    if (!UPI_ID_REGEX.test(cleanUpiId)) {
+      setError("Please enter a valid UPI ID (for example, yourname@okaxis).");
       return;
     }
+
+    const safeApp = ALLOWED_APPS.has(preferredApp) ? preferredApp : "any";
 
     setSaving(true);
     setError("");
@@ -106,7 +114,7 @@ function PaymentSettings() {
           {
             owner_id: user.id,
             upi_id: cleanUpiId,
-            preferred_app: preferredApp,
+            preferred_app: safeApp,
             updated_at: new Date().toISOString(),
           },
           { onConflict: "owner_id" }
@@ -115,7 +123,7 @@ function PaymentSettings() {
       if (saveError) throw saveError;
 
       setSavedUpiId(cleanUpiId);
-      setSavedApp(preferredApp);
+      setSavedApp(safeApp);
       setUpiId(cleanUpiId);
       setEditing(false);
       setSuccess("UPI payment details saved successfully.");
@@ -127,6 +135,7 @@ function PaymentSettings() {
   }
 
   function handleCancel() {
+    if (saving) return;
     setUpiId(savedUpiId);
     setPreferredApp(savedApp);
     setEditing(false);
@@ -223,6 +232,7 @@ function PaymentSettings() {
                 onChange={(event) => setUpiId(event.target.value)}
                 placeholder="yourname@bank"
                 autoComplete="off"
+                disabled={saving}
                 required
               />
 
@@ -230,7 +240,7 @@ function PaymentSettings() {
                 Enter the UPI ID where you want to receive rent.
               </p>
 
-              <fieldset className="payment-app-fieldset">
+              <fieldset className="payment-app-fieldset" disabled={saving}>
                 <legend>Preferred UPI app for tenants</legend>
                 <div className="payment-app-grid">
                   {paymentApps.map((app) => (

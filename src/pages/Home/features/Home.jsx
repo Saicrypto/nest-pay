@@ -20,9 +20,11 @@ LuChevronRight,
 } from "react-icons/lu";
 import HomeDashboardSkeleton from "../components/HomeDashboardSkeleton";
 import NotificationBell from "../components/NotificationBell";
+import { useUser } from "../../../context/UserContext";
+
 
 function Home() {
-
+  const { user } = useUser();
   const propertyCarouselRef = useRef(null);
 
 function scrollProperties(direction) {
@@ -47,63 +49,67 @@ function scrollProperties(direction) {
   const [menuOpen, setMenuOpen] = useState(false);
   const [propertyScroll, setPropertyScroll] = useState(null);
 
+
 useEffect(() => {
-  let active = true;
+    if (!user?.id) return;
 
-  async function loadDashboard() {
-    const cached = getHomeCache();
+    let active = true;
 
-    if (cached) {
-      setStats(cached.stats);
-      setProperties(cached.properties);
-      setLoading(false);
-      return;
-    }
+    async function loadDashboard() {
+      const cached = getHomeCache(user.id);
 
-    setLoading(true);
-
-    try {
-      const data = await DashboardService.getStats();
-      const propertyData = await PropertyService.getMyProperties();
-
-      if (active) {
-        setStats(data);
-        setProperties(propertyData);
+      if (cached) {
+        setStats(cached.stats);
+        setProperties(cached.properties);
         setError("");
-
-        setHomeCache({
-          stats: data,
-          properties: propertyData,
-        });
-      }
-    } catch (err) {
-      if (active) {
-        setError(err.message || "Unable to load dashboard data.");
-      }
-    } finally {
-      if (active) {
         setLoading(false);
+        return;
+      }
+
+      setLoading(true);
+
+      try {
+        const [data, propertyData] = await Promise.all([
+          DashboardService.getStats(),
+          PropertyService.getMyProperties(),
+        ]);
+
+        if (active) {
+          setStats(data);
+          setProperties(propertyData);
+          setError("");
+
+          setHomeCache(user.id, {
+            stats: data,
+            properties: propertyData,
+          });
+        }
+      } catch (err) {
+        if (active) {
+          setError(err.message || "Unable to load dashboard data.");
+        }
+      } finally {
+        if (active) {
+          setLoading(false);
+        }
       }
     }
-  }
 
-  loadDashboard();
+    loadDashboard();
 
-  return () => {
-    active = false;
-  };
-}, []);
-
-
-  
+    return () => {
+      active = false;
+    };
+  }, [user?.id]);
 
   function formatCurrency(amount) {
     return new Intl.NumberFormat("en-IN", {
       style: "currency",
       currency: "INR",
       maximumFractionDigits: 0,
-    }).format(amount);
+    }).format(Number(amount) || 0);
   }
+
 
   return (
     <main className="home-page">

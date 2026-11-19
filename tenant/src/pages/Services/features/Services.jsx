@@ -59,12 +59,24 @@ export default function Services() {
         return;
       }
 
-      const cachedData = getServicesCache(deviceToken);
+const cachedData = getServicesCache(deviceToken);
 
       if (cachedData) {
-        setServiceProviders(cachedData.serviceProviders);
-        setUtilityProviders(cachedData.utilityProviders);
-        setTenantContacts(cachedData.tenantContacts);
+        setServiceProviders(
+          Array.isArray(cachedData.serviceProviders)
+            ? cachedData.serviceProviders
+            : []
+        );
+        setUtilityProviders(
+          Array.isArray(cachedData.utilityProviders)
+            ? cachedData.utilityProviders
+            : []
+        );
+        setTenantContacts(
+          Array.isArray(cachedData.tenantContacts)
+            ? cachedData.tenantContacts
+            : []
+        );
         setLoading(false);
       } else {
         setLoading(true);
@@ -109,14 +121,17 @@ export default function Services() {
     };
   }, [deviceToken]);
 
-  function updateTenantContacts(nextContacts) {
-    setTenantContacts(nextContacts);
+ function updateTenantContacts(nextContacts) {
+    const safeContacts = Array.isArray(nextContacts) ? nextContacts : [];
+    setTenantContacts(safeContacts);
 
-    setServicesCache(deviceToken, {
-      serviceProviders,
-      utilityProviders,
-      tenantContacts: nextContacts,
-    });
+    if (deviceToken) {
+      setServicesCache(deviceToken, {
+        serviceProviders,
+        utilityProviders,
+        tenantContacts: safeContacts,
+      });
+    }
   }
 
   const providerType = activeTab === "service" ? "service" : "utility";
@@ -155,6 +170,7 @@ export default function Services() {
   }
 
   function handleEditContact(contact) {
+    if (!contact) return;
     setEditingContact(contact);
 
     setForm({
@@ -164,7 +180,7 @@ export default function Services() {
       description: contact.description || "",
     });
 
-    setActiveTab(contact.contact_type);
+    setActiveTab(contact.contact_type === "utility" ? "utility" : "service");
     setError("");
     setSuccessMessage("");
     setShowAddForm(true);
@@ -173,9 +189,12 @@ export default function Services() {
   async function handleUpdateContact(e) {
     e.preventDefault();
 
-    if (!editingContact) return;
+    if (saving || !editingContact || !deviceToken) return;
 
-    if (!form.contact_name.trim() || !form.phone.trim()) {
+    const cleanName = form.contact_name.trim();
+    const cleanPhone = form.phone.trim();
+
+    if (!cleanName || !cleanPhone) {
       setError("Contact name and phone number are required.");
       return;
     }
@@ -188,7 +207,10 @@ export default function Services() {
         await TenantPropertyService.updateCustomContact(deviceToken, {
           contact_id: editingContact.id,
           contact_type: providerType,
-          ...form,
+          contact_name: cleanName,
+          contact_person: form.contact_person.trim(),
+          phone: cleanPhone,
+          description: form.description.trim(),
         });
 
       updateTenantContacts(
@@ -209,8 +231,10 @@ export default function Services() {
   }
 
   async function handleDeleteContact(contact) {
+    if (!contact?.id || deletingId || !deviceToken) return;
+
     const confirmed = window.confirm(
-      `Are you sure you want to delete ${contact.contact_name}?`
+      `Are you sure you want to delete ${contact.contact_name || "this contact"}?`
     );
 
     if (!confirmed) return;
@@ -236,7 +260,12 @@ export default function Services() {
   async function handleAddContact(e) {
     e.preventDefault();
 
-    if (!form.contact_name.trim() || !form.phone.trim()) {
+    if (saving || !deviceToken) return;
+
+    const cleanName = form.contact_name.trim();
+    const cleanPhone = form.phone.trim();
+
+    if (!cleanName || !cleanPhone) {
       setError("Contact name and phone number are required.");
       return;
     }
@@ -248,7 +277,10 @@ export default function Services() {
       const newContact = await TenantPropertyService.addCustomContact(
         deviceToken,
         {
-          ...form,
+          contact_name: cleanName,
+          contact_person: form.contact_person.trim(),
+          phone: cleanPhone,
+          description: form.description.trim(),
           contact_type: providerType,
         }
       );

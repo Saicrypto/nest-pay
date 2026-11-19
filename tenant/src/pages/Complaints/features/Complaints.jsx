@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Navigate, useNavigate } from "react-router-dom";
 import {
   LuPlus,
   LuMessageSquare,
@@ -17,9 +17,24 @@ import {
 import "../styles/Complaints.css";
 import ComplaintsSkeleton from "../components/ComplaintsSkeleton";
 
+function formatSubmittedDate(value) {
+  if (!value) return "Date unavailable";
+  const parsed = new Date(value);
+  if (Number.isNaN(parsed.getTime())) return "Date unavailable";
+  return parsed.toLocaleDateString("en-IN", {
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+  });
+}
+
 export default function Complaints() {
   const navigate = useNavigate();
-  const { deviceToken } = useTenant();
+  const {
+    deviceToken,
+    loading: sessionLoading,
+    isAuthenticated,
+  } = useTenant();
 
   const [complaints, setComplaints] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -34,9 +49,9 @@ export default function Complaints() {
         return;
       }
 
-      const cachedData = getComplaintsCache();
+      const cachedData = getComplaintsCache(deviceToken);
 
-      if (cachedData !== null) {
+      if (Array.isArray(cachedData)) {
         setComplaints(cachedData);
         setLoading(false);
       } else {
@@ -47,18 +62,19 @@ export default function Complaints() {
         setError("");
 
         const data = await TenantComplaintService.getComplaints(deviceToken);
+        const safeComplaints = Array.isArray(data) ? data : [];
 
         if (cancelled) return;
 
-        setComplaints(data);
-        setComplaintsCache(data);
+        setComplaints(safeComplaints);
+        setComplaintsCache(deviceToken, safeComplaints);
       } catch (err) {
         if (cancelled) return;
 
         console.error("Complaint loading error:", err);
 
-        if (cachedData === null) {
-          setError("Unable to load complaints.");
+        if (!Array.isArray(cachedData)) {
+          setError(err?.message || "Unable to load complaints.");
         }
       } finally {
         if (!cancelled) {
@@ -67,28 +83,34 @@ export default function Complaints() {
       }
     }
 
-    loadComplaints();
+    if (!sessionLoading) {
+      loadComplaints();
+    }
 
     return () => {
       cancelled = true;
     };
-  }, [deviceToken]);
+  }, [deviceToken, sessionLoading]);
+
+  if (!sessionLoading && !isAuthenticated) {
+    return <Navigate to="/tenant/login" replace />;
+  }
 
   const activeCount = complaints.filter(
-    (c) => c.status === "open" || c.status === "in_progress"
+    (c) => c?.status === "open" || c?.status === "in_progress"
   ).length;
   const resolvedCount = complaints.filter(
-    (c) => c.status === "resolved" || c.status === "closed"
+    (c) => c?.status === "resolved" || c?.status === "closed"
   ).length;
 
   function renderStatusIcon(status) {
     if (status === "resolved" || status === "closed") {
-      return <LuCircleCheck size={17} />;
+      return <LuCircleCheck size={17} aria-hidden="true" />;
     }
     if (status === "in_progress") {
-      return <LuClock size={17} />;
+      return <LuClock size={17} aria-hidden="true" />;
     }
-    return <LuCircleAlert size={17} />;
+    return <LuCircleAlert size={17} aria-hidden="true" />;
   }
 
   return (
@@ -105,7 +127,7 @@ export default function Complaints() {
           className="tc-raise-btn"
           onClick={() => navigate("/tenant/complaints/raise")}
         >
-          <LuPlus size={16} />
+          <LuPlus size={16} aria-hidden="true" />
           <span>Raise Complaint</span>
         </button>
       </header>
@@ -132,7 +154,7 @@ export default function Complaints() {
         </div>
       </div>
 
-      {loading ? (
+      {loading || sessionLoading ? (
         <ComplaintsSkeleton />
       ) : error ? (
         <p className="tc-error-banner" role="alert">
@@ -141,7 +163,7 @@ export default function Complaints() {
       ) : complaints.length === 0 ? (
         <section className="tenant-complaints-empty">
           <div className="tc-empty-icon">
-            <LuMessageSquare size={26} />
+            <LuMessageSquare size={26} aria-hidden="true" />
           </div>
           <h3>No complaints yet</h3>
           <p>
@@ -152,14 +174,16 @@ export default function Complaints() {
             type="button"
             onClick={() => navigate("/tenant/complaints/raise")}
           >
-            <LuPlus size={16} />
+            <LuPlus size={16} aria-hidden="true" />
             <span>Raise Your First Complaint</span>
           </button>
         </section>
       ) : (
         <section className="tenant-complaints-list">
           {complaints.map((complaint) => {
-            const normalizedStatus = (complaint.status || "open").toLowerCase();
+            const normalizedStatus = String(
+              complaint.status || "open"
+            ).toLowerCase();
 
             return (
               <article key={complaint.id} className="tenant-complaint-card">
@@ -169,9 +193,9 @@ export default function Complaints() {
 
                 <div className="tc-card-body">
                   <div className="tc-card-top">
-                    <h3>{complaint.title}</h3>
+                    <h3>{complaint.title || "Untitled Complaint"}</h3>
                     <span className={`complaint-status ${normalizedStatus}`}>
-                      {complaint.status.replaceAll("_", " ")}
+                      {normalizedStatus.replaceAll("_", " ")}
                     </span>
                   </div>
 
@@ -180,17 +204,9 @@ export default function Complaints() {
                   )}
 
                   <small className="tc-card-date">
-                    <LuCalendarDays size={12} />
+                    <LuCalendarDays size={12} aria-hidden="true" />
                     <span>
-                      Submitted:{" "}
-                      {new Date(complaint.created_at).toLocaleDateString(
-                        "en-IN",
-                        {
-                          day: "numeric",
-                          month: "short",
-                          year: "numeric",
-                        }
-                      )}
+                      Submitted: {formatSubmittedDate(complaint.created_at)}
                     </span>
                   </small>
                 </div>

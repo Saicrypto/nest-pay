@@ -1,14 +1,20 @@
+let homeCache = {
+  userId: null,
+  data: null,
+};
 
-let homeCache = null;
-
-export function getHomeCache() {
-  return homeCache;
+export function getHomeCache(userId) {
+  if (!userId || homeCache.userId !== userId) {
+    return null;
+  }
+  return homeCache.data;
 }
 
-export function setHomeCache(data) {
-  homeCache = data;
+export function setHomeCache(userId, data) {
+  if (!userId) return;
+  homeCache = { userId, data };
 }
 
 export function clearHomeCache() {
-  homeCache = null;
+  homeCache = { userId: null, data: null };
 }

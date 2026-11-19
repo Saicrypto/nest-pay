@@ -1,24 +1,47 @@
-import { useNavigate } from "react-router-dom";
+import { Navigate, useNavigate } from "react-router-dom";
 import { useTenant } from "../../../context/TenantContext";
 import {
-  LuHouse,
   LuWrench,
   LuDroplet,
   LuMessageSquare,
-  LuWallet,
-  LuUserRound,
   LuBuilding2,
 } from "react-icons/lu";
 import "../styles/TenantHome.css";
 import NotificationBell from "../../../components/NotificationBell/NotificationBell";
 import TenantHomeSkeleton from "../components/TenantHomeSkeleton";
 
+const inrFormatter = new Intl.NumberFormat("en-IN", {
+  style: "currency",
+  currency: "INR",
+  maximumFractionDigits: 0,
+});
+
+function formatCurrency(value) {
+  const parsed = Number(value);
+  return inrFormatter.format(Number.isFinite(parsed) && parsed >= 0 ? parsed : 0);
+}
+
 function TenantHome() {
-  const { property, unit, tenant, loading } = useTenant();
+  const {
+    property,
+    unit,
+    tenant,
+    loading,
+    isAuthenticated,
+    onboardingCompleted,
+  } = useTenant();
   const navigate = useNavigate();
 
   if (loading) {
     return <TenantHomeSkeleton />;
+  }
+
+  if (!isAuthenticated) {
+    return <Navigate to="/tenant/login" replace />;
+  }
+
+  if (!onboardingCompleted) {
+    return <Navigate to="/tenant/welcome" replace />;
   }
 
   const currentDate = new Date();
@@ -27,43 +50,34 @@ function TenantHome() {
     year: "numeric",
   });
 
-  const tenantName = tenant?.full_name?.split(" ")[0] || "there";
-  const rentAmount = Number(unit?.monthly_rent || 0);
+  const tenantName =
+    String(tenant?.full_name ?? "").trim().split(/\s+/)[0] || "there";
+  const rentAmount = Number(unit?.monthly_rent);
 
   const shortcuts = [
     {
       label: "Services",
       sublabel: "Vendors & help",
-      icon: <LuWrench size={19} />,
+      icon: <LuWrench size={19} aria-hidden="true" />,
       iconClass: "services",
       path: "/tenant/services",
+      state: { tab: "service" },
     },
     {
       label: "Daily Utilities",
       sublabel: "Water & power",
-      icon: <LuDroplet size={19} />,
+      icon: <LuDroplet size={19} aria-hidden="true" />,
       iconClass: "utilities",
       path: "/tenant/services",
+      state: { tab: "utility" },
     },
     {
       label: "Complaints",
       sublabel: "Raise ticket",
-      icon: <LuMessageSquare size={19} />,
+      icon: <LuMessageSquare size={19} aria-hidden="true" />,
       iconClass: "complaints",
       path: "/tenant/complaints",
     },
-  ];
-
-  const navigation = [
-    { label: "Home", icon: <LuHouse size={18} />, path: "/tenant/home" },
-    { label: "Payments", icon: <LuWallet size={18} />, path: "/tenant/payments" },
-    { label: "Services", icon: <LuWrench size={18} />, path: "/tenant/services" },
-    {
-      label: "Complaints",
-      icon: <LuMessageSquare size={18} />,
-      path: "/tenant/complaints",
-    },
-    { label: "Profile", icon: <LuUserRound size={18} />, path: "/tenant/profile" },
   ];
 
   return (
@@ -94,17 +108,15 @@ function TenantHome() {
         <div className="tenant-rent-card-top">
           <span className="th-rent-label">MONTHLY RENT</span>
           <span className="th-rent-icon-badge">
-            <LuBuilding2 size={18} className="tenant-rent-watermark" />
+            <LuBuilding2
+              size={18}
+              className="tenant-rent-watermark"
+              aria-hidden="true"
+            />
           </span>
         </div>
 
-        <h2>
-          {rentAmount.toLocaleString("en-IN", {
-            style: "currency",
-            currency: "INR",
-            maximumFractionDigits: 0,
-          })}
-        </h2>
+        <h2>{formatCurrency(rentAmount)}</h2>
 
         <div className="tenant-rent-card-bottom">
           <span className="th-rent-month">{rentMonth}</span>
@@ -130,7 +142,9 @@ function TenantHome() {
               type="button"
               className="tenant-home-shortcut"
               key={item.label}
-              onClick={() => navigate(item.path)}
+              onClick={() =>
+                navigate(item.path, item.state ? { state: item.state } : undefined)
+              }
             >
               <span className={`th-shortcut-icon ${item.iconClass}`}>
                 {item.icon}
@@ -141,9 +155,6 @@ function TenantHome() {
           ))}
         </div>
       </section>
-
-      {/* Floating Pill Bottom Navigation Bar */}
-     
     </main>
   );
 }

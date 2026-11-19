@@ -1,6 +1,5 @@
-
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Navigate, useNavigate } from "react-router-dom";
 import { supabase } from "../../../../src/lib/supabase";
 import { useTenant } from "../../../context/TenantContext";
 import "../styles/TenantOnboarding.css";
@@ -10,6 +9,9 @@ function TenantOnboarding() {
     property,
     unit,
     deviceToken,
+    loading,
+    isAuthenticated,
+    onboardingCompleted,
     completeOnboarding,
   } = useTenant();
 
@@ -27,6 +29,22 @@ function TenantOnboarding() {
   const [error, setError] = useState("");
   const [submitting, setSubmitting] = useState(false);
 
+  if (loading) {
+    return (
+      <main className="tenant-details-page">
+        <p>Loading your apartment details...</p>
+      </main>
+    );
+  }
+
+  if (!isAuthenticated) {
+    return <Navigate to="/tenant/login" replace />;
+  }
+
+  if (onboardingCompleted) {
+    return <Navigate to="/tenant/home" replace />;
+  }
+
   function handleChange(event) {
     const { name, value } = event.target;
 
@@ -38,6 +56,8 @@ function TenantOnboarding() {
 
   async function handleSubmit(event) {
     event.preventDefault();
+    if (submitting) return;
+
     setError("");
 
     if (!deviceToken) {
@@ -45,31 +65,77 @@ function TenantOnboarding() {
       return;
     }
 
+    const cleanName = formData.full_name.trim();
+    const cleanPhone = formData.phone.trim();
+    const cleanProfession = formData.profession.trim();
+    const cleanEmail = formData.email.trim();
+
     if (
-      !formData.full_name.trim() ||
-      !formData.phone.trim() ||
-      !formData.family_members ||
-      !formData.age
+      !cleanName ||
+      !cleanPhone ||
+      formData.family_members === "" ||
+      formData.age === ""
     ) {
       setError("Please complete all required fields.");
+      return;
+    }
+
+    if (!/^[+\d\s()-]{7,20}$/.test(cleanPhone)) {
+      setError("Please enter a valid phone number.");
+      return;
+    }
+
+    const familyMembers = Number(formData.family_members);
+    const age = Number(formData.age);
+
+    if (!Number.isInteger(familyMembers) || familyMembers < 1 || familyMembers > 50) {
+      setError("Please enter a valid number of family members.");
+      return;
+    }
+
+    if (!Number.isInteger(age) || age < 18 || age > 120) {
+      setError("Age must be between 18 and 120.");
       return;
     }
 
     setSubmitting(true);
 
     try {
+      const normalizedPayload = {
+        full_name: cleanName,
+        family_members: familyMembers,
+        profession: cleanProfession,
+        age,
+        phone: cleanPhone,
+        email: cleanEmail,
+      };
+
       const { data, error: requestError } =
         await supabase.functions.invoke(
           "complete-tenant-onboarding",
           {
             body: {
+              ...normalizedPayload,
               device_token: deviceToken,
-              ...formData,
             },
           }
         );
 
-      if (requestError) throw requestError;
+      if (requestError) {
+        let message = requestError.message || "Unable to complete registration.";
+        try {
+          if (
+            requestError.context &&
+            typeof requestError.context.json === "function"
+          ) {
+            const payload = await requestError.context.json();
+            if (payload?.error) message = payload.error;
+          }
+        } catch {
+          // Keep fallback message
+        }
+        throw new Error(message);
+      }
 
       if (!data?.success) {
         throw new Error(
@@ -77,26 +143,34 @@ function TenantOnboarding() {
         );
       }
 
-      completeOnboarding({
-        id: data.tenant_id,
-        ...formData,
-      });
+      completeOnboarding(
+        data.tenant ?? {
+          id: data.tenant_id,
+          ...normalizedPayload,
+        }
+      );
 
       navigate("/tenant/home", { replace: true });
     } catch (err) {
       console.error("Tenant onboarding failed:", err);
-      setError(
-        err?.context?.error ||
-        err?.message ||
-        "Registration failed. Please try again."
-      );
+      setError(err?.message || "Registration failed. Please try again.");
     } finally {
       setSubmitting(false);
     }
   }
 
   if (!property || !unit) {
-    return <p>Unable to load apartment details. Please log in again.</p>;
+    return (
+      <main className="tenant-details-page">
+        <p>Unable to load apartment details. Please log in again.</p>
+        <button
+          type="button"
+          onClick={() => navigate("/tenant/login", { replace: true })}
+        >
+          Back to login
+        </button>
+      </main>
+    );
   }
 
   return (
@@ -111,8 +185,8 @@ function TenantOnboarding() {
         <h1>Let's get to know you</h1>
         <p>
           Please provide your details to complete your registration at{" "}
-          <strong>{property.property_name}</strong>,{" "}
-          <strong>{unit.unit_name}</strong>.
+          <strong>{property.property_name || "your property"}</strong>,{" "}
+          <strong>{unit.unit_name || "your flat"}</strong>.
         </p>
       </section>
 
@@ -124,6 +198,8 @@ function TenantOnboarding() {
             value={formData.full_name}
             onChange={handleChange}
             placeholder="Enter your full name"
+            maxLength={100}
+            disabled={submitting}
             required
           />
         </label>
@@ -134,9 +210,11 @@ function TenantOnboarding() {
             type="number"
             name="family_members"
             min="1"
+            max="50"
             value={formData.family_members}
             onChange={handleChange}
             placeholder="Including yourself"
+            disabled={submitting}
             required
           />
         </label>
@@ -148,6 +226,8 @@ function TenantOnboarding() {
             value={formData.profession}
             onChange={handleChange}
             placeholder="e.g. Software Engineer"
+            maxLength={100}
+            disabled={submitting}
           />
         </label>
 
@@ -161,6 +241,7 @@ function TenantOnboarding() {
             value={formData.age}
             onChange={handleChange}
             placeholder="Enter your age"
+            disabled={submitting}
             required
           />
         </label>
@@ -173,6 +254,8 @@ function TenantOnboarding() {
             value={formData.phone}
             onChange={handleChange}
             placeholder="Enter your phone number"
+            maxLength={20}
+            disabled={submitting}
             required
           />
         </label>
@@ -185,10 +268,16 @@ function TenantOnboarding() {
             value={formData.email}
             onChange={handleChange}
             placeholder="Enter your email address"
+            maxLength={254}
+            disabled={submitting}
           />
         </label>
 
-        {error && <p className="tenant-details-error">{error}</p>}
+        {error && (
+          <p className="tenant-details-error" role="alert">
+            {error}
+          </p>
+        )}
 
         <button
           type="submit"

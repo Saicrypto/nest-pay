@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Navigate, useNavigate } from "react-router-dom";
 import {
   LuArrowLeft,
   LuCircleCheck,
@@ -24,7 +24,11 @@ const issueCategories = [
 ];
 
 export default function RaiseComplaint() {
-  const { deviceToken } = useTenant();
+  const {
+    deviceToken,
+    loading: sessionLoading,
+    isAuthenticated,
+  } = useTenant();
   const navigate = useNavigate();
 
   const [title, setTitle] = useState("");
@@ -36,6 +40,8 @@ export default function RaiseComplaint() {
   const dropdownRef = useRef(null);
 
   useEffect(() => {
+    if (!dropdownOpen) return;
+
     function handleOutsideClick(event) {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
         setDropdownOpen(false);
@@ -48,19 +54,32 @@ export default function RaiseComplaint() {
       }
     }
 
-    document.addEventListener("mousedown", handleOutsideClick);
+    document.addEventListener("pointerdown", handleOutsideClick);
     document.addEventListener("keydown", handleEscape);
 
     return () => {
-      document.removeEventListener("mousedown", handleOutsideClick);
+      document.removeEventListener("pointerdown", handleOutsideClick);
       document.removeEventListener("keydown", handleEscape);
     };
-  }, []);
+  }, [dropdownOpen]);
+
+  if (!sessionLoading && !isAuthenticated) {
+    return <Navigate to="/tenant/login" replace />;
+  }
 
   async function handleSubmit(e) {
     e.preventDefault();
+    if (loading) return;
 
-    if (!title || !description.trim()) {
+    if (!deviceToken) {
+      setError("Your session has expired. Please log in again.");
+      return;
+    }
+
+    const cleanTitle = title.trim();
+    const cleanDescription = description.trim();
+
+    if (!cleanTitle || !cleanDescription) {
       setError("Please select an issue and enter a description.");
       return;
     }
@@ -71,15 +90,15 @@ export default function RaiseComplaint() {
 
       await TenantComplaintService.raiseComplaint(
         deviceToken,
-        title,
-        description
+        cleanTitle,
+        cleanDescription
       );
-      clearComplaintsCache();
+      clearComplaintsCache(deviceToken);
       setSuccess(true);
       setTitle("");
       setDescription("");
     } catch (err) {
-      setError(err.message || "Unable to submit complaint.");
+      setError(err?.message || "Unable to submit complaint.");
     } finally {
       setLoading(false);
     }
@@ -93,9 +112,10 @@ export default function RaiseComplaint() {
           type="button"
           className="raise-complaint-back"
           onClick={() => navigate("/tenant/complaints")}
+          disabled={loading}
         >
           <span className="rc-back-circle">
-            <LuArrowLeft size={16} />
+            <LuArrowLeft size={16} aria-hidden="true" />
           </span>
           <span>Back to Complaints</span>
         </button>
@@ -115,7 +135,7 @@ export default function RaiseComplaint() {
       {success ? (
         <div className="complaint-success">
           <div className="rc-success-icon">
-            <LuCircleCheck size={30} />
+            <LuCircleCheck size={30} aria-hidden="true" />
           </div>
           <h3>Complaint submitted successfully!</h3>
           <p>
@@ -140,6 +160,7 @@ export default function RaiseComplaint() {
                   type="button"
                   key={issue}
                   className={`rc-chip ${title === issue ? "active" : ""}`}
+                  disabled={loading}
                   onClick={() => {
                     setTitle(issue);
                     setError("");
@@ -164,10 +185,15 @@ export default function RaiseComplaint() {
               aria-haspopup="listbox"
               aria-expanded={dropdownOpen}
               aria-labelledby="complaint-issue-label"
+              disabled={loading}
               onClick={() => setDropdownOpen((prev) => !prev)}
             >
               <span>{title || "Choose an issue"}</span>
-              <LuChevronDown size={18} className="rc-select-chevron" />
+              <LuChevronDown
+                size={18}
+                className="rc-select-chevron"
+                aria-hidden="true"
+              />
             </button>
 
             {dropdownOpen && (
@@ -195,7 +221,11 @@ export default function RaiseComplaint() {
                     >
                       <span>{issue}</span>
                       {selected && (
-                        <LuCheck size={16} className="rc-option-check" />
+                        <LuCheck
+                          size={16}
+                          className="rc-option-check"
+                          aria-hidden="true"
+                        />
                       )}
                     </li>
                   );
@@ -216,6 +246,7 @@ export default function RaiseComplaint() {
             placeholder="Describe the issue in detail (e.g. location, urgency)..."
             rows={5}
             maxLength={2000}
+            disabled={loading}
             required
           />
 
@@ -226,7 +257,7 @@ export default function RaiseComplaint() {
           )}
 
           <button type="submit" className="rc-submit-btn" disabled={loading}>
-            <LuMessageSquarePlus size={18} />
+            <LuMessageSquarePlus size={18} aria-hidden="true" />
             <span>{loading ? "Submitting..." : "Raise Complaint"}</span>
           </button>
         </form>

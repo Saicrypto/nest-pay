@@ -13,6 +13,7 @@ import { clearPropertiesCache } from "../cache/propertiesCache";
 import { clearTenantsCache } from "../../Tenants/cache/tenantsCache";
 import { clearTenantDetailsCache } from "../../Tenants/cache/tenantDetailsCache";
 import { clearRentStatusCache } from "../../RentStatus/cache/rentStatusCache";
+import { useUser } from "../../../context/UserContext";
 
 const isValidUuid = (value) =>
   typeof value === "string" &&
@@ -20,8 +21,8 @@ const isValidUuid = (value) =>
 
 function sortUnits(units) {
   return [...units].sort((a, b) => {
-    const nameA = a.unit_name.replace(/^flat\s*/i, "").trim();
-    const nameB = b.unit_name.replace(/^flat\s*/i, "").trim();
+    const nameA = (a?.unit_name || "").replace(/^flat\s*/i, "").trim();
+    const nameB = (b?.unit_name || "").replace(/^flat\s*/i, "").trim();
 
     return nameA.localeCompare(nameB, undefined, {
       numeric: true,
@@ -32,7 +33,8 @@ function sortUnits(units) {
 
 export default function usePropertyDetails() {
   const { propertyId } = useParams();
-
+  const { user } = useUser();
+  const userId = user?.id;
   const [property, setProperty] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -77,6 +79,29 @@ export default function usePropertyDetails() {
 
   const [occupancyConfirmation, setOccupancyConfirmation] = useState(null);
   const [deletingTenantUnitId, setDeletingTenantUnitId] = useState(null);
+  const [updatingOccupancyUnitId, setUpdatingOccupancyUnitId] = useState(null);
+
+  function syncPropertyCache(updater) {
+    if (!userId || !propertyId) return;
+    const cached = getPropertyDetailsCache(userId, propertyId);
+    if (cached) {
+      setPropertyDetailsCache(userId, propertyId, updater(cached));
+    }
+  }
+
+  function invalidateOwnerCaches(unitId) {
+    clearHomeCache(userId);
+    clearPropertiesCache(userId);
+    clearTenantsCache(userId);
+    clearRentStatusCache(userId);
+
+    const unitTenants = unitId ? tenantsByUnit[unitId] || [] : [];
+    unitTenants.forEach((tenant) => {
+      if (tenant?.id) {
+        clearTenantDetailsCache(tenant.id);
+      }
+    });
+  }
 
   useEffect(() => {
     if (!toastMessage) return;
@@ -94,6 +119,14 @@ export default function usePropertyDetails() {
   }, []);
 
   useEffect(() => {
+    if (!userId) {
+      setProperty(null);
+      setUnits([]);
+      setTenantsByUnit({});
+      setLoading(false);
+      return;
+    }
+
     let active = true;
 
     async function loadProperty() {
@@ -105,7 +138,7 @@ export default function usePropertyDetails() {
       setLoading(true);
       setError("");
 
-      const cached = getPropertyDetailsCache(propertyId);
+      const cached = getPropertyDetailsCache(userId, propertyId);
 
       if (cached) {
         setProperty(cached.property);
@@ -116,10 +149,12 @@ export default function usePropertyDetails() {
       }
 
       try {
-        const properties = await PropertyService.getMyProperties();
-        const unitData = await UnitService.getUnitsByProperty(propertyId);
+        const [properties, unitData] = await Promise.all([
+          PropertyService.getMyProperties(),
+          UnitService.getUnitsByProperty(propertyId),
+        ]);
 
-        const selectedProperty = properties.find(
+        const selectedProperty = (properties || []).find(
           (item) => item.id === propertyId
         );
 
@@ -129,7 +164,7 @@ export default function usePropertyDetails() {
           );
         }
 
-        const sortedUnits = sortUnits(unitData);
+        const sortedUnits = sortUnits(unitData || []);
 
         const tenantEntries = await Promise.all(
           sortedUnits.map(async (unit) => [
@@ -145,7 +180,7 @@ export default function usePropertyDetails() {
           setUnits(sortedUnits);
           setTenantsByUnit(tenantData);
 
-          setPropertyDetailsCache(propertyId, {
+          setPropertyDetailsCache(userId, propertyId, {
             property: selectedProperty,
             units: sortedUnits,
             tenantsByUnit: tenantData,
@@ -167,10 +202,11 @@ export default function usePropertyDetails() {
     return () => {
       active = false;
     };
-  }, [propertyId]);
+  }, [propertyId, userId]);
 
   async function handleUpdateUnit(event, unitId, unitData) {
     event.preventDefault();
+    if (savingUnit) return;
 
     setSavingUnit(true);
     setUnitError("");
@@ -186,22 +222,14 @@ export default function usePropertyDetails() {
           )
         );
 
-        const cached = getPropertyDetailsCache(propertyId);
-
-        if (cached) {
-          setPropertyDetailsCache(propertyId, {
-            ...cached,
-            units: updatedUnits,
-          });
-        }
+        syncPropertyCache((cached) => ({
+          ...cached,
+          units: updatedUnits,
+        }));
 
         return updatedUnits;
       });
-      clearHomeCache();
-      clearPropertiesCache();
-      clearTenantsCache();
-      clearTenantDetailsCache();
-      clearRentStatusCache();
+      invalidateOwnerCaches(unitId);
       setEditingUnit(null);
       setUnitSuccess("Flat updated successfully!");
     } catch (err) {
@@ -213,6 +241,8 @@ export default function usePropertyDetails() {
 
   async function handleCreateUnit(event) {
     event.preventDefault();
+    if (savingUnit) return;
+
     setSavingUnit(true);
     setUnitError("");
     setUnitSuccess("");
@@ -232,20 +262,14 @@ export default function usePropertyDetails() {
       setUnits((current) => {
         const updatedUnits = sortUnits([...current, newUnit]);
 
-        const cached = getPropertyDetailsCache(propertyId);
-
-        if (cached) {
-          setPropertyDetailsCache(propertyId, {
-            ...cached,
-            units: updatedUnits,
-          });
-        }
+        syncPropertyCache((cached) => ({
+          ...cached,
+          units: updatedUnits,
+        }));
 
         return updatedUnits;
       });
-      clearHomeCache();
-      clearPropertiesCache();
-      clearTenantsCache();
+      invalidateOwnerCaches();
       setUnitSuccess("Unit added successfully!");
       setShowUnitForm(false);
 
@@ -321,21 +345,20 @@ export default function usePropertyDetails() {
     try {
       await UnitService.deleteUnit(unitId);
 
+      invalidateOwnerCaches(unitId);
+
       setUnits((current) => {
         const updatedUnits = current.filter((unit) => unit.id !== unitId);
 
-        const cached = getPropertyDetailsCache(propertyId);
-
-        if (cached) {
+        syncPropertyCache((cached) => {
           const updatedTenantsByUnit = { ...cached.tenantsByUnit };
           delete updatedTenantsByUnit[unitId];
-
-          setPropertyDetailsCache(propertyId, {
+          return {
             ...cached,
             units: updatedUnits,
             tenantsByUnit: updatedTenantsByUnit,
-          });
-        }
+          };
+        });
 
         return updatedUnits;
       });
@@ -345,11 +368,7 @@ export default function usePropertyDetails() {
         delete updatedTenants[unitId];
         return updatedTenants;
       });
-      clearHomeCache();
-      clearPropertiesCache();
-      clearTenantsCache();
-      clearTenantDetailsCache();
-      clearRentStatusCache();
+
       setUnitToDelete(null);
       setEditingUnit(null);
       setShowTenantFormFor((current) =>
@@ -367,6 +386,8 @@ export default function usePropertyDetails() {
   }
 
   async function handleOccupancyChange(unitId, newStatus) {
+    if (updatingOccupancyUnitId === unitId) return;
+
     setUnitError("");
     setUnitSuccess("");
 
@@ -380,6 +401,8 @@ export default function usePropertyDetails() {
       return;
     }
 
+    setUpdatingOccupancyUnitId(unitId);
+
     try {
       const updatedUnit = await UnitService.updateOccupancyStatus(
         unitId,
@@ -391,22 +414,19 @@ export default function usePropertyDetails() {
           item.id === unitId ? { ...item, ...updatedUnit } : item
         );
 
-        const cached = getPropertyDetailsCache(propertyId);
-
-        if (cached) {
-          setPropertyDetailsCache(propertyId, {
-            ...cached,
-            units: updatedUnits,
-          });
-        }
+        syncPropertyCache((cached) => ({
+          ...cached,
+          units: updatedUnits,
+        }));
 
         return updatedUnits;
       });
-      clearHomeCache();
-      clearTenantsCache();
+      invalidateOwnerCaches(unitId);
       setUnitSuccess("Occupancy status updated successfully!");
     } catch (err) {
       setUnitError(err.message || "Unable to update occupancy status.");
+    } finally {
+      setUpdatingOccupancyUnitId(null);
     }
   }
 
@@ -422,20 +442,18 @@ export default function usePropertyDetails() {
     try {
       await TenantService.vacateUnitAndDeleteTenants(unitId);
 
+      invalidateOwnerCaches(unitId);
+
       setTenantsByUnit((current) => {
         const updatedTenants = {
           ...current,
           [unitId]: [],
         };
 
-        const cached = getPropertyDetailsCache(propertyId);
-
-        if (cached) {
-          setPropertyDetailsCache(propertyId, {
-            ...cached,
-            tenantsByUnit: updatedTenants,
-          });
-        }
+        syncPropertyCache((cached) => ({
+          ...cached,
+          tenantsByUnit: updatedTenants,
+        }));
 
         return updatedTenants;
       });
@@ -447,21 +465,14 @@ export default function usePropertyDetails() {
             : unit
         );
 
-        const cached = getPropertyDetailsCache(propertyId);
-
-        if (cached) {
-          setPropertyDetailsCache(propertyId, {
-            ...cached,
-            units: updatedUnits,
-          });
-        }
+        syncPropertyCache((cached) => ({
+          ...cached,
+          units: updatedUnits,
+        }));
 
         return updatedUnits;
       });
-      clearHomeCache();
-      clearTenantsCache();
-      clearTenantDetailsCache();
-      clearRentStatusCache();
+
       setOccupancyConfirmation(null);
       setUnitSuccess("Tenant details removed. Unit is now vacant.");
     } catch (err) {
@@ -483,14 +494,10 @@ export default function usePropertyDetails() {
           [unitId]: tenantData,
         };
 
-        const cached = getPropertyDetailsCache(propertyId);
-
-        if (cached) {
-          setPropertyDetailsCache(propertyId, {
-            ...cached,
-            tenantsByUnit: updatedTenants,
-          });
-        }
+        syncPropertyCache((cached) => ({
+          ...cached,
+          tenantsByUnit: updatedTenants,
+        }));
 
         return updatedTenants;
       });
@@ -513,6 +520,8 @@ export default function usePropertyDetails() {
 
   async function handleCreateTenant(event, unitId) {
     event.preventDefault();
+    if (savingTenant) return;
+
     setSavingTenant(true);
     setTenantError("");
     setTenantSuccess("");
@@ -530,14 +539,10 @@ export default function usePropertyDetails() {
           [unitId]: [newTenant, ...(current[unitId] || [])],
         };
 
-        const cached = getPropertyDetailsCache(propertyId);
-
-        if (cached) {
-          setPropertyDetailsCache(propertyId, {
-            ...cached,
-            tenantsByUnit: updatedTenants,
-          });
-        }
+        syncPropertyCache((cached) => ({
+          ...cached,
+          tenantsByUnit: updatedTenants,
+        }));
 
         return updatedTenants;
       });
@@ -549,21 +554,15 @@ export default function usePropertyDetails() {
             : unit
         );
 
-        const cached = getPropertyDetailsCache(propertyId);
-
-        if (cached) {
-          setPropertyDetailsCache(propertyId, {
-            ...cached,
-            units: updatedUnits,
-          });
-        }
+        syncPropertyCache((cached) => ({
+          ...cached,
+          units: updatedUnits,
+        }));
 
         return updatedUnits;
       });
 
-      clearHomeCache();
-      clearTenantsCache();
-      clearRentStatusCache();
+      invalidateOwnerCaches(unitId);
 
       setTenantSuccess("Tenant added successfully!");
       setShowTenantFormFor(null);

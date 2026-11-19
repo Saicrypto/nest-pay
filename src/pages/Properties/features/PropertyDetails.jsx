@@ -21,20 +21,16 @@ function PropertyDetails() {
   }
   // ...rest of PropertyDetails unchanged
 
- if (details.loading) {
-  return <PropertyDetailsSkeleton />;
-}
-
-  if (details.error) {
+ if (!details.property) {
     return (
       <main className="property-details-page">
-       <Link to="/properties" className="properties-details-back">
-  <LuArrowLeft color="#DD6013" />
-  Properties
-</Link>
+        <Link to="/properties" className="properties-details-back">
+          <LuArrowLeft color="#DD6013" />
+          Properties
+        </Link>
 
         <p className="property-details-error" role="alert">
-          {details.error}
+          Property not found or you do not have access to view it.
         </p>
       </main>
     );

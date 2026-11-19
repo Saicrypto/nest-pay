@@ -1,4 +1,3 @@
-
 import {
   BrowserRouter,
   Routes,
@@ -25,7 +24,6 @@ import ServiceProviders from "./pages/Properties/features/ServiceProviders";
 import DailyUtilities from "./pages/Properties/features/DailyUtilities";
 import PropertyComplaints from "./pages/Properties/features/PropertyComplaints";
 
-
 // Tenant imports
 import {
   TenantProvider,
@@ -39,13 +37,17 @@ import TenantHome from "../tenant/src/pages/Home/features/TenantHome";
 import TenantServices from "../tenant/src/pages/Services/features/Services";
 import TenantComplaints from "../tenant/src/pages/Complaints/features/Complaints";
 import RaiseComplaint from "../tenant/src/pages/Complaints/features/RaiseComplaint";
-import NotificationBell from "../tenant/src/components/NotificationBell/NotificationBell.jsx";
 import FlatDetails from "../tenant/src/pages/Home/components/FlatDetails";
 import TenantProfile from "../tenant/src/pages/Profile/features/Profile";
 import TenantPayments from "../tenant/src/pages/Payments/features/Payments";
 import TenantHomeSkeleton from "../tenant/src/pages/Home/components/TenantHomeSkeleton";
 import ServicesSkeleton from "../tenant/src/pages/Services/components/ServicesSkeleton";
 import ComplaintsSkeleton from "../tenant/src/pages/Complaints/components/ComplaintsSkeleton";
+
+function normalizePath(pathname) {
+  if (!pathname || pathname === "/") return "/";
+  return pathname.replace(/\/+$/, "") || "/";
+}
 
 function ProtectedRoute({ children }) {
   const { user, loading } = useUser();
@@ -94,15 +96,16 @@ function RootRoute() {
   return <Welcome />;
 }
 
-// Tenant protected route
+// Tenant route skeleton loader
 function TenantRouteLoader() {
   const { pathname } = useLocation();
+  const cleanPath = normalizePath(pathname);
 
-  if (pathname.startsWith("/tenant/services")) {
+  if (cleanPath.startsWith("/tenant/services")) {
     return <ServicesSkeleton />;
   }
 
-  if (pathname === "/tenant/complaints") {
+  if (cleanPath === "/tenant/complaints") {
     return (
       <main className="tenant-complaints-page">
         <header className="tenant-complaints-header">
@@ -116,7 +119,7 @@ function TenantRouteLoader() {
     );
   }
 
-  if (pathname.startsWith("/tenant/home")) {
+  if (cleanPath.startsWith("/tenant/home")) {
     return <TenantHomeSkeleton />;
   }
 
@@ -135,11 +138,7 @@ function TenantRouteLoader() {
 
 // Tenant protected route
 function TenantProtectedRoute({ children, requireOnboarding = true }) {
-  const {
-    isAuthenticated,
-    loading,
-    onboardingCompleted,
-  } = useTenant();
+  const { isAuthenticated, loading, onboardingCompleted } = useTenant();
 
   if (loading || (isAuthenticated && onboardingCompleted === null)) {
     return <TenantRouteLoader />;
@@ -161,7 +160,7 @@ function TenantProtectedRoute({ children, requireOnboarding = true }) {
 }
 
 function TenantLoginRoute() {
-  const { isAuthenticated, loading } = useTenant();
+  const { isAuthenticated, loading, onboardingCompleted } = useTenant();
 
   if (loading) {
     return (
@@ -176,115 +175,124 @@ function TenantLoginRoute() {
     );
   }
 
-  return isAuthenticated
-    ? <Navigate to="/tenant/home" replace />
-    : <TenantLogin />;
+  if (isAuthenticated) {
+    return (
+      <Navigate
+        to={onboardingCompleted ? "/tenant/home" : "/tenant/welcome"}
+        replace
+      />
+    );
+  }
+
+  return <TenantLogin />;
 }
 
 // Tenant application routes
 function TenantRoutes() {
   return (
-<Routes>
-  <Route index element={<Navigate to="login" replace />} />
+    <Routes>
+      <Route index element={<Navigate to="login" replace />} />
 
-  <Route path="login" element={<TenantLoginRoute />} />
+      <Route path="login" element={<TenantLoginRoute />} />
 
-  <Route
-    path="welcome"
-    element={
-      <TenantProtectedRoute requireOnboarding={false}>
-        <TenantWelcome />
-      </TenantProtectedRoute>
-    }
-  />
+      <Route
+        path="welcome"
+        element={
+          <TenantProtectedRoute requireOnboarding={false}>
+            <TenantWelcome />
+          </TenantProtectedRoute>
+        }
+      />
 
-  <Route
-    path="details"
-    element={
-      <TenantProtectedRoute requireOnboarding={false}>
-       <TenantOnboarding />
-      </TenantProtectedRoute>
-    }
-  />
+      <Route
+        path="details"
+        element={
+          <TenantProtectedRoute requireOnboarding={false}>
+            <TenantOnboarding />
+          </TenantProtectedRoute>
+        }
+      />
 
-  <Route
-    path="home"
-    element={
-      <TenantProtectedRoute>
-        <TenantHome />
-      </TenantProtectedRoute>
-    }
-  />
+      <Route
+        path="home"
+        element={
+          <TenantProtectedRoute>
+            <TenantHome />
+          </TenantProtectedRoute>
+        }
+      />
 
-<Route
-  path="payments"
-  element={
-    <TenantProtectedRoute>
-      <TenantPayments />
-    </TenantProtectedRoute>
-  }
-/>
+      <Route
+        path="payments"
+        element={
+          <TenantProtectedRoute>
+            <TenantPayments />
+          </TenantProtectedRoute>
+        }
+      />
 
-  <Route
-    path="services"
-    element={
-      <TenantProtectedRoute>
-         <TenantServices />
-      </TenantProtectedRoute>
-    }
-  />
+      <Route
+        path="services"
+        element={
+          <TenantProtectedRoute>
+            <TenantServices />
+          </TenantProtectedRoute>
+        }
+      />
 
-  <Route
-    path="complaints"
-    element={
-      <TenantProtectedRoute>
-        <TenantComplaints />
-      </TenantProtectedRoute>
-    }
-  />
+      <Route
+        path="complaints"
+        element={
+          <TenantProtectedRoute>
+            <TenantComplaints />
+          </TenantProtectedRoute>
+        }
+      />
 
-<Route
-  path="complaints/raise"
-  element={
-    <TenantProtectedRoute>
-      <RaiseComplaint />
-    </TenantProtectedRoute>
-  }
-/>
+      <Route
+        path="complaints/raise"
+        element={
+          <TenantProtectedRoute>
+            <RaiseComplaint />
+          </TenantProtectedRoute>
+        }
+      />
 
-<Route
-  path="flat-details"
-  element={
-    <TenantProtectedRoute>
-      <FlatDetails />
-    </TenantProtectedRoute>
-  }
-/>
+      <Route
+        path="flat-details"
+        element={
+          <TenantProtectedRoute>
+            <FlatDetails />
+          </TenantProtectedRoute>
+        }
+      />
 
-<Route
-  path="profile"
-  element={
-    <TenantProtectedRoute>
-      <TenantProfile />
-    </TenantProtectedRoute>
-  }
-/>
+      <Route
+        path="profile"
+        element={
+          <TenantProtectedRoute>
+            <TenantProfile />
+          </TenantProtectedRoute>
+        }
+      />
 
-</Routes>
+      <Route path="*" element={<Navigate to="/tenant/home" replace />} />
+    </Routes>
   );
 }
 
+const TENANT_NAV_PATHS = new Set([
+  "/tenant/home",
+  "/tenant/payments",
+  "/tenant/services",
+  "/tenant/complaints",
+  "/tenant/profile",
+]);
 
 function TenantApp() {
-  const location = useLocation();
-
-  const showTenantNav = [
-    "/tenant/home",
-    "/tenant/payments",
-    "/tenant/services",
-    "/tenant/complaints",
-    "/tenant/profile",
-  ].includes(location.pathname);
+  const { pathname } = useLocation();
+  const cleanPath = normalizePath(pathname);
+  const showTenantNav = TENANT_NAV_PATHS.has(cleanPath);
 
   return (
     <>
@@ -297,24 +305,25 @@ function TenantApp() {
   );
 }
 
-
 // Owner application routes
 function AppRoutes() {
   const { user } = useUser();
-  const location = useLocation();
+  const { pathname } = useLocation();
+  const cleanPath = normalizePath(pathname);
 
-  const isTenantRoute = location.pathname.startsWith("/tenant/");
+  const isTenantRoute =
+    cleanPath === "/tenant" || cleanPath.startsWith("/tenant/");
 
-const showNav =
+  const showNav =
     user &&
     !isTenantRoute &&
-    location.pathname !== "/" &&
-    location.pathname !== "/login";
+    cleanPath !== "/" &&
+    cleanPath !== "/login";
 
   return (
     <>
       <Routes>
-<Route path="/" element={<RootRoute />} />
+        <Route path="/" element={<RootRoute />} />
 
         <Route
           path="/login"
@@ -361,8 +370,6 @@ const showNav =
           }
         />
 
-        
-
         <Route
           path="/payment-settings"
           element={
@@ -400,31 +407,31 @@ const showNav =
         />
 
         <Route
-  path="/properties/:propertyId/services"
-  element={
-    <ProtectedRoute>
-      <ServiceProviders />
-    </ProtectedRoute>
-  }
-/>
+          path="/properties/:propertyId/services"
+          element={
+            <ProtectedRoute>
+              <ServiceProviders />
+            </ProtectedRoute>
+          }
+        />
 
-<Route
-  path="/properties/:propertyId/utilities"
-  element={
-    <ProtectedRoute>
-      <DailyUtilities />
-    </ProtectedRoute>
-  }
-/>
+        <Route
+          path="/properties/:propertyId/utilities"
+          element={
+            <ProtectedRoute>
+              <DailyUtilities />
+            </ProtectedRoute>
+          }
+        />
 
-<Route
-  path="/properties/:propertyId/complaints"
-  element={
-    <ProtectedRoute>
-      <PropertyComplaints />
-    </ProtectedRoute>
-  }
-/>
+        <Route
+          path="/properties/:propertyId/complaints"
+          element={
+            <ProtectedRoute>
+              <PropertyComplaints />
+            </ProtectedRoute>
+          }
+        />
 
         {/* Tenant application */}
         <Route path="/tenant/*" element={<TenantApp />} />
@@ -439,13 +446,13 @@ const showNav =
 
 function App() {
   return (
-    <UserProvider>
-      <TenantProvider>
-        <BrowserRouter>
+    <BrowserRouter>
+      <UserProvider>
+        <TenantProvider>
           <AppRoutes />
-        </BrowserRouter>
-      </TenantProvider>
-    </UserProvider>
+        </TenantProvider>
+      </UserProvider>
+    </BrowserRouter>
   );
 }
 

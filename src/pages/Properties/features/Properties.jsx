@@ -18,7 +18,8 @@ function Properties() {
   const [properties, setProperties] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-  const { myProfile } = useUser();
+  const { user, myProfile } = useUser();
+  const activeUserId = user?.id || currentUserId;
 
 const username =
   myProfile?.username ||
@@ -73,23 +74,30 @@ const handleStartEditOwnerName = () => {
 };
 
 const handleSaveOwnerName = async (e) => {
-  if (e) e.preventDefault();
-  if (!currentUserId) return;
+    if (e) e.preventDefault();
+    if (!currentUserId || isSavingOwnerName) return;
 
-  const trimmed = draftOwnerName.trim();
-  setIsSavingOwnerName(true);
+    const trimmed = draftOwnerName.trim().slice(0, 18);
+    setIsSavingOwnerName(true);
+    setError("");
 
-  const { data, error } = await supabase.auth.updateUser({
-    data: { short_name: trimmed || null }
-  });
+    try {
+      const { data, error: updateError } = await supabase.auth.updateUser({
+        data: { short_name: trimmed || null },
+      });
 
-  setIsSavingOwnerName(false);
+      if (updateError) throw updateError;
 
-  if (!error && data?.user?.id === currentUserId) {
-    setOwnerShortName(trimmed);
-    setIsEditingOwnerName(false);
-  }
-};
+      if (data?.user?.id === currentUserId) {
+        setOwnerShortName(trimmed);
+        setIsEditingOwnerName(false);
+      }
+    } catch (err) {
+      setError(err.message || "Unable to update display name.");
+    } finally {
+      setIsSavingOwnerName(false);
+    }
+  };
 
 const formattedHeading = ownerShortName
   ? `${ownerShortName}${ownerShortName.toLowerCase().endsWith('s') ? "'" : "'s"} Properties`
@@ -97,44 +105,48 @@ const formattedHeading = ownerShortName
 
 
 useEffect(() => {
-  let active = true;
+    if (!activeUserId) return;
 
-  async function loadProperties() {
-    const cached = getPropertiesCache();
+    let active = true;
 
-    if (cached !== null) {
-      setProperties(cached);
-      setLoading(false);
-      return;
-    }
+    async function loadProperties() {
+      const cached = getPropertiesCache(activeUserId);
 
-    try {
-      const data = await PropertyService.getMyProperties();
-
-      if (active) {
-        const result = data || [];
-
-        setProperties(result);
-        setPropertiesCache(result);
-        setError("");
-      }
-    } catch (err) {
-      if (active) {
-        setError(err.message || "Unable to load your properties.");
-      }
-    } finally {
-      if (active) {
+      if (cached !== null) {
+        setProperties(cached);
         setLoading(false);
+        return;
+      }
+
+      setLoading(true);
+
+      try {
+        const data = await PropertyService.getMyProperties();
+
+        if (active) {
+          const result = data || [];
+
+          setProperties(result);
+          setPropertiesCache(activeUserId, result);
+          setError("");
+        }
+      } catch (err) {
+        if (active) {
+          setError(err.message || "Unable to load your properties.");
+        }
+      } finally {
+        if (active) {
+          setLoading(false);
+        }
       }
     }
-  }
 
-  loadProperties();
+    loadProperties();
 
-  return () => {
-    active = false;
-  };
-}, []);
+    return () => {
+      active = false;
+    };
+  }, [activeUserId]);
 
 
   return (
@@ -224,12 +236,15 @@ useEffect(() => {
       className="properties-list-card"
     >
       <div className="properties-list-image">
-        <img
+       <img
           src={
-            property.image_url ||
-            "/images/property-placeholder.jpg"
+            property.image_url &&
+            /^(https?:\/\/|\/)/i.test(property.image_url)
+              ? property.image_url
+              : "/images/property-placeholder.jpg"
           }
-          alt={property.property_name}
+          alt={property.property_name || "Property"}
+          loading="lazy"
           onError={(event) => {
             event.currentTarget.style.display = "none";
           }}

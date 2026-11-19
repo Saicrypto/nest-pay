@@ -20,10 +20,12 @@ import "../styles/PropertySummary.css";
 import { clearTenantsCache } from "../../Tenants/cache/tenantsCache";
 import { clearTenantDetailsCache } from "../../Tenants/cache/tenantDetailsCache";
 import { clearRentStatusCache } from "../../RentStatus/cache/rentStatusCache";
+import { useUser } from "../../../context/UserContext";
+
 
 function PropertySummary({ property, unitCount }) {
   const navigate = useNavigate();
-
+ const { user } = useUser();
   const [editing, setEditing] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState(false);
   const [deleting, setDeleting] = useState(false);
@@ -47,22 +49,52 @@ const address = property.city || "City not provided";
     setForm((current) => ({ ...current, [name]: value }));
   }
 
-  async function handleSave(event) {
+async function handleSave(event) {
     event.preventDefault();
+    if (saving) return;
+
+    const cleanName = form.propertyName.trim();
+    const parsedUnits = Number.parseInt(form.totalUnits, 10);
+    const cleanPincode = form.pincode.trim();
+
+    if (!cleanName) {
+      setError("Property name is required.");
+      return;
+    }
+
+    if (!Number.isInteger(parsedUnits) || parsedUnits < Math.max(1, unitCount || 1)) {
+      setError(
+        `Total flats must be at least ${Math.max(1, unitCount || 1)}.`
+      );
+      return;
+    }
+
+    if (cleanPincode && !/^\d{6}$/.test(cleanPincode)) {
+      setError("Enter a valid 6-digit pincode.");
+      return;
+    }
+
     setSaving(true);
     setError("");
 
     try {
-      await PropertyService.updateProperty(property.id, form);
+      await PropertyService.updateProperty(property.id, {
+        ...form,
+        propertyName: cleanName,
+        address: form.address.trim(),
+        city: form.city.trim(),
+        state: form.state.trim(),
+        pincode: cleanPincode,
+        totalUnits: parsedUnits,
+      });
 
-clearPropertiesCache();
-clearHomeCache();
-clearPropertyDetailsCache(property.id);
-clearTenantsCache();
-clearTenantDetailsCache();
-clearRentStatusCache();
+      clearPropertiesCache();
+      clearHomeCache();
+      clearPropertyDetailsCache(user?.id, property.id);
+      clearTenantsCache();
+      clearTenantDetailsCache();
+      clearRentStatusCache();
 
-      // Reload to display the updated property and its address.
       window.location.reload();
     } catch (err) {
       setError(err.message || "Unable to update property.");
@@ -72,18 +104,20 @@ clearRentStatusCache();
   }
 
   async function handleDelete() {
+    if (deleting) return;
+
     setDeleting(true);
     setError("");
 
     try {
       await PropertyService.deleteProperty(property.id);
 
-clearPropertiesCache();
-clearHomeCache();
-clearPropertyDetailsCache();
-clearTenantsCache();
-clearTenantDetailsCache();
-clearRentStatusCache();
+      clearPropertiesCache();
+      clearHomeCache();
+      clearPropertyDetailsCache(user?.id, property.id);
+      clearTenantsCache();
+      clearTenantDetailsCache();
+      clearRentStatusCache();
 
       navigate("/properties", { replace: true });
     } catch (err) {

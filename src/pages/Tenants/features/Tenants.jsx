@@ -2,26 +2,26 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import {
   LuSearch,
+  LuX,
   LuHouse,
   LuUserRound,
   LuPlus,
-  LuX,
+  LuChevronRight,
+  LuPencil,
   LuPhone,
   LuMail,
-  LuChevronRight,
+  LuCalendarDays,
+  LuUsers,
+  LuBriefcase,
   LuKeyRound,
   LuCopy,
   LuEye,
   LuEyeOff,
-  LuCalendarDays,
-  LuUsers,
-  LuBriefcase,
-  LuPencil,
 } from "react-icons/lu";
 import PropertyService from "../../../services/PropertyService";
 import UnitService from "../../../services/UnitService";
 import TenantService from "../../../services/TenantService";
-import "./../styles/Tenants.css";
+import { useUser } from "../../../context/UserContext";
 import {
   getTenantsCache,
   setTenantsCache,
@@ -31,8 +31,40 @@ import TenantsSkeleton from "../components/TenantsSkeleton";
 import { clearTenantDetailsCache } from "../cache/tenantDetailsCache";
 import { clearRentStatusCache } from "../../RentStatus/cache/rentStatusCache";
 import UnitAccessCodeService from "../../Properties/services/UnitAccessCodeService";
+import "../styles/Tenants.css";
+
+
+
+async function copyTextSafely(text) {
+  if (navigator?.clipboard?.writeText) {
+    try {
+      await navigator.clipboard.writeText(text);
+      return true;
+    } catch {
+      // Fall through to legacy textarea copy for restricted WebViews
+    }
+  }
+
+  try {
+    const textarea = document.createElement("textarea");
+    textarea.value = text;
+    textarea.setAttribute("readonly", "");
+    textarea.style.position = "fixed";
+    textarea.style.opacity = "0";
+    document.body.appendChild(textarea);
+    textarea.select();
+    const copied = document.execCommand("copy");
+    document.body.removeChild(textarea);
+    return copied;
+  } catch {
+    return false;
+  }
+}
 
 function Tenants() {
+  const { user } = useUser();
+  const userId = user?.id;
+
   const [properties, setProperties] = useState([]);
   const [units, setUnits] = useState([]);
   const [tenants, setTenants] = useState([]);
@@ -46,8 +78,6 @@ function Tenants() {
   const [editingTenant, setEditingTenant] = useState(false);
   const [savingEdit, setSavingEdit] = useState(false);
   const [editError, setEditError] = useState("");
-  const [moveInDate, setMoveInDate] = useState("");
-  const [saving, setSaving] = useState(false);
   const [formError, setFormError] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
   const [viewingUnit, setViewingUnit] = useState(null);
@@ -59,48 +89,85 @@ function Tenants() {
   const [accessCodeError, setAccessCodeError] = useState("");
   const [showAccessCode, setShowAccessCode] = useState(false);
 
-  const loadData = useCallback(async (forceRefresh = false) => {
-    const cached = getTenantsCache();
+  const loadData = useCallback(
+    async (forceRefresh = false) => {
+      if (!userId) {
+        setProperties([]);
+        setUnits([]);
+        setTenants([]);
+        setLoading(false);
+        return;
+      }
 
-    if (cached && !forceRefresh) {
-      setProperties(cached.properties);
-      setUnits(cached.units);
-      setTenants(cached.tenants);
+      const cached = getTenantsCache(userId);
+
+      if (cached && !forceRefresh) {
+        setProperties(Array.isArray(cached.properties) ? cached.properties : []);
+        setUnits(Array.isArray(cached.units) ? cached.units : []);
+        setTenants(Array.isArray(cached.tenants) ? cached.tenants : []);
+        setPageError("");
+        setLoading(false);
+        return;
+      }
+
+      setLoading(true);
       setPageError("");
-      setLoading(false);
-      return;
-    }
 
-    setLoading(true);
-    setPageError("");
+      try {
+        const [propertyData, unitData, tenantData] = await Promise.all([
+          PropertyService.getMyProperties(),
+          UnitService.getMyUnits(),
+          TenantService.getMyTenants(),
+        ]);
 
-    try {
-      const [propertyData, unitData, tenantData] = await Promise.all([
-        PropertyService.getMyProperties(),
-        UnitService.getMyUnits(),
-        TenantService.getMyTenants(),
-      ]);
+        const result = {
+          properties: Array.isArray(propertyData) ? propertyData : [],
+          units: Array.isArray(unitData) ? unitData : [],
+          tenants: Array.isArray(tenantData) ? tenantData : [],
+        };
 
-      const result = {
-        properties: propertyData || [],
-        units: unitData || [],
-        tenants: tenantData || [],
-      };
-
-      setProperties(result.properties);
-      setUnits(result.units);
-      setTenants(result.tenants);
-      setTenantsCache(result);
-    } catch (err) {
-      setPageError(err.message || "Unable to load tenants and flats.");
-    } finally {
-      setLoading(false);
-    }
-  }, []);
+        setProperties(result.properties);
+        setUnits(result.units);
+        setTenants(result.tenants);
+        setTenantsCache(userId, result);
+      } catch (err) {
+        setPageError(err.message || "Unable to load tenants and flats.");
+      } finally {
+        setLoading(false);
+      }
+    },
+    [userId]
+  );
 
   useEffect(() => {
     loadData();
   }, [loadData]);
+
+  useEffect(() => {
+    if (!viewingUnit && !selectedUnit) return;
+
+    function handleKeyDown(event) {
+      if (event.key !== "Escape") return;
+      if (generatingCode || savingEdit || loadingAccessCode) return;
+
+      if (viewingUnit) {
+        setEditingTenant(false);
+        setEditError("");
+        setShowAccessCode(false);
+        setViewingUnit(null);
+      }
+
+      if (selectedUnit) {
+        setSelectedUnit(null);
+        setGeneratedCode("");
+        setShowAccessCode(false);
+        setFormError("");
+      }
+    }
+
+    document.addEventListener("keydown", handleKeyDown);
+    return () => document.removeEventListener("keydown", handleKeyDown);
+  }, [viewingUnit, selectedUnit, generatingCode, savingEdit, loadingAccessCode]);
 
   const tenantsByUnit = useMemo(() => {
     const grouped = {};
@@ -153,10 +220,6 @@ function Tenants() {
 
   function openTenantForm(unit) {
     setSelectedUnit(unit);
-    setTenantName("");
-    setTenantPhone("");
-    setTenantEmail("");
-    setMoveInDate("");
     setGeneratedCode("");
     setShowAccessCode(false);
     setFormError("");
@@ -165,15 +228,22 @@ function Tenants() {
   }
 
   function closeTenantForm() {
-    if (saving || generatingCode) return;
+    if (generatingCode) return;
     setSelectedUnit(null);
+    setGeneratedCode("");
+    setShowAccessCode(false);
     setFormError("");
   }
 
   async function handleGenerateAccessCode(event) {
     event.preventDefault();
 
-    if (!selectedUnit) return;
+    if (!selectedUnit || generatingCode) return;
+
+    if (!rentStartDate) {
+      setFormError("Please select a rent start date.");
+      return;
+    }
 
     setGeneratingCode(true);
     setFormError("");
@@ -187,10 +257,13 @@ function Tenants() {
       );
 
       setGeneratedCode(result.code);
+      if (userId) {
+        clearTenantsCache(userId);
+      }
       setSuccessMessage(
         result.existing
-          ? "Existing permanent access code retrieved."
-          : "Permanent access code created successfully."
+          ? "Existing access code retrieved."
+          : "Access code generated for new tenant."
       );
     } catch (err) {
       setFormError(err.message || "Unable to generate access code.");
@@ -200,6 +273,8 @@ function Tenants() {
   }
 
   async function handleViewAccessCode(unit) {
+    if (!unit?.id || loadingAccessCode) return;
+
     setLoadingAccessCode(true);
     setViewingAccessCode("");
     setAccessCodeError("");
@@ -218,15 +293,30 @@ function Tenants() {
     }
   }
 
+  async function handleCopyCode(codeValue) {
+    if (!codeValue) return;
+    const copied = await copyTextSafely(codeValue);
+    if (copied) {
+      setSuccessMessage("Access code copied.");
+    } else {
+      setFormError("Unable to copy automatically. Please copy the code manually.");
+    }
+  }
+
   const handleUpdateTenant = async (e) => {
     e.preventDefault();
+    if (savingEdit) return;
 
     if (!viewingUnit?.tenant?.id) {
       setEditError("Tenant details not found.");
       return;
     }
 
-    if (!tenantName.trim() || !tenantPhone.trim()) {
+    const cleanName = tenantName.trim();
+    const cleanPhone = tenantPhone.trim();
+    const cleanEmail = tenantEmail.trim();
+
+    if (!cleanName || !cleanPhone) {
       setEditError("Tenant name and phone are required.");
       return;
     }
@@ -239,33 +329,37 @@ function Tenants() {
       const updatedTenant = await TenantService.updateTenant(
         viewingUnit.tenant.id,
         {
-          fullName: tenantName,
-          phone: tenantPhone,
-          email: tenantEmail,
+          fullName: cleanName,
+          phone: cleanPhone,
+          email: cleanEmail,
         }
       );
 
-      setTenants((current) =>
-        current.map((tenant) =>
-          tenant.id === updatedTenant.id ? updatedTenant : tenant
-        )
+      const nextTenants = tenants.map((tenant) =>
+        tenant.id === updatedTenant.id ? updatedTenant : tenant
       );
 
-      setTenantsCache((current) => {
-        const cached = Array.isArray(current) ? current : tenants;
-        return cached.map((tenant) =>
-          tenant.id === updatedTenant.id ? updatedTenant : tenant
-        );
-      });
+      setTenants(nextTenants);
 
-      setViewingUnit((current) => ({
-        ...current,
-        tenant: updatedTenant,
-      }));
+      if (userId) {
+        setTenantsCache(userId, {
+          properties,
+          units,
+          tenants: nextTenants,
+        });
+      }
 
-      clearTenantsCache();
+      setViewingUnit((current) =>
+        current
+          ? {
+              ...current,
+              tenant: updatedTenant,
+            }
+          : null
+      );
+
       clearTenantDetailsCache(updatedTenant.id);
-      clearRentStatusCache();
+      clearRentStatusCache(userId);
       setEditingTenant(false);
       setSuccessMessage("Tenant details updated successfully.");
     } catch (error) {
@@ -308,7 +402,7 @@ function Tenants() {
               onClick={() => setSearch("")}
               aria-label="Clear search"
             >
-              <LuX size={15} />
+              <LuX size={15} aria-hidden="true" />
             </button>
           )}
         </div>
@@ -332,7 +426,7 @@ function Tenants() {
       {!pageError && filteredProperties.length === 0 && (
         <section className="tenants-empty">
           <div className="tenants-empty-icon">
-            <LuHouse size={26} />
+            <LuHouse size={26} aria-hidden="true" />
           </div>
           <h2>{search ? "No matches found" : "No flats yet"}</h2>
           <p>
@@ -354,7 +448,7 @@ function Tenants() {
           <section className="tenants-property" key={property.id}>
             <div className="tenants-property-heading">
               <span className="tenants-property-icon">
-                <LuHouse size={20} />
+                <LuHouse size={20} aria-hidden="true" />
               </span>
               <div className="tenants-property-meta">
                 <h2>{property.property_name}</h2>
@@ -369,8 +463,8 @@ function Tenants() {
             <div className="tenants-unit-list">
               {[...property.units]
                 .sort((a, b) => {
-                  const nameA = a.unit_name.replace(/^flat\s*/i, "").trim();
-                  const nameB = b.unit_name.replace(/^flat\s*/i, "").trim();
+                  const nameA = (a.unit_name || "").replace(/^flat\s*/i, "").trim();
+                  const nameB = (b.unit_name || "").replace(/^flat\s*/i, "").trim();
 
                   return nameA.localeCompare(nameB, undefined, {
                     numeric: true,
@@ -441,7 +535,7 @@ function Tenants() {
                           </div>
 
                           <div className="tenants-current-tenant">
-                            <LuUserRound size={13} />
+                            <LuUserRound size={13} aria-hidden="true" />
                             <span>
                               {activeTenant
                                 ? activeTenant.full_name
@@ -461,7 +555,7 @@ function Tenants() {
                               className="tenants-add-button"
                               onClick={() => openTenantForm(unit)}
                             >
-                              <LuPlus size={14} />
+                              <LuPlus size={14} aria-hidden="true" />
                               <span>Add tenant</span>
                             </button>
                           )}
@@ -469,6 +563,7 @@ function Tenants() {
                           <LuChevronRight
                             size={16}
                             className="tenants-unit-arrow"
+                            aria-hidden="true"
                           />
                         </div>
                       </div>
@@ -484,8 +579,8 @@ function Tenants() {
       {viewingUnit && (
         <div
           className="tenant-details-overlay"
-          onMouseDown={(e) => {
-            if (e.target === e.currentTarget) {
+          onPointerDown={(e) => {
+            if (e.target === e.currentTarget && !savingEdit && !loadingAccessCode) {
               setEditingTenant(false);
               setEditError("");
               setShowAccessCode(false);
@@ -527,7 +622,7 @@ function Tenants() {
                       setEditingTenant(true);
                     }}
                   >
-                    <LuPencil size={15} />
+                    <LuPencil size={15} aria-hidden="true" />
                   </button>
                 )}
 
@@ -542,7 +637,7 @@ function Tenants() {
                   }}
                   aria-label="Close tenant details"
                 >
-                  <LuX size={18} />
+                  <LuX size={18} aria-hidden="true" />
                 </button>
               </div>
             </div>
@@ -583,7 +678,9 @@ function Tenants() {
                   </label>
 
                   {editError && (
-                    <p className="tenant-form-error">{editError}</p>
+                    <p className="tenant-form-error" role="alert">
+                      {editError}
+                    </p>
                   )}
 
                   <div className="tenant-edit-actions">
@@ -608,7 +705,7 @@ function Tenants() {
                   <div className="tenant-details-contact">
                     <div className="tn-detail-row">
                       <span className="tn-detail-icon">
-                        <LuUserRound size={16} />
+                        <LuUserRound size={16} aria-hidden="true" />
                       </span>
                       <div>
                         <span>Full name</span>
@@ -618,7 +715,7 @@ function Tenants() {
 
                     <div className="tn-detail-row">
                       <span className="tn-detail-icon">
-                        <LuPhone size={16} />
+                        <LuPhone size={16} aria-hidden="true" />
                       </span>
                       <div>
                         <span>Phone number</span>
@@ -628,7 +725,7 @@ function Tenants() {
 
                     <div className="tn-detail-row">
                       <span className="tn-detail-icon">
-                        <LuMail size={16} />
+                        <LuMail size={16} aria-hidden="true" />
                       </span>
                       <div>
                         <span>Email address</span>
@@ -638,13 +735,13 @@ function Tenants() {
 
                     <div className="tn-detail-grid-3">
                       <div className="tn-mini-stat">
-                        <LuCalendarDays size={14} />
+                        <LuCalendarDays size={14} aria-hidden="true" />
                         <span>Age</span>
                         <strong>{viewingUnit.tenant.age ?? "—"}</strong>
                       </div>
 
                       <div className="tn-mini-stat">
-                        <LuUsers size={14} />
+                        <LuUsers size={14} aria-hidden="true" />
                         <span>Family</span>
                         <strong>
                           {viewingUnit.tenant.family_members ?? "—"}
@@ -652,7 +749,7 @@ function Tenants() {
                       </div>
 
                       <div className="tn-mini-stat">
-                        <LuBriefcase size={14} />
+                        <LuBriefcase size={14} aria-hidden="true" />
                         <span>Profession</span>
                         <strong>
                           {viewingUnit.tenant.profession || "—"}
@@ -675,7 +772,7 @@ function Tenants() {
                       }}
                       disabled={loadingAccessCode}
                     >
-                      <LuKeyRound size={16} />
+                      <LuKeyRound size={16} aria-hidden="true" />
                       <span>
                         {loadingAccessCode
                           ? "Loading access code..."
@@ -699,14 +796,9 @@ function Tenants() {
                           {showAccessCode && (
                             <button
                               type="button"
-                              onClick={() => {
-                                navigator.clipboard.writeText(
-                                  viewingAccessCode
-                                );
-                                setSuccessMessage("Access code copied.");
-                              }}
+                              onClick={() => handleCopyCode(viewingAccessCode)}
                             >
-                              <LuCopy size={13} />
+                              <LuCopy size={13} aria-hidden="true" />
                               <span>Copy</span>
                             </button>
                           )}
@@ -734,7 +826,7 @@ function Tenants() {
                     openTenantForm(unit);
                   }}
                 >
-                  <LuPlus size={17} />
+                  <LuPlus size={17} aria-hidden="true" />
                   <span>Add tenant</span>
                 </button>
               </div>
@@ -747,7 +839,7 @@ function Tenants() {
       {selectedUnit && (
         <div
           className="tenant-form-overlay"
-          onMouseDown={(event) => {
+          onPointerDown={(event) => {
             if (event.target === event.currentTarget && !generatingCode) {
               closeTenantForm();
             }
@@ -782,7 +874,7 @@ function Tenants() {
                 disabled={generatingCode}
                 aria-label="Close form"
               >
-                <LuX size={18} />
+                <LuX size={18} aria-hidden="true" />
               </button>
             </div>
 
@@ -815,12 +907,9 @@ function Tenants() {
                     {showAccessCode && (
                       <button
                         type="button"
-                        onClick={() => {
-                          navigator.clipboard.writeText(generatedCode);
-                          setSuccessMessage("Access code copied.");
-                        }}
+                        onClick={() => handleCopyCode(generatedCode)}
                       >
-                        <LuCopy size={13} />
+                        <LuCopy size={13} aria-hidden="true" />
                         <span>Copy</span>
                       </button>
                     )}
@@ -849,18 +938,18 @@ function Tenants() {
                 {generatedCode ? (
                   showAccessCode ? (
                     <>
-                      <LuEyeOff size={16} />
+                      <LuEyeOff size={16} aria-hidden="true" />
                       <span>Hide access code</span>
                     </>
                   ) : (
                     <>
-                      <LuEye size={16} />
+                      <LuEye size={16} aria-hidden="true" />
                       <span>View access code</span>
                     </>
                   )
                 ) : (
                   <>
-                    <LuKeyRound size={16} />
+                    <LuKeyRound size={16} aria-hidden="true" />
                     <span>
                       {generatingCode
                         ? "Generating..."

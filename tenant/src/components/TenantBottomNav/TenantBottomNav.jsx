@@ -1,4 +1,4 @@
-import { NavLink } from "react-router-dom";
+import { NavLink, useLocation } from "react-router-dom";
 import {
   LuHouse,
   LuIndianRupee,
@@ -37,6 +37,8 @@ const navItems = [
 ];
 
 export default function TenantBottomNav() {
+  const { pathname } = useLocation();
+
   return (
     <nav className="tenant-bottom-nav" aria-label="Tenant navigation">
       {navItems.map(({ label, path, Icon }) => (
@@ -44,12 +46,13 @@ export default function TenantBottomNav() {
           key={path}
           to={path}
           end={path === "/tenant/home"}
+          replace={pathname === path}
           aria-label={label}
           className={({ isActive }) =>
             `tenant-bottom-nav-item ${isActive ? "active" : ""}`
           }
         >
-          <span className="tenant-bottom-nav-icon">
+          <span className="tenant-bottom-nav-icon" aria-hidden="true">
             <Icon size={18} />
           </span>
 

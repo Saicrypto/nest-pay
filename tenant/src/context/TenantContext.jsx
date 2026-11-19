@@ -1,12 +1,47 @@
-
 import {
   createContext,
+  useCallback,
   useContext,
   useEffect,
+  useMemo,
   useState,
 } from "react";
 
 import { supabase } from "../lib/supabase";
+import { clearServicesCache } from "../pages/Services/cache/servicesCache";
+import { clearComplaintsCache } from "../pages/Complaints/cache/complaintsCache";
+
+const TOKEN_STORAGE_KEY = "nest-pay-tenant-token";
+const UNIT_STORAGE_KEY = "nest-pay-tenant-unit";
+
+function readSessionStorage(key) {
+  try {
+    return window.sessionStorage.getItem(key);
+  } catch {
+    return null;
+  }
+}
+
+function writeSessionStorage(key, value) {
+  try {
+    window.sessionStorage.setItem(key, value);
+  } catch {
+    // Ignore storage quota/security errors on restricted WebViews
+  }
+}
+
+function removeSessionStorage(key) {
+  try {
+    window.sessionStorage.removeItem(key);
+  } catch {
+    // Ignore storage errors on restricted WebViews
+  }
+}
+
+function clearAllTenantCaches(token) {
+  clearServicesCache(token);
+  clearComplaintsCache(token);
+}
 
 const TenantContext = createContext(null);
 
@@ -21,7 +56,7 @@ export function TenantProvider({ children }) {
   const [loading, setLoading] = useState(true);
   const [ownerPayment, setOwnerPayment] = useState(null);
 
-  async function verifySession(token, storedUnitId) {
+  const verifySession = useCallback(async (token, storedUnitId) => {
     const { data, error } = await supabase.functions.invoke(
       "verify-tenant-session",
       {
@@ -29,21 +64,39 @@ export function TenantProvider({ children }) {
       }
     );
 
-    if (error) throw error;
+    if (error) {
+      const status = error?.context?.status;
+      let serverMessage = error?.message || "Unable to verify session.";
 
-    if (!data?.valid || data.unit_id !== storedUnitId) {
-      throw new Error("Tenant session is invalid or expired.");
+      try {
+        if (error?.context && typeof error.context.json === "function") {
+          const payload = await error.context.json();
+          if (payload?.error) serverMessage = payload.error;
+        }
+      } catch {
+        // Keep fallback message
+      }
+
+      const wrappedError = new Error(serverMessage);
+      wrappedError.isAuthInvalid = status === 401 || status === 403;
+      throw wrappedError;
+    }
+
+    if (!data?.valid || String(data.unit_id) !== String(storedUnitId)) {
+      const invalidError = new Error("Tenant session is invalid or expired.");
+      invalidError.isAuthInvalid = true;
+      throw invalidError;
     }
 
     return data;
-  }
+  }, []);
 
   useEffect(() => {
     let mounted = true;
 
     async function verifyStoredSession() {
-      const token = sessionStorage.getItem("nest-pay-tenant-token");
-      const storedUnitId = sessionStorage.getItem("nest-pay-tenant-unit");
+      const token = readSessionStorage(TOKEN_STORAGE_KEY);
+      const storedUnitId = readSessionStorage(UNIT_STORAGE_KEY);
 
       if (!token || !storedUnitId) {
         if (mounted) setLoading(false);
@@ -52,14 +105,13 @@ export function TenantProvider({ children }) {
 
       try {
         const data = await verifySession(token, storedUnitId);
-        
 
         if (mounted) {
           setDeviceToken(token);
           setUnitId(data.unit_id);
-          setUnit(data.unit);
-          setProperty(data.property);
-          setOnboardingCompleted(data.onboarding_completed);
+          setUnit(data.unit ?? null);
+          setProperty(data.property ?? null);
+          setOnboardingCompleted(Boolean(data.onboarding_completed));
           setRentStartDate(data.rent_start_date ?? null);
           setTenant(data.tenant ?? null);
           setOwnerPayment(data.owner_payment ?? null);
@@ -67,8 +119,11 @@ export function TenantProvider({ children }) {
       } catch (error) {
         console.error("Tenant session verification failed:", error);
 
-        sessionStorage.removeItem("nest-pay-tenant-token");
-        sessionStorage.removeItem("nest-pay-tenant-unit");
+        if (error?.isAuthInvalid) {
+          removeSessionStorage(TOKEN_STORAGE_KEY);
+          removeSessionStorage(UNIT_STORAGE_KEY);
+          clearAllTenantCaches(token);
+        }
       } finally {
         if (mounted) setLoading(false);
       }
@@ -79,39 +134,49 @@ export function TenantProvider({ children }) {
     return () => {
       mounted = false;
     };
-  }, []);
+  }, [verifySession]);
 
-  function login(
-    token,
-    id,
-    completed = false,
-    unitData = null,
-    propertyData = null,
-    rentDate = null,
-    tenantData = null,
-    ownerPaymentData = null
-  ) {
-    sessionStorage.setItem("nest-pay-tenant-token", token);
-    sessionStorage.setItem("nest-pay-tenant-unit", id);
+  const login = useCallback(
+    (
+      token,
+      id,
+      completed = false,
+      unitData = null,
+      propertyData = null,
+      rentDate = null,
+      tenantData = null,
+      ownerPaymentData = null
+    ) => {
+      const cleanToken = String(token ?? "").trim();
+      const cleanUnitId = String(id ?? "").trim();
+      if (!cleanToken || !cleanUnitId) return;
 
-    setDeviceToken(token);
-    setUnitId(id);
-    setOnboardingCompleted(completed);
-    setUnit(unitData);
-    setProperty(propertyData);
-    setRentStartDate(rentDate);
-    setTenant(tenantData);
-    setOwnerPayment(ownerPaymentData);
-  }
+      clearAllTenantCaches();
+      writeSessionStorage(TOKEN_STORAGE_KEY, cleanToken);
+      writeSessionStorage(UNIT_STORAGE_KEY, cleanUnitId);
 
-  function completeOnboarding(tenantData) {
+      setDeviceToken(cleanToken);
+      setUnitId(cleanUnitId);
+      setOnboardingCompleted(Boolean(completed));
+      setUnit(unitData);
+      setProperty(propertyData);
+      setRentStartDate(rentDate);
+      setTenant(tenantData);
+      setOwnerPayment(ownerPaymentData);
+    },
+    []
+  );
+
+  const completeOnboarding = useCallback((tenantData) => {
     setTenant(tenantData);
     setOnboardingCompleted(true);
-  }
+  }, []);
 
-  function logout() {
-    sessionStorage.removeItem("nest-pay-tenant-token");
-    sessionStorage.removeItem("nest-pay-tenant-unit");
+  const logout = useCallback(() => {
+    const currentToken = readSessionStorage(TOKEN_STORAGE_KEY);
+    removeSessionStorage(TOKEN_STORAGE_KEY);
+    removeSessionStorage(UNIT_STORAGE_KEY);
+    clearAllTenantCaches(currentToken);
 
     setDeviceToken(null);
     setUnitId(null);
@@ -121,28 +186,44 @@ export function TenantProvider({ children }) {
     setRentStartDate(null);
     setOnboardingCompleted(null);
     setOwnerPayment(null);
-  }
+  }, []);
+
+  const value = useMemo(
+    () => ({
+      deviceToken,
+      unitId,
+      tenant,
+      setTenant,
+      unit,
+      property,
+      rentStartDate,
+      loading,
+      onboardingCompleted,
+      isAuthenticated: Boolean(deviceToken && unitId),
+      login,
+      logout,
+      completeOnboarding,
+      ownerPayment,
+      setOwnerPayment,
+    }),
+    [
+      deviceToken,
+      unitId,
+      tenant,
+      unit,
+      property,
+      rentStartDate,
+      loading,
+      onboardingCompleted,
+      login,
+      logout,
+      completeOnboarding,
+      ownerPayment,
+    ]
+  );
 
   return (
-    <TenantContext.Provider
-      value={{
-        deviceToken,
-        unitId,
-        tenant,
-        setTenant,
-        unit,
-        property,
-        rentStartDate,
-        loading,
-        onboardingCompleted,
-        isAuthenticated: Boolean(deviceToken && unitId),
-        login,
-        logout,
-        completeOnboarding,
-        ownerPayment,
-        setOwnerPayment,
-      }}
-    >
+    <TenantContext.Provider value={value}>
       {children}
     </TenantContext.Provider>
   );

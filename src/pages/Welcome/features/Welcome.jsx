@@ -5,22 +5,31 @@ import "../styles/Welcome.css";
 
 function Welcome() {
   const [activeTab, setActiveTab] = useState("owner");
-  const touchStartX = useRef(null);
+  const touchStart = useRef(null);
 
   function handleTouchStart(event) {
-    touchStartX.current = event.touches[0].clientX;
+    const touch = event.touches[0];
+    if (!touch) return;
+    touchStart.current = { x: touch.clientX, y: touch.clientY };
   }
 
   function handleTouchEnd(event) {
-    if (touchStartX.current === null) return;
+    if (!touchStart.current) return;
 
-    const difference = event.changedTouches[0].clientX - touchStartX.current;
-
-    if (Math.abs(difference) > 60) {
-      setActiveTab(difference < 0 ? "tenant" : "owner");
+    const touch = event.changedTouches[0];
+    if (!touch) {
+      touchStart.current = null;
+      return;
     }
 
-    touchStartX.current = null;
+    const diffX = touch.clientX - touchStart.current.x;
+    const diffY = touch.clientY - touchStart.current.y;
+
+    if (Math.abs(diffX) > 60 && Math.abs(diffX) > Math.abs(diffY) * 1.5) {
+      setActiveTab(diffX < 0 ? "tenant" : "owner");
+    }
+
+    touchStart.current = null;
   }
 
   return (

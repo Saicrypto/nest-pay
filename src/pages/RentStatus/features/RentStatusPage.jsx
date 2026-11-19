@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 
 import { supabase } from "../../../lib/supabase";
+import { useUser } from "../../../context/UserContext";
 import "../styles/RentStatusPage.css";
 import {
   LuSearch,
@@ -19,7 +20,12 @@ import {
 import RentStatusPageSkeleton from "../components/RentStatusPageSkeleton";
 import { clearHomeCache } from "../../Home/cache/homeCache";
 
+const ALLOWED_PAYMENT_STATUSES = new Set(["unpaid", "paid", "overdue"]);
+
 function RentStatusPage() {
+  const { user } = useUser();
+  const userId = user?.id;
+
   const [payments, setPayments] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -31,38 +37,63 @@ function RentStatusPage() {
   const [filter, setFilter] = useState("all");
   const [searchTerm, setSearchTerm] = useState("");
 
-  async function loadPayments() {
-    const cached = getRentStatusCache();
+  useEffect(() => {
+    if (!userId) return;
 
-    // Show cached data immediately while refreshing from Supabase.
-    if (cached !== null) {
-      setPayments(cached);
-      setLoading(false);
+    let active = true;
+
+    async function loadPayments() {
+      const cached = getRentStatusCache(userId);
+      const hasFullDetails =
+        Array.isArray(cached) &&
+        (cached.length === 0 || "rent_month" in cached[0]);
+
+      // Show cached full records immediately while refreshing from Supabase.
+      if (hasFullDetails) {
+        setPayments(cached);
+        setLoading(false);
+      } else {
+        setLoading(true);
+      }
+
+      try {
+        const { data, error } = await supabase
+          .from("rent_payments")
+          .select(`
+            id, tenant_id, unit_id, rent_month, rent_amount, status, paid_at,
+            tenants (id, full_name, phone, tenant_status),
+            property_units (unit_name, property_id, rent_due_day,
+              properties (property_name))
+          `)
+          .order("rent_month", { ascending: false })
+          .limit(500);
+
+        if (error) throw error;
+
+        const result = Array.isArray(data) ? data : [];
+
+        if (active) {
+          setPayments(result);
+          setRentStatusCache(userId, result);
+          setError("");
+        }
+      } catch (err) {
+        if (active) {
+          setError(err.message || "Unable to load rent records.");
+        }
+      } finally {
+        if (active) {
+          setLoading(false);
+        }
+      }
     }
 
-    const { data, error } = await supabase
-      .from("rent_payments")
-      .select(`
-        id, tenant_id, unit_id, rent_month, rent_amount, status, paid_at,
-        tenants (id, full_name, phone, tenant_status),
-        property_units (unit_name, property_id, rent_due_day,
-          properties (property_name))
-      `)
-      .order("rent_month", { ascending: false });
+    loadPayments();
 
-    if (error) throw error;
-
-    const result = data || [];
-
-    setPayments(result);
-    setRentStatusCache(result);
-  }
-
-  useEffect(() => {
-    loadPayments()
-      .catch((err) => setError(err.message || "Unable to load rent records."))
-      .finally(() => setLoading(false));
-  }, []);
+    return () => {
+      active = false;
+    };
+  }, [userId]);
 
   const months = useMemo(() => {
     const uniqueMonths = new Set([
@@ -121,16 +152,22 @@ function RentStatusPage() {
     return true;
   });
 
-  async function updateStatus(paymentId, status) {
+ async function updateStatus(paymentId, status) {
+    if (updatingId === paymentId || !ALLOWED_PAYMENT_STATUSES.has(status)) {
+      return;
+    }
+
     setUpdatingId(paymentId);
     setError("");
+
+    const nextPaidAt = status === "paid" ? new Date().toISOString() : null;
 
     try {
       const { data, error } = await supabase
         .from("rent_payments")
         .update({
           status,
-          paid_at: status === "paid" ? new Date().toISOString() : null,
+          paid_at: nextPaidAt,
         })
         .eq("id", paymentId)
         .select("id");
@@ -148,12 +185,14 @@ function RentStatusPage() {
             ? {
                 ...payment,
                 status,
-                paid_at: status === "paid" ? new Date().toISOString() : null,
+                paid_at: nextPaidAt,
               }
             : payment
         );
 
-        setRentStatusCache(updatedPayments);
+        if (userId) {
+          setRentStatusCache(userId, updatedPayments);
+        }
         return updatedPayments;
       });
 
@@ -165,16 +204,25 @@ function RentStatusPage() {
     }
   }
 
+const inrFormatter = useMemo(
+    () =>
+      new Intl.NumberFormat("en-IN", {
+        style: "currency",
+        currency: "INR",
+        maximumFractionDigits: 0,
+      }),
+    []
+  );
+
   function formatCurrency(amount) {
-    return new Intl.NumberFormat("en-IN", {
-      style: "currency",
-      currency: "INR",
-      maximumFractionDigits: 0,
-    }).format(Number(amount || 0));
+    const parsed = Number(amount);
+    return inrFormatter.format(Number.isFinite(parsed) ? parsed : 0);
   }
 
   function formatDate(date) {
-    return new Date(date).toLocaleDateString("en-IN", {
+    const parsed = new Date(date);
+    if (Number.isNaN(parsed.getTime())) return "date not recorded";
+    return parsed.toLocaleDateString("en-IN", {
       day: "numeric",
       month: "short",
       year: "numeric",

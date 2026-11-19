@@ -3,7 +3,7 @@ import UnitForm from "./UnitForm";
 import UnitCard from "./UnitCard";
 import "../styles/PropertyUnits.css";
 import "../styles/UnitForm.css";
-import { useState } from "react";
+import { useState, useMemo } from "react";
 
 function PropertyUnits({
   units,
@@ -49,6 +49,8 @@ function PropertyUnits({
   setEditingFloorNumber,
   editingBedrooms,
   setEditingBedrooms,
+  squareFeet,
+  setSquareFeet,
   editingSquareFeet,
   setEditingSquareFeet,
   editingMonthlyRent,
@@ -61,29 +63,35 @@ function PropertyUnits({
   setEditingRentDueDay,
   handleOccupancyChange,
 }) {
-  const sortedUnits = [...units].sort((a, b) => {
-    const nameA = a.unit_name.replace(/^flat\s*/i, "").trim();
-    const nameB = b.unit_name.replace(/^flat\s*/i, "").trim();
+const [unitFilter, setUnitFilter] = useState("all"); // "all" | "occupied" | "vacant"
 
-    return nameA.localeCompare(nameB, undefined, {
-      numeric: true,
-      sensitivity: "base",
+  const sortedUnits = useMemo(() => {
+    return [...(units || [])].sort((a, b) => {
+      const nameA = (a.unit_name || "").replace(/^flat\s*/i, "").trim();
+      const nameB = (b.unit_name || "").replace(/^flat\s*/i, "").trim();
+
+      return nameA.localeCompare(nameB, undefined, {
+        numeric: true,
+        sensitivity: "base",
+      });
     });
-  });
+  }, [units]);
 
-  const [unitFilter, setUnitFilter] = useState("all"); // "all" | "occupied" | "vacant"
-
-const occupiedCount = sortedUnits.filter(
-    (unit) => unit.occupancy_status === "occupied"
-  ).length;
+  const occupiedCount = useMemo(
+    () =>
+      sortedUnits.filter((unit) => unit.occupancy_status === "occupied").length,
+    [sortedUnits]
+  );
   const vacantCount = sortedUnits.length - occupiedCount;
 
-  const filteredUnits = sortedUnits.filter((unit) => {
-    const isOccupied = unit.occupancy_status === "occupied";
-    if (unitFilter === "occupied") return isOccupied;
-    if (unitFilter === "vacant") return !isOccupied;
-    return true;
-  });
+  const filteredUnits = useMemo(() => {
+    return sortedUnits.filter((unit) => {
+      const isOccupied = unit.occupancy_status === "occupied";
+      if (unitFilter === "occupied") return isOccupied;
+      if (unitFilter === "vacant") return !isOccupied;
+      return true;
+    });
+  }, [sortedUnits, unitFilter]);
 
   return (
     <section className="property-units-section">

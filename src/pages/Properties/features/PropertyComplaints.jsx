@@ -29,30 +29,48 @@ export default function PropertyComplaints() {
   const [updatingId, setUpdatingId] = useState(null);
   const [statusFilter, setStatusFilter] = useState("all");
 
-  async function loadComplaints() {
+async function loadComplaints(signal) {
+    if (!propertyId) return;
+
     try {
       setError("");
       const data =
         await PropertyManagementService.getPropertyComplaints(propertyId);
-      setComplaints(data);
+      if (!signal?.aborted) {
+        setComplaints(Array.isArray(data) ? data : []);
+      }
     } catch (err) {
-      setError(err.message || "Unable to load complaints.");
+      if (!signal?.aborted) {
+        setError(err.message || "Unable to load complaints.");
+      }
     } finally {
-      setLoading(false);
+      if (!signal?.aborted) {
+        setLoading(false);
+      }
     }
   }
 
   useEffect(() => {
-    loadComplaints();
+    const controller = new AbortController();
+    setLoading(true);
+    setComplaints([]);
+    setStatusFilter("all");
+    loadComplaints(controller.signal);
+
+    return () => controller.abort();
   }, [propertyId]);
 
   async function updateStatus(id, status) {
+    if (updatingId === id) return;
+
     try {
       setUpdatingId(id);
       setError("");
 
       await PropertyManagementService.updateComplaintStatus(id, status);
-      await loadComplaints();
+      setComplaints((prev) =>
+        prev.map((item) => (item.id === id ? { ...item, status } : item))
+      );
     } catch (err) {
       setError(err.message || "Unable to update complaint.");
     } finally {
@@ -177,10 +195,10 @@ export default function PropertyComplaints() {
             >
               <div className="property-complaint-card-header">
                 <h3>{complaint.title}</h3>
-                <span
-                  className={`complaint-status complaint-status-${complaint.status}`}
+              <span
+                  className={`complaint-status complaint-status-${complaint.status || "submitted"}`}
                 >
-                  {complaint.status.replace("_", " ")}
+                  {(complaint.status || "submitted").replace("_", " ")}
                 </span>
               </div>
 
@@ -212,29 +230,35 @@ export default function PropertyComplaints() {
               </div>
 
               {/* Photo Attachments */}
-              {complaint.photo_urls?.length > 0 && (
-                <div className="property-complaint-photos">
-                  <span className="pc-photos-label">
-                    <LuImage size={13} />
-                    <span>Attachments ({complaint.photo_urls.length})</span>
-                  </span>
+        {Array.isArray(complaint.photo_urls) &&
+                complaint.photo_urls.filter((u) => /^https?:\/\//i.test(u)).length > 0 && (
+                  <div className="property-complaint-photos">
+                    <span className="pc-photos-label">
+                      <LuImage size={13} />
+                      <span>
+                        Attachments (
+                        {complaint.photo_urls.filter((u) => /^https?:\/\//i.test(u)).length})
+                      </span>
+                    </span>
 
-                  <div className="pc-photo-links">
-                    {complaint.photo_urls.map((url, index) => (
-                      <a
-                        key={index}
-                        href={url}
-                        target="_blank"
-                        rel="noreferrer"
-                        className="pc-photo-pill"
-                      >
-                        <span>Photo {index + 1}</span>
-                        <LuExternalLink size={12} />
-                      </a>
-                    ))}
+                    <div className="pc-photo-links">
+                      {complaint.photo_urls
+                        .filter((u) => /^https?:\/\//i.test(u))
+                        .map((url, index) => (
+                          <a
+                            key={`${complaint.id}-photo-${index}`}
+                            href={url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="pc-photo-pill"
+                          >
+                            <span>Photo {index + 1}</span>
+                            <LuExternalLink size={12} />
+                          </a>
+                        ))}
+                    </div>
                   </div>
-                </div>
-              )}
+                )}
 
               {/* Interactive Quick-Tap Status Pills + Accessible Select */}
               <div className="property-complaint-status-control">

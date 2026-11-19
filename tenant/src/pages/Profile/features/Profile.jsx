@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "../../../../src/lib/supabase";
 import { useTenant } from "../../../context/TenantContext";
-
+import { clearServicesCache } from "../../Services/cache/servicesCache";
 import {
   LuUserRound,
   LuBuilding2,
@@ -113,8 +113,10 @@ export default function TenantProfile() {
     setError("");
   }
 
-  async function handleSave(event) {
+async function handleSave(event) {
     event.preventDefault();
+    if (saving) return;
+
     setError("");
     setSuccess("");
 
@@ -123,20 +125,30 @@ export default function TenantProfile() {
       return;
     }
 
+    const cleanName = formData.full_name.trim();
+    const cleanPhone = formData.phone.trim();
+    const cleanProfession = formData.profession.trim();
+    const cleanEmail = formData.email.trim();
+
     if (
-      !formData.full_name.trim() ||
-      !formData.phone.trim() ||
-      !formData.family_members ||
-      !formData.age
+      !cleanName ||
+      !cleanPhone ||
+      formData.family_members === "" ||
+      formData.age === ""
     ) {
       setError("Please complete all required fields.");
+      return;
+    }
+
+    if (!/^[+\d\s()-]{7,20}$/.test(cleanPhone)) {
+      setError("Enter a valid phone number.");
       return;
     }
 
     const familyMembers = Number(formData.family_members);
     const age = Number(formData.age);
 
-    if (!Number.isInteger(familyMembers) || familyMembers < 1) {
+    if (!Number.isInteger(familyMembers) || familyMembers < 1 || familyMembers > 50) {
       setError("Enter a valid number of family members.");
       return;
     }
@@ -154,16 +166,30 @@ export default function TenantProfile() {
           body: {
             device_token: deviceToken,
             action: "update_profile",
-            full_name: formData.full_name.trim(),
+            full_name: cleanName,
             family_members: familyMembers,
-            profession: formData.profession.trim(),
+            profession: cleanProfession,
             age,
-            phone: formData.phone.trim(),
-            email: formData.email.trim(),
+            phone: cleanPhone,
+            email: cleanEmail,
           },
         });
 
-      if (requestError) throw requestError;
+      if (requestError) {
+        let message = requestError.message || "Unable to update your details.";
+        try {
+          if (
+            requestError.context &&
+            typeof requestError.context.json === "function"
+          ) {
+            const payload = await requestError.context.json();
+            if (payload?.error) message = payload.error;
+          }
+        } catch {
+          // Keep fallback message
+        }
+        throw new Error(message);
+      }
 
       if (!data?.success || !data?.tenant) {
         throw new Error(data?.error || "Unable to update your details.");
@@ -174,16 +200,14 @@ export default function TenantProfile() {
       setSuccess("Your details have been updated.");
     } catch (err) {
       console.error("Profile update failed:", err);
-
-      setError(
-        err?.context?.error || err?.message || "Unable to update your details."
-      );
+      setError(err?.message || "Unable to update your details.");
     } finally {
       setSaving(false);
     }
   }
 
   function handleLogout() {
+    clearServicesCache(deviceToken);
     logout();
     navigate("/tenant/login", { replace: true });
   }

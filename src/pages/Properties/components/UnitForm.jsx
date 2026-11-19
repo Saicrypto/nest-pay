@@ -127,8 +127,11 @@ const filledCount = [
             <h3 className={String(unitName || "").trim() ? "filled" : ""}>
               {String(unitName || "").trim() || "Flat 101"}
             </h3>
-            <p>
-              Floor {String(floorNumber ?? "").trim() || "2"} • {bhkText}
+          <p>
+              Floor {String(floorNumber ?? "").trim() || "2"} · {bhkText}
+              {Number(squareFeet) > 0
+                ? ` · ${Number(squareFeet).toLocaleString("en-IN")} sq. ft.`
+                : ""}
             </p>
           </div>
 
@@ -140,16 +143,20 @@ const filledCount = [
         <div className="uf-preview-divider" />
 
         <div className="uf-preview-bottom">
-          <div className="uf-preview-rent">
+       <div className="uf-preview-rent">
             <strong>
-              ₹{Number(monthlyRent) > 0 ? Number(monthlyRent).toLocaleString("en-IN") : "12,000"}
+              ₹
+              {Number.isFinite(Number(monthlyRent)) && Number(monthlyRent) > 0
+                ? Number(monthlyRent).toLocaleString("en-IN")
+                : "12,000"}
             </strong>
             <span>/mo</span>
-            {Number(maintenanceAmount) > 0 && (
-              <small>
-                + ₹{Number(maintenanceAmount).toLocaleString("en-IN")} maint.
-              </small>
-            )}
+            {Number.isFinite(Number(maintenanceAmount)) &&
+              Number(maintenanceAmount) > 0 && (
+                <small>
+                  + ₹{Number(maintenanceAmount).toLocaleString("en-IN")} maint.
+                </small>
+              )}
           </div>
 
           <span className="uf-preview-due-pill">

@@ -31,21 +31,41 @@ function AddProperty() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
-  async function handleSubmit(event) {
+async function handleSubmit(event) {
     event.preventDefault();
+    if (loading) return;
+
+    const cleanName = propertyName.trim();
+    const cleanState = state.trim();
+    const cleanPincode = pincode.trim();
+
+    if (!cleanName) {
+      setError("Property name is required.");
+      return;
+    }
+
+    if (!cleanState) {
+      setError("State is required.");
+      return;
+    }
+
+    if (cleanPincode && !/^\d{6}$/.test(cleanPincode)) {
+      setError("Enter a valid 6-digit PIN code.");
+      return;
+    }
 
     setLoading(true);
     setError("");
 
     try {
       await PropertyService.createProperty({
-        propertyName,
+        propertyName: cleanName,
         propertyType,
-        address,
-        city,
-        state,
-        pincode,
-        totalUnits: 1, // Satisfies DB not-null & >= 1 constraint; actual count is tracked dynamically from added flats
+        address: address.trim(),
+        city: city.trim(),
+        state: cleanState,
+        pincode: cleanPincode,
+        totalUnits: 1,
       });
 
       clearPropertiesCache();
@@ -54,6 +74,7 @@ function AddProperty() {
       clearTenantsCache();
 
       navigate("/properties", {
+        replace: true,
         state: { propertyAdded: true },
       });
     } catch (err) {
@@ -275,7 +296,9 @@ function AddProperty() {
                 pattern="[0-9]{6}"
                 maxLength={6}
                 value={pincode}
-                onChange={(event) => setPincode(event.target.value)}
+               onChange={(event) =>
+                  setPincode(event.target.value.replace(/\D/g, "").slice(0, 6))
+                }
                 placeholder="500045"
               />
             </div>

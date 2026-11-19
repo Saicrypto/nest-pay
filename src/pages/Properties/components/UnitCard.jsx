@@ -64,19 +64,27 @@ function UnitCard({
               </span>
             )}
 
-            {unit.square_feet != null && unit.square_feet !== "" && (
-              <span className="unit-card-detail-item">
-                <LuMaximize2 size={13} />
-                <span>{Number(unit.square_feet).toLocaleString("en-IN")} sq. ft.</span>
-              </span>
-            )}
+     {unit.square_feet != null &&
+              unit.square_feet !== "" &&
+              Number.isFinite(Number(unit.square_feet)) && (
+                <span className="unit-card-detail-item">
+                  <LuMaximize2 size={13} />
+                  <span>
+                    {Number(unit.square_feet).toLocaleString("en-IN")} sq. ft.
+                  </span>
+                </span>
+              )}
 
-            {unit.monthly_rent && (
-              <span className="unit-card-rent-pill">
-                <LuIndianRupee size={12} />
-                <span>{Number(unit.monthly_rent).toLocaleString("en-IN")}/mo</span>
-              </span>
-            )}
+            {unit.monthly_rent != null &&
+              unit.monthly_rent !== "" &&
+              Number.isFinite(Number(unit.monthly_rent)) && (
+                <span className="unit-card-rent-pill">
+                  <LuIndianRupee size={12} />
+                  <span>
+                    {Number(unit.monthly_rent).toLocaleString("en-IN")}/mo
+                  </span>
+                </span>
+              )}
           </div>
         </div>
 
@@ -121,9 +129,24 @@ function UnitCard({
                   : "—"}
               </p>
               <p>Occupancy: {unit.occupancy_status}</p>
-              <p>Monthly rent: ₹{unit.monthly_rent ?? "—"}</p>
-              <p>Security deposit: ₹{unit.security_deposit ?? "—"}</p>
-              <p>Maintenance: ₹{unit.maintenance_amount ?? "—"}</p>
+              <p>
+                Monthly rent:{" "}
+                {unit.monthly_rent != null && Number.isFinite(Number(unit.monthly_rent))
+                  ? `₹${Number(unit.monthly_rent).toLocaleString("en-IN")}`
+                  : "—"}
+              </p>
+              <p>
+                Security deposit:{" "}
+                {unit.security_deposit != null && Number.isFinite(Number(unit.security_deposit))
+                  ? `₹${Number(unit.security_deposit).toLocaleString("en-IN")}`
+                  : "—"}
+              </p>
+              <p>
+                Maintenance:{" "}
+                {unit.maintenance_amount != null && Number.isFinite(Number(unit.maintenance_amount))
+                  ? `₹${Number(unit.maintenance_amount).toLocaleString("en-IN")}`
+                  : "—"}
+              </p>
               <p>Rent due day: {unit.rent_due_day ?? "—"}</p>
 
               <div className="unit-details-actions">

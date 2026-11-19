@@ -1,25 +1,31 @@
-
 import PropertyService from "./PropertyService";
 import UnitService from "./UnitService";
 
 const DashboardService = {
   async getStats() {
-    const [properties, units] = await Promise.all([
+    const [rawProperties, rawUnits] = await Promise.all([
       PropertyService.getMyProperties(),
       UnitService.getMyUnits(),
     ]);
 
-    const occupied = units.filter(
-      (unit) => unit.occupancy_status === "occupied"
-    ).length;
+    const properties = Array.isArray(rawProperties) ? rawProperties : [];
+    const units = Array.isArray(rawUnits) ? rawUnits : [];
 
-    const vacant = units.filter(
-      (unit) => unit.occupancy_status === "vacant"
-    ).length;
+    let occupied = 0;
+    let vacant = 0;
+    let monthlyRent = 0;
 
-    const monthlyRent = units
-      .filter((unit) => unit.occupancy_status === "occupied")
-      .reduce((total, unit) => total + Number(unit.monthly_rent || 0), 0);
+    for (const unit of units) {
+      if (unit?.occupancy_status === "occupied") {
+        occupied += 1;
+        const rent = Number(unit.monthly_rent);
+        if (Number.isFinite(rent)) {
+          monthlyRent += rent;
+        }
+      } else if (unit?.occupancy_status === "vacant") {
+        vacant += 1;
+      }
+    }
 
     return {
       properties: properties.length,
