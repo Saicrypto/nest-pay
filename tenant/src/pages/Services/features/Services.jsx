@@ -13,6 +13,7 @@ import ProviderCard from "../components/ProviderCard";
 import "../styles/Services.css";
 import ServicesSkeleton from "../components/ServicesSkeleton";
 import { getServicesCache, setServicesCache } from "../cache/servicesCache";
+import { FEATURES } from "../../../../../src/config/features";
 
 const initialForm = {
   contact_name: "",
@@ -30,9 +31,12 @@ export default function Services() {
   const [tenantContacts, setTenantContacts] = useState([]);
 
   const [showAddForm, setShowAddForm] = useState(false);
-  const [activeTab, setActiveTab] = useState(
-    location.state?.tab === "utility" ? "utility" : "service"
-  );
+ const defaultTab =
+  FEATURES.SERVICE_PROVIDERS_ENABLED && location.state?.tab === "service"
+    ? "service"
+    : "utility";
+
+const [activeTab, setActiveTab] = useState(defaultTab);
 
   const [form, setForm] = useState(initialForm);
   const [saving, setSaving] = useState(false);
@@ -304,21 +308,24 @@ const cachedData = getServicesCache(deviceToken);
   return (
     <main className="tenant-services-page">
       {/* Full-Bleed Top Curved Burnt-Orange Hero Header */}
-      <header className="tenant-services-header">
+  <header className="tenant-services-header">
         <div>
           <h1>Services</h1>
           <p>Find useful contacts for your property.</p>
         </div>
 
-        <button
-          type="button"
-          className="tenant-add-contact-btn"
-          onClick={openAddForm}
-        >
-          <LuPlus size={16} />
-          <span>Add My Own</span>
-        </button>
+        {(FEATURES.SERVICE_PROVIDERS_ENABLED || activeTab === "utility") && (
+          <button
+            type="button"
+            className="tenant-add-contact-btn"
+            onClick={openAddForm}
+          >
+            <LuPlus size={16} />
+            <span>Add My Own</span>
+          </button>
+        )}
       </header>
+
 
       {/* Overlapping Floating Segmented Category Capsule */}
       <div className="tenant-services-tabs-wrap">
@@ -347,6 +354,20 @@ const cachedData = getServicesCache(deviceToken);
         </div>
       </div>
 
+      {/* Content Area */}
+      {activeTab === "service" && !FEATURES.SERVICE_PROVIDERS_ENABLED ? (
+        <section className="tenant-services-coming-soon">
+          <div className="ts-coming-soon-icon">
+            <LuWrench size={26} aria-hidden="true" />
+          </div>
+          <h3>Coming Soon</h3>
+          <p>
+            Verified local service providers and maintenance vendors will be
+            available here soon.
+          </p>
+        </section>
+      ) : (
+<>
       {error && !showAddForm && (
         <p className="tenant-services-error" role="alert">
           {error}
@@ -435,7 +456,8 @@ const cachedData = getServicesCache(deviceToken);
           )}
         </div>
       </section>
-
+ </>
+      )}
       {/* Add / Edit Custom Contact Slide-Up Bottom Sheet */}
       {showAddForm && (
         <div

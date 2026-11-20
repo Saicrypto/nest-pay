@@ -13,6 +13,7 @@ import {
   LuMap,
   LuHash,
   LuLayers,
+  LuPhone,
 } from "react-icons/lu";
 import { clearPropertiesCache } from "../cache/propertiesCache";
 import { clearTenantsCache } from "../../Tenants/cache/tenantsCache";
@@ -28,6 +29,7 @@ function AddProperty() {
   const [city, setCity] = useState("");
   const [state, setState] = useState("Telangana");
   const [pincode, setPincode] = useState("");
+  const [watchmanPhone, setWatchmanPhone] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
@@ -38,6 +40,7 @@ async function handleSubmit(event) {
     const cleanName = propertyName.trim();
     const cleanState = state.trim();
     const cleanPincode = pincode.trim();
+    const cleanWatchmanPhone = watchmanPhone.trim();
 
     if (!cleanName) {
       setError("Property name is required.");
@@ -54,6 +57,11 @@ async function handleSubmit(event) {
       return;
     }
 
+    if (cleanWatchmanPhone && !/^[6-9]\d{9}$/.test(cleanWatchmanPhone)) {
+  setError("Enter a valid 10-digit watchman mobile number.");
+  return;
+    }
+
     setLoading(true);
     setError("");
 
@@ -65,6 +73,7 @@ async function handleSubmit(event) {
         city: city.trim(),
         state: cleanState,
         pincode: cleanPincode,
+        watchmanPhone: cleanWatchmanPhone,
         totalUnits: 1,
       });
 
@@ -303,6 +312,33 @@ async function handleSubmit(event) {
               />
             </div>
           </div>
+
+{/* Card 3: PROPERTY STAFF */}
+<div className="ap-section-card">
+  <div className="ap-section-header">
+    <h3>PROPERTY STAFF</h3>
+    <span>Optional</span>
+  </div>
+
+  <div className="ap-field-group">
+    <label htmlFor="watchmanPhone">
+      <LuPhone size={14} />
+      Watchman mobile number
+    </label>
+    <input
+      id="watchmanPhone"
+      type="tel"
+      inputMode="numeric"
+      maxLength={10}
+      value={watchmanPhone}
+      onChange={(event) =>
+        setWatchmanPhone(event.target.value.replace(/\D/g, "").slice(0, 10))
+      }
+      placeholder="e.g. 9876543210"
+    />
+  </div>
+</div>
+
         </form>
 
         {/* Sticky Bottom Action Bar */}

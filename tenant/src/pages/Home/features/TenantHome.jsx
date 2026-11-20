@@ -9,6 +9,7 @@ import {
 import "../styles/TenantHome.css";
 import NotificationBell from "../../../components/NotificationBell/NotificationBell";
 import TenantHomeSkeleton from "../components/TenantHomeSkeleton";
+import { FEATURES } from "../../../../../src/config/features";
 
 const inrFormatter = new Intl.NumberFormat("en-IN", {
   style: "currency",
@@ -54,7 +55,7 @@ function TenantHome() {
     String(tenant?.full_name ?? "").trim().split(/\s+/)[0] || "there";
   const rentAmount = Number(unit?.monthly_rent);
 
-  const shortcuts = [
+const shortcuts = [
     {
       label: "Services",
       sublabel: "Vendors & help",
@@ -94,7 +95,7 @@ function TenantHome() {
         </header>
 
         <section className="tenant-home-welcome">
-          <h1>Welcome, {tenantName} 👋</h1>
+          <h1>Welcome, {tenantName} </h1>
           <p>
             {unit?.unit_name || "Your flat"}
             <span> · </span>

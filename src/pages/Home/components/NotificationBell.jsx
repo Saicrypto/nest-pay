@@ -18,32 +18,41 @@ export default function NotificationBell() {
   const [markingAll, setMarkingAll] = useState(false);
   const [error, setError] = useState("");
 
-  const loadNotifications = useCallback(async () => {
-    if (!currentUserId) return;
+  const loadNotifications = useCallback(
+    async ({ silent = false } = {}) => {
+      if (!currentUserId) return;
 
-    try {
-      setLoading(true);
-      setError("");
+      try {
+        if (!silent) {
+          setLoading(true);
+          setError("");
+        }
 
-      const { data, error: fetchError } = await supabase
-        .from("notifications")
-        .select("*, property_units(property_id)")
-        .eq("recipient_user_id", currentUserId)
-        .order("created_at", { ascending: false })
-        .limit(50);
+        const { data, error: fetchError } = await supabase
+          .from("notifications")
+          .select("*, property_units(property_id)")
+          .eq("recipient_user_id", currentUserId)
+          .order("created_at", { ascending: false })
+          .limit(50);
 
-      if (fetchError) throw fetchError;
+        if (fetchError) throw fetchError;
 
-      const list = data || [];
-      setNotifications(list);
-      setUnreadCount(list.filter((item) => !item.is_read).length);
-    } catch (err) {
-      console.error("Owner notification error:", err);
-      setError("Unable to load notifications.");
-    } finally {
-      setLoading(false);
-    }
-  }, [currentUserId]);
+        const list = data || [];
+        setNotifications(list);
+        setUnreadCount(list.filter((item) => !item.is_read).length);
+      } catch (err) {
+        console.error("Owner notification error:", err);
+        if (!silent) {
+          setError("Unable to load notifications.");
+        }
+      } finally {
+        if (!silent) {
+          setLoading(false);
+        }
+      }
+    },
+    [currentUserId]
+  );
 
   async function handleMarkAsRead(id) {
     if (!currentUserId) return;
@@ -140,6 +149,7 @@ export default function NotificationBell() {
     }
   }
 
+  // Initial load + Realtime subscription for incoming notifications
   useEffect(() => {
     if (!currentUserId) {
       setNotifications([]);
@@ -149,6 +159,60 @@ export default function NotificationBell() {
     }
 
     loadNotifications();
+
+    const channel = supabase
+      .channel(`owner-notifications-${currentUserId}`)
+      .on(
+        "postgres_changes",
+        {
+          event: "INSERT",
+          schema: "public",
+          table: "notifications",
+          filter: `recipient_user_id=eq.${currentUserId}`,
+        },
+        (payload) => {
+          const incoming = payload.new;
+          if (!incoming?.id) return;
+
+          setNotifications((prev) => {
+            if (prev.some((n) => n.id === incoming.id)) return prev;
+            return [incoming, ...prev].slice(0, 50);
+          });
+
+          if (!incoming.is_read) {
+            setUnreadCount((prev) => prev + 1);
+          }
+
+          // Silently re-fetch to populate the joined property_units(property_id) relation
+          loadNotifications({ silent: true });
+        }
+      )
+      .on(
+        "postgres_changes",
+        {
+          event: "UPDATE",
+          schema: "public",
+          table: "notifications",
+          filter: `recipient_user_id=eq.${currentUserId}`,
+        },
+        (payload) => {
+          const updated = payload.new;
+          if (!updated?.id) return;
+
+          setNotifications((prev) => {
+            const next = prev.map((n) =>
+              n.id === updated.id ? { ...n, ...updated } : n
+            );
+            setUnreadCount(next.filter((item) => !item.is_read).length);
+            return next;
+          });
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
   }, [currentUserId, loadNotifications]);
 
   useEffect(() => {
@@ -170,7 +234,7 @@ export default function NotificationBell() {
         onClick={() => {
           const nextOpen = !isOpen;
           setIsOpen(nextOpen);
-          if (nextOpen) loadNotifications();
+          if (nextOpen) loadNotifications({ silent: notifications.length > 0 });
         }}
         aria-label="Notifications"
         aria-expanded={isOpen}

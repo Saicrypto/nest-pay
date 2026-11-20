@@ -3,9 +3,11 @@ import {
   LuHouse,
   LuIndianRupee,
   LuWrench,
+  LuDroplet,
   LuMessageSquare,
   LuUserRound,
 } from "react-icons/lu";
+import { FEATURES } from "../../../../src/config/features";
 import "./TenantBottomNav.css";
 
 const navItems = [

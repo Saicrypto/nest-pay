@@ -13,28 +13,51 @@ import { clearComplaintsCache } from "../pages/Complaints/cache/complaintsCache"
 
 const TOKEN_STORAGE_KEY = "nest-pay-tenant-token";
 const UNIT_STORAGE_KEY = "nest-pay-tenant-unit";
+const PROFILE_STORAGE_KEY = "nest-pay-tenant-profile";
 
-function readSessionStorage(key) {
+function readStorage(key) {
   try {
-    return window.sessionStorage.getItem(key);
+    return (
+      window.localStorage.getItem(key) ??
+      window.sessionStorage.getItem(key)
+    );
   } catch {
     return null;
   }
 }
 
-function writeSessionStorage(key, value) {
+function writeStorage(key, value) {
   try {
+    window.localStorage.setItem(key, value);
     window.sessionStorage.setItem(key, value);
   } catch {
     // Ignore storage quota/security errors on restricted WebViews
   }
 }
 
-function removeSessionStorage(key) {
+function removeStorage(key) {
   try {
+    window.localStorage.removeItem(key);
     window.sessionStorage.removeItem(key);
   } catch {
     // Ignore storage errors on restricted WebViews
+  }
+}
+
+function readCachedProfile() {
+  try {
+    const raw = readStorage(PROFILE_STORAGE_KEY);
+    return raw ? JSON.parse(raw) : null;
+  } catch {
+    return null;
+  }
+}
+
+function writeCachedProfile(profile) {
+  try {
+    writeStorage(PROFILE_STORAGE_KEY, JSON.stringify(profile));
+  } catch {
+    // Ignore serialization/storage errors
   }
 }
 
@@ -46,15 +69,28 @@ function clearAllTenantCaches(token) {
 const TenantContext = createContext(null);
 
 export function TenantProvider({ children }) {
-  const [deviceToken, setDeviceToken] = useState(null);
-  const [unitId, setUnitId] = useState(null);
-  const [tenant, setTenant] = useState(null);
-  const [unit, setUnit] = useState(null);
-  const [property, setProperty] = useState(null);
-  const [rentStartDate, setRentStartDate] = useState(null);
-  const [onboardingCompleted, setOnboardingCompleted] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [ownerPayment, setOwnerPayment] = useState(null);
+  const initialToken = useMemo(() => readStorage(TOKEN_STORAGE_KEY), []);
+  const initialUnitId = useMemo(() => readStorage(UNIT_STORAGE_KEY), []);
+  const initialProfile = useMemo(() => readCachedProfile(), []);
+
+  const [deviceToken, setDeviceToken] = useState(initialToken);
+  const [unitId, setUnitId] = useState(initialUnitId);
+  const [tenant, setTenant] = useState(initialProfile?.tenant ?? null);
+  const [unit, setUnit] = useState(initialProfile?.unit ?? null);
+  const [property, setProperty] = useState(initialProfile?.property ?? null);
+  const [rentStartDate, setRentStartDate] = useState(
+    initialProfile?.rentStartDate ?? null
+  );
+  const [onboardingCompleted, setOnboardingCompleted] = useState(
+    initialProfile ? Boolean(initialProfile.onboardingCompleted) : null
+  );
+  const [ownerPayment, setOwnerPayment] = useState(
+    initialProfile?.ownerPayment ?? null
+  );
+  // Only block rendering on boot if we don't already have a cached profile snapshot
+  const [loading, setLoading] = useState(
+    Boolean(initialToken && initialUnitId && !initialProfile)
+  );
 
   const verifySession = useCallback(async (token, storedUnitId) => {
     const { data, error } = await supabase.functions.invoke(
@@ -95,8 +131,8 @@ export function TenantProvider({ children }) {
     let mounted = true;
 
     async function verifyStoredSession() {
-      const token = readSessionStorage(TOKEN_STORAGE_KEY);
-      const storedUnitId = readSessionStorage(UNIT_STORAGE_KEY);
+      const token = readStorage(TOKEN_STORAGE_KEY);
+      const storedUnitId = readStorage(UNIT_STORAGE_KEY);
 
       if (!token || !storedUnitId) {
         if (mounted) setLoading(false);
@@ -107,22 +143,51 @@ export function TenantProvider({ children }) {
         const data = await verifySession(token, storedUnitId);
 
         if (mounted) {
+          const nextOnboarding = Boolean(data.onboarding_completed);
+          const nextUnit = data.unit ?? null;
+          const nextProperty = data.property ?? null;
+          const nextRentDate = data.rent_start_date ?? null;
+          const nextTenant = data.tenant ?? null;
+          const nextOwnerPayment = data.owner_payment ?? null;
+
+          // Migrate any legacy sessionStorage-only tokens into localStorage
+          writeStorage(TOKEN_STORAGE_KEY, token);
+          writeStorage(UNIT_STORAGE_KEY, String(data.unit_id));
+          writeCachedProfile({
+            onboardingCompleted: nextOnboarding,
+            unit: nextUnit,
+            property: nextProperty,
+            rentStartDate: nextRentDate,
+            tenant: nextTenant,
+            ownerPayment: nextOwnerPayment,
+          });
+
           setDeviceToken(token);
           setUnitId(data.unit_id);
-          setUnit(data.unit ?? null);
-          setProperty(data.property ?? null);
-          setOnboardingCompleted(Boolean(data.onboarding_completed));
-          setRentStartDate(data.rent_start_date ?? null);
-          setTenant(data.tenant ?? null);
-          setOwnerPayment(data.owner_payment ?? null);
+          setUnit(nextUnit);
+          setProperty(nextProperty);
+          setOnboardingCompleted(nextOnboarding);
+          setRentStartDate(nextRentDate);
+          setTenant(nextTenant);
+          setOwnerPayment(nextOwnerPayment);
         }
       } catch (error) {
         console.error("Tenant session verification failed:", error);
 
-        if (error?.isAuthInvalid) {
-          removeSessionStorage(TOKEN_STORAGE_KEY);
-          removeSessionStorage(UNIT_STORAGE_KEY);
+        if (error?.isAuthInvalid && mounted) {
+          removeStorage(TOKEN_STORAGE_KEY);
+          removeStorage(UNIT_STORAGE_KEY);
+          removeStorage(PROFILE_STORAGE_KEY);
           clearAllTenantCaches(token);
+
+          setDeviceToken(null);
+          setUnitId(null);
+          setTenant(null);
+          setUnit(null);
+          setProperty(null);
+          setRentStartDate(null);
+          setOnboardingCompleted(null);
+          setOwnerPayment(null);
         }
       } finally {
         if (mounted) setLoading(false);
@@ -151,18 +216,29 @@ export function TenantProvider({ children }) {
       const cleanUnitId = String(id ?? "").trim();
       if (!cleanToken || !cleanUnitId) return;
 
+      const nextOnboarding = Boolean(completed);
+
       clearAllTenantCaches();
-      writeSessionStorage(TOKEN_STORAGE_KEY, cleanToken);
-      writeSessionStorage(UNIT_STORAGE_KEY, cleanUnitId);
+      writeStorage(TOKEN_STORAGE_KEY, cleanToken);
+      writeStorage(UNIT_STORAGE_KEY, cleanUnitId);
+      writeCachedProfile({
+        onboardingCompleted: nextOnboarding,
+        unit: unitData,
+        property: propertyData,
+        rentStartDate: rentDate,
+        tenant: tenantData,
+        ownerPayment: ownerPaymentData,
+      });
 
       setDeviceToken(cleanToken);
       setUnitId(cleanUnitId);
-      setOnboardingCompleted(Boolean(completed));
+      setOnboardingCompleted(nextOnboarding);
       setUnit(unitData);
       setProperty(propertyData);
       setRentStartDate(rentDate);
       setTenant(tenantData);
       setOwnerPayment(ownerPaymentData);
+      setLoading(false);
     },
     []
   );
@@ -170,12 +246,20 @@ export function TenantProvider({ children }) {
   const completeOnboarding = useCallback((tenantData) => {
     setTenant(tenantData);
     setOnboardingCompleted(true);
+
+    const existing = readCachedProfile() ?? {};
+    writeCachedProfile({
+      ...existing,
+      tenant: tenantData,
+      onboardingCompleted: true,
+    });
   }, []);
 
   const logout = useCallback(() => {
-    const currentToken = readSessionStorage(TOKEN_STORAGE_KEY);
-    removeSessionStorage(TOKEN_STORAGE_KEY);
-    removeSessionStorage(UNIT_STORAGE_KEY);
+    const currentToken = readStorage(TOKEN_STORAGE_KEY);
+    removeStorage(TOKEN_STORAGE_KEY);
+    removeStorage(UNIT_STORAGE_KEY);
+    removeStorage(PROFILE_STORAGE_KEY);
     clearAllTenantCaches(currentToken);
 
     setDeviceToken(null);

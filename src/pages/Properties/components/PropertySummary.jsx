@@ -40,6 +40,7 @@ function PropertySummary({ property, unitCount }) {
     state: property.state || "",
     pincode: property.pincode || "",
     totalUnits: String(property.total_units ?? unitCount ?? 1),
+    watchmanPhone: property.watchman_phone || "",
   });
 
 const address = property.city || "City not provided";
@@ -85,6 +86,7 @@ async function handleSave(event) {
         city: form.city.trim(),
         state: form.state.trim(),
         pincode: cleanPincode,
+        watchmanPhone: form.watchmanPhone.trim(),
         totalUnits: parsedUnits,
       });
 
@@ -160,6 +162,7 @@ async function handleSave(event) {
                   state: property.state || "",
                   pincode: property.pincode || "",
                   totalUnits: String(property.total_units ?? unitCount ?? 1),
+                  watchmanPhone: property.watchman_phone || "",
                 });
                 setError("");
                 setEditing(true);
@@ -272,6 +275,16 @@ async function handleSave(event) {
                 value={form.pincode}
                 onChange={changeField}
                 inputMode="numeric"
+              />
+            </label>
+
+            <label>
+              Watchman phone
+              <input
+                name="watchmanPhone"
+                value={form.watchmanPhone}
+                onChange={changeField}
+                inputMode="tel"
               />
             </label>
 

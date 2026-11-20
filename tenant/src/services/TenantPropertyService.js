@@ -28,9 +28,12 @@ async function extractFunctionError(error, fallbackMessage) {
 }
 
 function normalizeContactPayload(contact = {}, { requireId = false } = {}) {
-  const name = String(contact.name ?? contact.provider_name ?? "").trim();
+  const name = String(
+    contact.contact_name ?? contact.name ?? contact.provider_name ?? ""
+  ).trim();
   const phone = String(contact.phone ?? contact.phone_number ?? "").trim();
-  const category = String(contact.category ?? contact.service_type ?? "").trim() || null;
+  const category =
+    String(contact.category ?? contact.service_type ?? "").trim() || null;
   const notes = String(contact.notes ?? "").trim() || null;
 
   if (!name) {
@@ -43,6 +46,7 @@ function normalizeContactPayload(contact = {}, { requireId = false } = {}) {
 
   const normalized = {
     ...contact,
+    ...(contact.contact_name !== undefined ? { contact_name: name } : {}),
     ...(contact.name !== undefined ? { name } : {}),
     ...(contact.provider_name !== undefined ? { provider_name: name } : {}),
     ...(contact.phone !== undefined ? { phone } : {}),

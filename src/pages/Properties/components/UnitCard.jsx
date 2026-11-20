@@ -13,6 +13,7 @@ import { createPortal } from "react-dom";
 
 function UnitCard({
   unit,
+  watchmanPhone,
   onOccupancyChange,
   onEdit,
   onDelete,
@@ -148,6 +149,15 @@ function UnitCard({
                   : "—"}
               </p>
               <p>Rent due day: {unit.rent_due_day ?? "—"}</p>
+
+              <p>
+  Watchman number:{" "}
+  {watchmanPhone ? (
+    <a href={`tel:${watchmanPhone}`}>{watchmanPhone}</a>
+  ) : (
+    "—"
+  )}
+</p>
 
               <div className="unit-details-actions">
                 <button

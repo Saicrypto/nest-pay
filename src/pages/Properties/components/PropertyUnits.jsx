@@ -6,6 +6,7 @@ import "../styles/UnitForm.css";
 import { useState, useMemo } from "react";
 
 function PropertyUnits({
+  property,
   units,
   unitName,
   setUnitName,
@@ -256,6 +257,7 @@ const [unitFilter, setUnitFilter] = useState("all"); // "all" | "occupied" | "va
                 <UnitCard
                   key={unit.id}
                   unit={unit}
+                  waitForVacate={occupancyConfirmation?.unitId === unit.id}
                   tenants={tenantsByUnit[unit.id] || []}
                   onEdit={handleEditUnit}
                   onDelete={handleRequestDeleteUnit}

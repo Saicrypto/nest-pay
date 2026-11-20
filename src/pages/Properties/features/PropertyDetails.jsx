@@ -11,6 +11,7 @@ import PropertySummary from "../components/PropertySummary";
 import PropertyUnits from "../components/PropertyUnits";
 import "../styles/PropertyDetails.css";
 import PropertyDetailsSkeleton from "../components/PropertyDetailsSkeleton";
+import { FEATURES } from "../../../config/features";
 
 function PropertyDetails() {
   const details = usePropertyDetails();
@@ -58,18 +59,20 @@ function PropertyDetails() {
       />
 
 <div className="property-feature-links">
-        <button
-          type="button"
-          className="pd-feature-tile"
-          onClick={() => navigate(`/properties/${details.property.id}/services`)}
-        >
-          <span className="pd-feature-icon services">
-            <LuWrench size={18} />
-          </span>
-          <strong>Service Providers</strong>
-          <small>Vendors &amp; staff</small>
-          <LuChevronRight className="pd-feature-arrow" size={14} />
-        </button>
+        {FEATURES.SERVICE_PROVIDERS_ENABLED && (
+          <button
+            type="button"
+            className="pd-feature-tile"
+            onClick={() => navigate(`/properties/${details.property.id}/services`)}
+          >
+            <span className="pd-feature-icon services">
+              <LuWrench size={18} />
+            </span>
+            <strong>Service Providers</strong>
+            <small>Vendors &amp; staff</small>
+            <LuChevronRight className="pd-feature-arrow" size={14} />
+          </button>
+        )}
 
         <button
           type="button"

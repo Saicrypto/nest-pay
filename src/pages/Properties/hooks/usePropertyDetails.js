@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { useParams } from "react-router-dom";
-
+import { supabase } from "../../../lib/supabase";
 import PropertyService from "../../../services/PropertyService";
 import UnitService from "../../../services/UnitService";
 import TenantService from "../../../services/TenantService";
@@ -201,6 +201,73 @@ export default function usePropertyDetails() {
 
     return () => {
       active = false;
+    };
+  }, [propertyId, userId]);
+
+useEffect(() => {
+    if (!userId || !isValidUuid(propertyId)) return;
+
+    const channel = supabase
+      .channel(`property-units-realtime-${propertyId}`)
+      .on(
+        "postgres_changes",
+        {
+          event: "UPDATE",
+          schema: "public",
+          table: "property_units",
+          filter: `property_id=eq.${propertyId}`,
+        },
+        (payload) => {
+          const updatedUnit = payload.new;
+          if (!updatedUnit?.id) return;
+
+          setUnits((current) => {
+            const updatedUnits = sortUnits(
+              current.map((unit) =>
+                unit.id === updatedUnit.id ? { ...unit, ...updatedUnit } : unit
+              )
+            );
+
+            syncPropertyCache((cached) => ({
+              ...cached,
+              units: updatedUnits,
+            }));
+
+            return updatedUnits;
+          });
+
+          invalidateOwnerCaches(updatedUnit.id);
+        }
+      )
+      .on(
+        "postgres_changes",
+        {
+          event: "*",
+          schema: "public",
+          table: "tenants",
+        },
+        (payload) => {
+          const targetUnitId =
+            payload.new?.unit_id ?? payload.old?.unit_id;
+          if (!targetUnitId) return;
+
+          // Only react if this tenant belongs to a unit in the currently viewed property
+          setUnits((current) => {
+            const belongsToProperty = current.some(
+              (unit) => unit.id === targetUnitId
+            );
+            if (belongsToProperty) {
+              loadTenantsForUnit(targetUnitId);
+              invalidateOwnerCaches(targetUnitId);
+            }
+            return current;
+          });
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
     };
   }, [propertyId, userId]);
 

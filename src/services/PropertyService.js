@@ -35,6 +35,7 @@ function normalizePropertyPayload(propertyData = {}) {
     state: String(propertyData.state ?? "").trim() || null,
     pincode: String(propertyData.pincode ?? "").trim() || null,
     total_units: totalUnits,
+    watchman_phone: String(propertyData.watchmanPhone ?? "").trim() || null,
   };
 }
 
@@ -43,7 +44,7 @@ const PropertyService = {
     const { data, error } = await supabase
       .from("properties")
       .select(
-        "id, property_name, property_type, address, city, state, pincode, created_at, property_units(count)"
+        "id, property_name, property_type, address, city, state, pincode, watchman_phone, created_at, property_units(count)"
       )
       .order("created_at", { ascending: false })
       .limit(200);

@@ -191,7 +191,7 @@ const TenantService = {
   async vacateUnitAndDeleteTenants(unitId) {
     assertValidUuid(unitId, "unit ID");
 
-    const { data, error } = await supabase.functions.invoke("vacate-unit", {
+    const { data, error } = await supabase.functions.invoke("vacant-unit", {
       body: { unit_id: unitId.trim() },
     });
 

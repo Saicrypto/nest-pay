@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { LuBell, LuX } from "react-icons/lu";
 import { useTenant } from "../../context/TenantContext";
+import { supabase } from "../../lib/supabase";
 import TenantNotificationService from "../../services/TenantNotificationService";
 import "./NotificationBell.css";
 
@@ -17,7 +18,7 @@ function formatTimestamp(value) {
 }
 
 export default function NotificationBell() {
-  const { deviceToken } = useTenant();
+  const { deviceToken, unitId } = useTenant();
 
   const [notifications, setNotifications] = useState([]);
   const [unreadCount, setUnreadCount] = useState(0);
@@ -37,51 +38,105 @@ export default function NotificationBell() {
     };
   }, []);
 
-  const loadNotifications = useCallback(async () => {
-    if (!deviceToken) {
-      setNotifications([]);
-      setUnreadCount(0);
-      setError("");
-      setLoading(false);
-      return;
-    }
-
-    const requestId = ++requestIdRef.current;
-
-    try {
-      setLoading(true);
-      setError("");
-
-      const result = await TenantNotificationService.getNotifications(
-        deviceToken
-      );
-
-      if (!mountedRef.current || requestId !== requestIdRef.current) return;
-
-      const list = Array.isArray(result?.notifications)
-        ? result.notifications
-        : [];
-      const count = Number.isFinite(Number(result?.unreadCount))
-        ? Math.max(0, Number(result.unreadCount))
-        : list.filter((item) => !item?.is_read).length;
-
-      setNotifications(list);
-      setUnreadCount(count);
-    } catch (err) {
-      if (!mountedRef.current || requestId !== requestIdRef.current) return;
-
-      console.error("Notification loading error:", err);
-      setError(err?.message || "Unable to load notifications.");
-    } finally {
-      if (mountedRef.current && requestId === requestIdRef.current) {
+  const loadNotifications = useCallback(
+    async ({ silent = false } = {}) => {
+      if (!deviceToken) {
+        setNotifications([]);
+        setUnreadCount(0);
+        setError("");
         setLoading(false);
+        return;
       }
-    }
-  }, [deviceToken]);
+
+      const requestId = ++requestIdRef.current;
+
+      try {
+        if (!silent) {
+          setLoading(true);
+          setError("");
+        }
+
+        const result = await TenantNotificationService.getNotifications(
+          deviceToken
+        );
+
+        if (!mountedRef.current || requestId !== requestIdRef.current) return;
+
+        const list = Array.isArray(result?.notifications)
+          ? result.notifications
+          : [];
+        const count = Number.isFinite(Number(result?.unreadCount))
+          ? Math.max(0, Number(result.unreadCount))
+          : list.filter((item) => !item?.is_read).length;
+
+        setNotifications(list);
+        setUnreadCount(count);
+        if (silent) setError("");
+      } catch (err) {
+        if (!mountedRef.current || requestId !== requestIdRef.current) return;
+
+        console.error("Notification loading error:", err);
+        if (!silent) {
+          setError(err?.message || "Unable to load notifications.");
+        }
+      } finally {
+        if (mountedRef.current && requestId === requestIdRef.current && !silent) {
+          setLoading(false);
+        }
+      }
+    },
+    [deviceToken]
+  );
 
   useEffect(() => {
     loadNotifications();
   }, [loadNotifications]);
+
+  // Real-time subscription for new/updated notifications on this tenant's unit
+  useEffect(() => {
+    if (!deviceToken || !unitId) return;
+
+    const channel = supabase
+      .channel(`tenant-notifications-${unitId}`)
+      .on(
+        "postgres_changes",
+        {
+          event: "*",
+          schema: "public",
+          table: "tenant_notifications",
+          filter: `unit_id=eq.${unitId}`,
+        },
+        (payload) => {
+          if (payload.eventType === "INSERT" && payload.new?.id) {
+            const incoming = payload.new;
+            setNotifications((prev) =>
+              prev.some((item) => item.id === incoming.id)
+                ? prev
+                : [incoming, ...prev]
+            );
+            if (!incoming.is_read) {
+              setUnreadCount((prev) => prev + 1);
+            }
+          }
+          // Reconcile exact server state & unread count silently
+          loadNotifications({ silent: true });
+        }
+      )
+      .subscribe();
+
+    function handleVisibilityChange() {
+      if (document.visibilityState === "visible") {
+        loadNotifications({ silent: true });
+      }
+    }
+
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+
+    return () => {
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
+      supabase.removeChannel(channel);
+    };
+  }, [deviceToken, unitId, loadNotifications]);
 
   useEffect(() => {
     if (!isOpen) return;
@@ -166,7 +221,7 @@ export default function NotificationBell() {
     setIsOpen((prev) => {
       const nextOpen = !prev;
       if (nextOpen) {
-        loadNotifications();
+        loadNotifications({ silent: notifications.length > 0 });
       }
       return nextOpen;
     });

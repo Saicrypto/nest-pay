@@ -5,7 +5,7 @@ import {
   Navigate,
   useLocation,
 } from "react-router-dom";
-
+import { FEATURES } from "./config/features";
 import MobileBottomNav from "./components/MobileBottomNav";
 import Properties from "./pages/Properties/features/Properties";
 import PropertyDetails from "./pages/Properties/features/PropertyDetails";
@@ -231,7 +231,7 @@ function TenantRoutes() {
         }
       />
 
-      <Route
+<Route
         path="services"
         element={
           <TenantProtectedRoute>
@@ -406,12 +406,16 @@ function AppRoutes() {
           }
         />
 
-        <Route
+<Route
           path="/properties/:propertyId/services"
           element={
-            <ProtectedRoute>
-              <ServiceProviders />
-            </ProtectedRoute>
+            FEATURES.SERVICE_PROVIDERS_ENABLED ? (
+              <ProtectedRoute>
+                <ServiceProviders />
+              </ProtectedRoute>
+            ) : (
+              <Navigate to="/properties" replace />
+            )
           }
         />
 

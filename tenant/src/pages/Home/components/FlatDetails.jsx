@@ -1,6 +1,6 @@
 import { Navigate, useNavigate } from "react-router-dom";
 import { useTenant } from "../../../context/TenantContext";
-import { LuArrowLeft, LuBuilding2 } from "react-icons/lu";
+import { LuArrowLeft, LuBuilding2, } from "react-icons/lu";
 import "../styles/FlatDetails.css";
 
 const inrFormatter = new Intl.NumberFormat("en-IN", {
@@ -60,6 +60,7 @@ export default function FlatDetails() {
     ["Security Deposit", formatCurrency(unit?.security_deposit)],
     ["Maintenance", formatCurrency(unit?.maintenance_amount)],
     ["Rent Due Day", formatOrdinal(unit?.rent_due_day)],
+    ["Watchman Phone", unit?.watchmanPhone || "—"],
     ...(propertyAddress ? [["Address", propertyAddress]] : []),
   ];
 
