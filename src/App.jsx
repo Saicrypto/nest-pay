@@ -18,11 +18,14 @@ import PaymentSettings from "./pages/Profile/features/PaymentSettings";
 import Profile from "./pages/Profile/features/Profile";
 import Tenants from "./pages/Tenants/features/Tenants";
 
+
 import AppSkeleton from "./components/AppSkeleton";
 import Welcome from "./pages/Welcome/features/Welcome";
 import ServiceProviders from "./pages/Properties/features/ServiceProviders";
 import DailyUtilities from "./pages/Properties/features/DailyUtilities";
 import PropertyComplaints from "./pages/Properties/features/PropertyComplaints";
+import PrivacyPolicy from "./pages/Profile/components/PrivacyPolicy";
+import TermsAndConditions from "./pages/Profile/components/TermsAndConditions";
 
 // Tenant imports
 import {
@@ -277,6 +280,8 @@ function TenantRoutes() {
       />
 
       <Route path="*" element={<Navigate to="/tenant/home" replace />} />
+      <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+<Route path="/terms-and-conditions" element={<TermsAndConditions />} />
     </Routes>
   );
 }
@@ -405,6 +410,9 @@ function AppRoutes() {
             </ProtectedRoute>
           }
         />
+
+        <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+<Route path="/terms-and-conditions" element={<TermsAndConditions />} />
 
 <Route
           path="/properties/:propertyId/services"

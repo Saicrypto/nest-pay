@@ -13,6 +13,7 @@ import {
   LuX,
   LuPencil,
   LuArrowLeft,
+  LuFileText,
 } from "react-icons/lu";
 
 import "../styles/Profile.css";
@@ -263,78 +264,95 @@ async function handleSave(event) {
       </section>
 
       {/* Profile Options Bento Card */}
-      <section className="tenant-profile-options">
-        <button
-          type="button"
-          className="tenant-profile-option"
-          onClick={openPersonalDetails}
-        >
-          <div className="tenant-profile-option-icon">
-            <LuUserRound size={18} />
-          </div>
+<section className="tenant-profile-options">
+     <button
+       type="button"
+       className="tenant-profile-option"
+       onClick={openPersonalDetails}
+     >
+       <div className="tenant-profile-option-icon">
+         <LuUserRound size={18} />
+       </div>
 
-          <div className="tenant-profile-option-info">
-            <strong>Your Personal Details</strong>
-            <span>View and edit your information</span>
-          </div>
+       <div className="tenant-profile-option-info">
+         <strong>Your Personal Details</strong>
+         <span>View and edit your information</span>
+       </div>
 
-          <LuChevronRight size={17} className="tenant-profile-chevron" />
-        </button>
+       <LuChevronRight size={17} className="tenant-profile-chevron" />
+     </button>
 
-        <button
-          type="button"
-          className="tenant-profile-option tenant-property-card"
-          onClick={() => navigate("/tenant/flat-details")}
-        >
-          <div className="tenant-profile-option-icon tenant-property-icon">
-            <LuBuilding2 size={18} />
-          </div>
+     <button
+       type="button"
+       className="tenant-profile-option tenant-property-card"
+       onClick={() => navigate("/tenant/flat-details")}
+     >
+       <div className="tenant-profile-option-icon tenant-property-icon">
+         <LuBuilding2 size={18} />
+       </div>
 
-          <div className="tenant-profile-option-info tenant-property-info">
-            <strong>{property?.property_name || "Your Property"}</strong>
-            <span>
-              {unit?.unit_name || "Flat"}
-              {unit?.bedrooms ? ` · ${unit.bedrooms} BHK` : ""}
-            </span>
-          </div>
+       <div className="tenant-profile-option-info tenant-property-info">
+         <strong>{property?.property_name || "Your Property"}</strong>
+         <span>
+           {unit?.unit_name || "Flat"}
+           {unit?.bedrooms ? ` · ${unit.bedrooms} BHK` : ""}
+         </span>
+       </div>
 
-          <LuChevronRight size={17} className="tenant-profile-chevron" />
-        </button>
+       <LuChevronRight size={17} className="tenant-profile-chevron" />
+     </button>
 
-        <button
-          type="button"
-          className="tenant-profile-option"
-          onClick={() => navigate("/tenant/profile/security")}
-        >
-          <div className="tenant-profile-option-icon">
-            <LuShieldCheck size={18} />
-          </div>
+     <a
+       href="mailto:support@nestpay.in?subject=Nest%20Pay%20Tenant%20Support"
+       className="tenant-profile-option"
+       style={{ textDecoration: "none" }}
+     >
+       <div className="tenant-profile-option-icon">
+         <LuHeadset size={18} />
+       </div>
 
-          <div className="tenant-profile-option-info">
-            <strong>Privacy & Security</strong>
-            <span>Account security</span>
-          </div>
+       <div className="tenant-profile-option-info">
+         <strong>Help &amp; Support</strong>
+         <span>support@nestpay.in</span>
+       </div>
 
-          <LuChevronRight size={17} className="tenant-profile-chevron" />
-        </button>
+       <LuChevronRight size={17} className="tenant-profile-chevron" />
+     </a>
 
-        <button
-          type="button"
-          className="tenant-profile-option"
-          onClick={() => navigate("/tenant/profile/support")}
-        >
-          <div className="tenant-profile-option-icon">
-            <LuHeadset size={18} />
-          </div>
+     <button
+       type="button"
+       className="tenant-profile-option"
+       onClick={() => navigate("/privacy-policy")}
+     >
+       <div className="tenant-profile-option-icon">
+         <LuShieldCheck size={18} />
+       </div>
 
-          <div className="tenant-profile-option-info">
-            <strong>Help & Support</strong>
-            <span>Get assistance</span>
-          </div>
+       <div className="tenant-profile-option-info">
+         <strong>Privacy Policy</strong>
+         <span>How we collect, use, and protect your data</span>
+       </div>
 
-          <LuChevronRight size={17} className="tenant-profile-chevron" />
-        </button>
-      </section>
+       <LuChevronRight size={17} className="tenant-profile-chevron" />
+     </button>
+
+     <button
+       type="button"
+       className="tenant-profile-option"
+       onClick={() => navigate("/terms-and-conditions")}
+     >
+       <div className="tenant-profile-option-icon">
+         <LuFileText size={18} />
+       </div>
+
+       <div className="tenant-profile-option-info">
+         <strong>Terms &amp; Conditions</strong>
+         <span>Rules and guidelines for using Nest Pay</span>
+       </div>
+
+       <LuChevronRight size={17} className="tenant-profile-chevron" />
+     </button>
+   </section>
 
       {/* Logout CTA */}
       <button

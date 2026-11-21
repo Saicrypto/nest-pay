@@ -11,6 +11,7 @@ import {
 } from "react-icons/lu";
 import { useTenant } from "../../../context/TenantContext";
 import "../styles/Payments.css";
+import { FEATURES } from "../../../../../src/config/features";
 
 const UPI_APPS = {
   google_pay: {
@@ -307,17 +308,19 @@ function Payments() {
               </div>
             </div>
 
-            <button
-              type="button"
-              className="tenant-pay-rent-button"
-              onClick={() => openPaymentApp()}
-              disabled={!paymentParams}
-            >
-              <span>
-                Pay {formatCurrency(rentAmount)} using {preferredAppLabel}
-              </span>
-              <LuExternalLink size={16} aria-hidden="true" />
-            </button>
+           {FEATURES.TENANT_PAYMENTS_ENABLED && (
+  <button
+    type="button"
+    className="tenant-pay-rent-button"
+    onClick={() => openPaymentApp()}
+    disabled={!paymentParams}
+  >
+    <span>
+      Pay {formatCurrency(rentAmount)} using {preferredAppLabel}
+    </span>
+    <LuExternalLink size={16} aria-hidden="true" />
+  </button>
+)}
 
             {preferredApp !== "any" && paymentParams && (
               <button

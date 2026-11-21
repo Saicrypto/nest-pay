@@ -1,6 +1,5 @@
 export const FEATURES = {
   SERVICE_PROVIDERS_ENABLED: false,
   DAILY_UTILITIES_ENABLED: true,
+  TENANT_PAYMENTS_ENABLED: false,
 };
-
-export default FEATURES;

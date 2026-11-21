@@ -15,6 +15,7 @@ import {
   LuTrash2,
   LuTriangleAlert,
   LuX,
+  LuFileText,
 } from "react-icons/lu";
 import { clearHomeCache } from "../../Home/cache/homeCache";
 import { clearPropertiesCache } from "../../Properties/cache/propertiesCache";
@@ -230,6 +231,34 @@ function Profile() {
               </span>
               <LuChevronRight size={17} className="profile-setting-arrow" />
             </button>
+          </div>
+        </section>
+
+<section className="profile-section">
+          <h2 className="profile-section-title">Legal</h2>
+
+          <div className="profile-settings-card">
+            <Link to="/privacy-policy" className="profile-setting-row">
+              <span className="profile-row-icon">
+                <LuShieldCheck size={18} />
+              </span>
+              <span className="profile-setting-label">
+                <strong>Privacy Policy</strong>
+                <small>How we collect, use, and protect your data</small>
+              </span>
+              <LuChevronRight size={17} className="profile-setting-arrow" />
+            </Link>
+
+            <Link to="/terms-and-conditions" className="profile-setting-row">
+              <span className="profile-row-icon">
+                <LuFileText size={18} />
+              </span>
+              <span className="profile-setting-label">
+                <strong>Terms &amp; Conditions</strong>
+                <small>Rules and guidelines for using Nest Pay</small>
+              </span>
+              <LuChevronRight size={17} className="profile-setting-arrow" />
+            </Link>
           </div>
         </section>
 
