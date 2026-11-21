@@ -280,8 +280,7 @@ function TenantRoutes() {
       />
 
       <Route path="*" element={<Navigate to="/tenant/home" replace />} />
-      <Route path="/privacy-policy" element={<PrivacyPolicy />} />
-<Route path="/terms-and-conditions" element={<TermsAndConditions />} />
+
     </Routes>
   );
 }
